@@ -23,15 +23,17 @@ void HydrologyGlaDSAnalysis::CreateConstraints(Constraints* constraints,IoModel*
 		/*Fetch lake datalake*/
 		IssmDouble* lake_data = NULL;
 		IssmDouble* spcphi    = NULL;
+		IssmDouble* phi       = NULL;
 		iomodel->FetchData(&lake_data,NULL,NULL,"md.mask.lake_levelset");
 		iomodel->FetchData(&spcphi,NULL,NULL,"md.hydrology.spcphi");
+		iomodel->FetchData(&phi,NULL,NULL,"md.initialization.hydraulic_potential");
 
 		/*Create spcs from x,y,z, as well as the spc values on those spcs: */
 		int count = constraints->Size();
 		for(int i=0;i<iomodel->numberofvertices;i++){
 			if(iomodel->my_vertices[i]){
 				if(xIsNan(spcphi[i]) && lake_data[i]>0.){
-					constraints->AddObject(new SpcDynamic(count+1,i+1,0,0., HydrologyGlaDSAnalysisEnum));
+					constraints->AddObject(new SpcDynamic(count+1,i+1,0,phi[i], HydrologyGlaDSAnalysisEnum));
 					count++;
 				}
 			}
