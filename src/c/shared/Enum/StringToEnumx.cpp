@@ -277,7 +277,6 @@ int  StringToEnumx(const char* name,bool notfounderror){
 	      else if (strcmp(name,"HydrologyChannelBeta")==0) return HydrologyChannelBetaEnum;
 	      else if (strcmp(name,"HydrologyCavitySpacing")==0) return HydrologyCavitySpacingEnum;
 	      else if (strcmp(name,"HydrologyChannelSheetWidth")==0) return HydrologyChannelSheetWidthEnum;
-	      else if (strcmp(name,"HydrologyEnglacialVoidRatio")==0) return HydrologyEnglacialVoidRatioEnum;
 	      else if (strcmp(name,"HydrologyIschannels")==0) return HydrologyIschannelsEnum;
 	      else if (strcmp(name,"HydrologyIsIncludeSheetThickness")==0) return HydrologyIsIncludeSheetThicknessEnum;
 	      else if (strcmp(name,"HydrologyCreepOpenFlag")==0) return HydrologyCreepOpenFlagEnum;
@@ -382,11 +381,11 @@ int  StringToEnumx(const char* name,bool notfounderror){
 	      else if (strcmp(name,"LoveR0")==0) return LoveR0Enum;
 	      else if (strcmp(name,"LoveShNmax")==0) return LoveShNmaxEnum;
 	      else if (strcmp(name,"LoveShNmin")==0) return LoveShNminEnum;
+	      else if (strcmp(name,"LoveStartingLayer")==0) return LoveStartingLayerEnum;
          else stage=4;
    }
    if(stage==4){
-	      if (strcmp(name,"LoveStartingLayer")==0) return LoveStartingLayerEnum;
-	      else if (strcmp(name,"LoveUnderflowTol")==0) return LoveUnderflowTolEnum;
+	      if (strcmp(name,"LoveUnderflowTol")==0) return LoveUnderflowTolEnum;
 	      else if (strcmp(name,"LovePostWidderThreshold")==0) return LovePostWidderThresholdEnum;
 	      else if (strcmp(name,"LoveDebug")==0) return LoveDebugEnum;
 	      else if (strcmp(name,"LoveHypergeomNZ")==0) return LoveHypergeomNZEnum;
@@ -505,11 +504,11 @@ int  StringToEnumx(const char* name,bool notfounderror){
 	      else if (strcmp(name,"LoadLoveL")==0) return LoadLoveLEnum;
 	      else if (strcmp(name,"LoveTimeFreq")==0) return LoveTimeFreqEnum;
 	      else if (strcmp(name,"LoveIsTime")==0) return LoveIsTimeEnum;
+	      else if (strcmp(name,"LoveHypergeomZ")==0) return LoveHypergeomZEnum;
          else stage=5;
    }
    if(stage==5){
-	      if (strcmp(name,"LoveHypergeomZ")==0) return LoveHypergeomZEnum;
-	      else if (strcmp(name,"LoveHypergeomTable1")==0) return LoveHypergeomTable1Enum;
+	      if (strcmp(name,"LoveHypergeomTable1")==0) return LoveHypergeomTable1Enum;
 	      else if (strcmp(name,"LoveHypergeomTable2")==0) return LoveHypergeomTable2Enum;
 	      else if (strcmp(name,"SealevelchangeGSelfAttraction")==0) return SealevelchangeGSelfAttractionEnum;
 	      else if (strcmp(name,"SealevelchangeGViscoElastic")==0) return SealevelchangeGViscoElasticEnum;
@@ -628,11 +627,11 @@ int  StringToEnumx(const char* name,bool notfounderror){
 	      else if (strcmp(name,"SmbRlapslgm")==0) return SmbRlapslgmEnum;
 	      else if (strcmp(name,"SmbRunoffalti")==0) return SmbRunoffaltiEnum;
 	      else if (strcmp(name,"SmbRunoffgrad")==0) return SmbRunoffgradEnum;
+	      else if (strcmp(name,"SmbRunoffref")==0) return SmbRunoffrefEnum;
          else stage=6;
    }
    if(stage==6){
-	      if (strcmp(name,"SmbRunoffref")==0) return SmbRunoffrefEnum;
-	      else if (strcmp(name,"SmbSealev")==0) return SmbSealevEnum;
+	      if (strcmp(name,"SmbSealev")==0) return SmbSealevEnum;
 	      else if (strcmp(name,"SmbSemicMethod")==0) return SmbSemicMethodEnum;
 	      else if (strcmp(name,"SmbSemicHcrit")==0) return SmbSemicHcritEnum;
 	      else if (strcmp(name,"SmbSemicRcrit")==0) return SmbSemicRcritEnum;
@@ -751,11 +750,11 @@ int  StringToEnumx(const char* name,bool notfounderror){
 	      else if (strcmp(name,"Age")==0) return AgeEnum;
 	      else if (strcmp(name,"Air")==0) return AirEnum;
 	      else if (strcmp(name,"Approximation")==0) return ApproximationEnum;
+	      else if (strcmp(name,"BalancethicknessMisfit")==0) return BalancethicknessMisfitEnum;
          else stage=7;
    }
    if(stage==7){
-	      if (strcmp(name,"BalancethicknessMisfit")==0) return BalancethicknessMisfitEnum;
-	      else if (strcmp(name,"BalancethicknessOmega0")==0) return BalancethicknessOmega0Enum;
+	      if (strcmp(name,"BalancethicknessOmega0")==0) return BalancethicknessOmega0Enum;
 	      else if (strcmp(name,"BalancethicknessOmega")==0) return BalancethicknessOmegaEnum;
 	      else if (strcmp(name,"BalancethicknessSpcthickness")==0) return BalancethicknessSpcthicknessEnum;
 	      else if (strcmp(name,"BalancethicknessThickeningRate")==0) return BalancethicknessThickeningRateEnum;
@@ -874,11 +873,11 @@ int  StringToEnumx(const char* name,bool notfounderror){
 	      else if (strcmp(name,"EsaEmotion")==0) return EsaEmotionEnum;
 	      else if (strcmp(name,"EsaNmotion")==0) return EsaNmotionEnum;
 	      else if (strcmp(name,"EsaRotationrate")==0) return EsaRotationrateEnum;
+	      else if (strcmp(name,"EsaStrainratexx")==0) return EsaStrainratexxEnum;
          else stage=8;
    }
    if(stage==8){
-	      if (strcmp(name,"EsaStrainratexx")==0) return EsaStrainratexxEnum;
-	      else if (strcmp(name,"EsaStrainratexy")==0) return EsaStrainratexyEnum;
+	      if (strcmp(name,"EsaStrainratexy")==0) return EsaStrainratexyEnum;
 	      else if (strcmp(name,"EsaStrainrateyy")==0) return EsaStrainrateyyEnum;
 	      else if (strcmp(name,"EsaUmotion")==0) return EsaUmotionEnum;
 	      else if (strcmp(name,"EsaXmotion")==0) return EsaXmotionEnum;
@@ -934,6 +933,7 @@ int  StringToEnumx(const char* name,bool notfounderror){
 	      else if (strcmp(name,"HydrologyDissipation")==0) return HydrologyDissipationEnum;
 	      else if (strcmp(name,"HydrologyDrainageRate")==0) return HydrologyDrainageRateEnum;
 	      else if (strcmp(name,"HydrologyEnglacialInput")==0) return HydrologyEnglacialInputEnum;
+	      else if (strcmp(name,"HydrologyEnglacialVoidRatio")==0) return HydrologyEnglacialVoidRatioEnum;
 	      else if (strcmp(name,"HydrologyFrictionHeat")==0) return HydrologyFrictionHeatEnum;
 	      else if (strcmp(name,"HydrologyGapHeight")==0) return HydrologyGapHeightEnum;
 	      else if (strcmp(name,"HydrologyGapHeightX")==0) return HydrologyGapHeightXEnum;

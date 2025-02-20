@@ -70,7 +70,7 @@ void solutionsequence_glads_nonlinear(FemModel* femmodel){
 			}
 		}
 		if(VerboseConvergence()) _printf0_(setw(50) << left << "   Inner loop converged in "<<count_in<<" iterations\n");
-		if(VerboseSolution()) _printf0_("   updating lake depth\n");
+		if(VerboseConvergence()) _printf0_("   updating lake depth\n");
 		analysis->UpdateLakeDepth(femmodel);
 		
 		if(VerboseConvergence()) _printf0_("   updating sheet thickness and channels cross section\n");

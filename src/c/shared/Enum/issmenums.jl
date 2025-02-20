@@ -258,7 +258,6 @@
 	HydrologyChannelBetaEnum
 	HydrologyCavitySpacingEnum
 	HydrologyChannelSheetWidthEnum
-	HydrologyEnglacialVoidRatioEnum
 	HydrologyIschannelsEnum
 	HydrologyIsIncludeSheetThicknessEnum
 	HydrologyCreepOpenFlagEnum
@@ -900,6 +899,7 @@
 	HydrologyDissipationEnum
 	HydrologyDrainageRateEnum
 	HydrologyEnglacialInputEnum
+	HydrologyEnglacialVoidRatioEnum
 	HydrologyFrictionHeatEnum
 	HydrologyGapHeightEnum
 	HydrologyGapHeightXEnum
@@ -2092,7 +2092,6 @@ function EnumToString(enum::IssmEnum)
 	if(enum==HydrologyChannelBetaEnum) return "HydrologyChannelBeta" end
 	if(enum==HydrologyCavitySpacingEnum) return "HydrologyCavitySpacing" end
 	if(enum==HydrologyChannelSheetWidthEnum) return "HydrologyChannelSheetWidth" end
-	if(enum==HydrologyEnglacialVoidRatioEnum) return "HydrologyEnglacialVoidRatio" end
 	if(enum==HydrologyIschannelsEnum) return "HydrologyIschannels" end
 	if(enum==HydrologyIsIncludeSheetThicknessEnum) return "HydrologyIsIncludeSheetThickness" end
 	if(enum==HydrologyCreepOpenFlagEnum) return "HydrologyCreepOpenFlag" end
@@ -2734,6 +2733,7 @@ function EnumToString(enum::IssmEnum)
 	if(enum==HydrologyDissipationEnum) return "HydrologyDissipation" end
 	if(enum==HydrologyDrainageRateEnum) return "HydrologyDrainageRate" end
 	if(enum==HydrologyEnglacialInputEnum) return "HydrologyEnglacialInput" end
+	if(enum==HydrologyEnglacialVoidRatioEnum) return "HydrologyEnglacialVoidRatio" end
 	if(enum==HydrologyFrictionHeatEnum) return "HydrologyFrictionHeat" end
 	if(enum==HydrologyGapHeightEnum) return "HydrologyGapHeight" end
 	if(enum==HydrologyGapHeightXEnum) return "HydrologyGapHeightX" end
@@ -3926,7 +3926,6 @@ function StringToEnum(name::String)
 	if(name=="HydrologyChannelBeta") return HydrologyChannelBetaEnum  end
 	if(name=="HydrologyCavitySpacing") return HydrologyCavitySpacingEnum  end
 	if(name=="HydrologyChannelSheetWidth") return HydrologyChannelSheetWidthEnum  end
-	if(name=="HydrologyEnglacialVoidRatio") return HydrologyEnglacialVoidRatioEnum  end
 	if(name=="HydrologyIschannels") return HydrologyIschannelsEnum  end
 	if(name=="HydrologyIsIncludeSheetThickness") return HydrologyIsIncludeSheetThicknessEnum  end
 	if(name=="HydrologyCreepOpenFlag") return HydrologyCreepOpenFlagEnum  end
@@ -4568,6 +4567,7 @@ function StringToEnum(name::String)
 	if(name=="HydrologyDissipation") return HydrologyDissipationEnum  end
 	if(name=="HydrologyDrainageRate") return HydrologyDrainageRateEnum  end
 	if(name=="HydrologyEnglacialInput") return HydrologyEnglacialInputEnum  end
+	if(name=="HydrologyEnglacialVoidRatio") return HydrologyEnglacialVoidRatioEnum  end
 	if(name=="HydrologyFrictionHeat") return HydrologyFrictionHeatEnum  end
 	if(name=="HydrologyGapHeight") return HydrologyGapHeightEnum  end
 	if(name=="HydrologyGapHeightX") return HydrologyGapHeightXEnum  end

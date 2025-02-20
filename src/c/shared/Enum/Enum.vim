@@ -269,7 +269,6 @@ syn keyword cConstant HydrologyChannelAlphaEnum
 syn keyword cConstant HydrologyChannelBetaEnum
 syn keyword cConstant HydrologyCavitySpacingEnum
 syn keyword cConstant HydrologyChannelSheetWidthEnum
-syn keyword cConstant HydrologyEnglacialVoidRatioEnum
 syn keyword cConstant HydrologyIschannelsEnum
 syn keyword cConstant HydrologyIsIncludeSheetThicknessEnum
 syn keyword cConstant HydrologyCreepOpenFlagEnum
@@ -911,6 +910,7 @@ syn keyword cConstant HydrologydcSedimentTransmitivityEnum
 syn keyword cConstant HydrologyDissipationEnum
 syn keyword cConstant HydrologyDrainageRateEnum
 syn keyword cConstant HydrologyEnglacialInputEnum
+syn keyword cConstant HydrologyEnglacialVoidRatioEnum
 syn keyword cConstant HydrologyFrictionHeatEnum
 syn keyword cConstant HydrologyGapHeightEnum
 syn keyword cConstant HydrologyGapHeightXEnum
@@ -1935,7 +1935,6 @@ syn keyword cType Numericalflux
 syn keyword cType Observation
 syn keyword cType Observations
 syn keyword cType Option
-syn keyword cType OptionUtilities
 syn keyword cType Options
 syn keyword cType Param
 syn keyword cType Parameters

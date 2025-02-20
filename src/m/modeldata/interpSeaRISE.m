@@ -60,7 +60,11 @@ switch (oshostname()),
 			searisenc='/totten_1/ModelData/SeaRISE/Greenland_5km_dev1.2.nc';
 		elseif hemisphere==-1,
 			searisenc='/totten_1/ModelData/SeaRISE/Antarctica_5km_dev1.0.nc';
-		end
+        end
+    case{'mac0017'}
+        if hemisphere==1
+            searisenc='/Users/ajh24/models/ISSM/examples/Data/Greenland_5km_dev1.2.nc';
+        end
 	otherwise
 		error('hostname not supported yet');
 end
