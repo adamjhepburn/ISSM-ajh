@@ -542,8 +542,7 @@ void           HydrologyGlaDSAnalysis::InputUpdateFromSolution(IssmDouble* solut
 	/*Update element general phi*/
 	element->InputUpdateFromSolutionOneDof(solution,HydraulicPotentialEnum);
 	/*Update lake outlet phi*/
-	if(!islakes) return;
-	else if(islakes){
+	if(islakes){
 		UpdateLakeOutletPhi(element);
 	}
 	/*Compute Hydrology Vx and Vy for time stepping purposes and Sheet Discharge as an optional output (These inputs do not affect GlaDS)*/
