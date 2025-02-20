@@ -33,7 +33,7 @@ Channel::Channel(){/*{{{*/
 	this->nodes      = NULL;
 }
 /*}}}*/
-Channel::Channel(int channel_id,IssmDouble channelarea,int index,IoModel* iomodel){/*{{{*/
+Channel::Channel(int channel_id,IssmDouble channelarea,IssmDouble channeldischarge, int index,IoModel* iomodel){/*{{{*/
 //Channel::Channel(int channel_id,int i,int index,IoModel* iomodel)
 
 	this->id=channel_id;
@@ -47,7 +47,9 @@ Channel::Channel(int channel_id,IssmDouble channelarea,int index,IoModel* iomode
 	//this->Sold = 0.;
 	this->S    = channelarea;
 	this->Sold = channelarea;
-	this->discharge = 0.;/*for output only*/
+	this->discharge	= channeldischarge;/*for output only*/
+	this->dischargeold = channeldischarge;/*for output only*/
+	
 
 	/*Get edge info*/
 	int i1 = iomodel->faces[4*index+0];
@@ -153,6 +155,7 @@ void    Channel::Marshall(MarshallHandle* marshallhandle){ /*{{{*/
 	marshallhandle->call(this->Sold);
 	marshallhandle->call(this->boundary);
 	marshallhandle->call(this->discharge);
+	marshallhandle->call(this->dischargeold);
 
 	if(marshallhandle->OperationNumber()==MARSHALLING_LOAD){
 		this->hnodes      = new Hook();
@@ -653,6 +656,7 @@ ElementVector* Channel::CreatePVectorHydrologyGlaDS(void){/*{{{*/
 void           Channel::SetChannelCrossSectionOld(void){/*{{{*/
 
 	this->Sold = this->S;
+	this->dischargeold = this->discharge;
 
 } /*}}}*/
 void           Channel::UpdateChannelCrossSection(void){/*{{{*/
@@ -661,6 +665,7 @@ void           Channel::UpdateChannelCrossSection(void){/*{{{*/
 	Tria*  tria=(Tria*)element;
 	if(this->boundary || !tria->IsIceOnlyInElement()){
 		this->S = 0.;
+		this->discharge = 0.;
 		return;
 	}
 	_assert_(tria->FiniteElement()==P1Enum); 
@@ -825,5 +830,119 @@ void           Channel::WriteChannelCrossSection(IssmPDouble* values){/*{{{*/
 void           Channel::WriteChannelDischarge(IssmPDouble* values){/*{{{*/
 	_assert_(values);
 	values[this->sid] = reCast<IssmPDouble>(this->discharge);
+}
+/*}}}*/
+void          Channel::AddDischargeToVector(Vector<IssmDouble>* Qr_vec){/*{{{*/
+
+	/*Derive Qr (channel flux in to or out of node with supra/extraglacial lake)*/
+	/*Intermediaries */
+	IssmDouble phi1,phi2;
+	IssmDouble oceanLS1,iceLS1,lakeLS1;
+	IssmDouble oceanLS2,iceLS2,lakeLS2;
+	IssmDouble vBound1,vBound2;
+	int sid[2];
+	IssmDouble qr[2];
+
+
+	/*Initialize Element matrix and return if necessary*/
+	Tria*  tria=(Tria*)element;
+	/*if(!tria->IsIceOnlyInElement()) return NULL*/;
+	_assert_(tria->FiniteElement()==P1Enum); 
+	int index1=tria->GetVertexIndex(vertices[0]);
+	int index2=tria->GetVertexIndex(vertices[1]);
+	GaussTria* gauss1=new GaussTria();
+	GaussTria* gauss2=new GaussTria();	
+
+	/*Get Sid of 2 vertices*/
+	sid[0] = this->vertices[0]->Lid();
+	sid[1] = this->vertices[1]->Lid();
+
+	/*Retrieve all inputs and parameters*/
+	Input* phi_input    = element->GetInput(HydraulicPotentialEnum);           _assert_(phi_input);
+	Input* lakeLS_input 		= element->GetInput(MaskLakeOutLevelsetEnum);  _assert_(lakeLS_input);
+	Input* oceanLS_input = element->GetInput(MaskOceanLevelsetEnum);      _assert_(oceanLS_input);
+	Input* iceLS_input = element->GetInput(MaskIceLevelsetEnum);          _assert_(iceLS_input);
+	Input* vBound_input = element->GetInput(MeshVertexonboundaryEnum);	_assert_(vBound_input);
+
+
+	/* Evaluate values at both ends of the channel*/
+	gauss1->GaussVertex(index1);
+	gauss2->GaussVertex(index2);
+
+	phi_input->GetInputValue(&phi1,gauss1);
+	phi_input->GetInputValue(&phi2,gauss2);
+	lakeLS_input->GetInputValue(&lakeLS1,gauss1);
+	lakeLS_input->GetInputValue(&lakeLS2,gauss2);
+	oceanLS_input->GetInputValue(&oceanLS1,gauss1);
+	oceanLS_input->GetInputValue(&oceanLS2,gauss2);
+	iceLS_input->GetInputValue(&iceLS1,gauss1);
+	iceLS_input->GetInputValue(&iceLS2,gauss2);
+	vBound_input->GetInputValue(&vBound1,gauss1);
+	vBound_input->GetInputValue(&vBound2,gauss2);
+
+
+	/*Set outlet discharge to zero if floating*/
+	if(oceanLS1<0. || oceanLS2<0.){
+		qr[0] = 0.;
+		qr[1] = 0.;
+		Qr_vec->SetValues(2,&sid[0], &qr[0],ADD_VAL);
+		return;
+	}
+	/*Set outlet discharge to zero if no ice*/
+	if(iceLS1>0. || iceLS2>0.){
+		qr[0] = 0.;
+		qr[1] = 0.;
+		Qr_vec->SetValues(2,&sid[0], &qr[0],ADD_VAL);
+		return;
+	}
+
+	/*set qr = 0 for channel entirely on edge*/
+	if(vBound1!=0. && vBound2!=0.){
+		qr[0] = 0.;
+		qr[1] = 0.;
+		Qr_vec->SetValues(2,&sid[0], &qr[0],ADD_VAL);
+		return;
+	}
+
+	if(lakeLS1>0. || lakeLS2>0.){
+		if(lakeLS1>0.){
+			if(phi1>phi2){
+				qr[0] = abs(this->discharge);
+				qr[1] = 0.;
+			}
+			if(phi1<phi2){
+				qr[0] = -abs(this->discharge);
+				qr[1] = 0.;
+			}
+		}
+		else if(lakeLS2>0.){
+			if(phi1>phi2){
+				qr[0] = 0.;
+				qr[1] = -abs(this->discharge);
+			}
+			if(phi1<phi2){
+				qr[0] = 0.;
+				qr[1] = abs(this->discharge);
+			}
+		}
+
+
+		Qr_vec->SetValues(2,&sid[0], &qr[0],ADD_VAL);
+	}
+	/*Set outlet discharge to zero if no lake*/
+	else{
+		qr[0] = 0.;
+		qr[1] = 0.;
+		Qr_vec->SetValues(2,&sid[0], &qr[0],ADD_VAL);
+		return;
+	}
+
+	/*Create discharge vector (copy twice)*/
+	/*IssmDouble qc[2];
+	qc[0] = this->discharge;
+	qc[1] = this->discharge;
+
+	/*Add to global vector*/
+	/*Qc_vec->SetValues(2,&sid[0], &qc[0],ADD_VAL)*/;
 }
 /*}}}*/

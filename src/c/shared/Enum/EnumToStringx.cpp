@@ -277,6 +277,7 @@ const char* EnumToStringx(int en){
 		case HydrologyCreepOpenFlagEnum : return "HydrologyCreepOpenFlag";
 		case HydrologyIsTransitionEnum : return "HydrologyIsTransition";
 		case HydrologyIsWaterPressureArmaEnum : return "HydrologyIsWaterPressureArma";
+		case HydrologyLakeFlagEnum : return "HydrologyLakeFlag";
 		case HydrologyMeltFlagEnum : return "HydrologyMeltFlag";
 		case HydrologyModelEnum : return "HydrologyModel";
 		case HydrologyNumBasinsEnum : return "HydrologyNumBasins";
@@ -803,6 +804,7 @@ const char* EnumToStringx(int en){
 		case CalvingrateyEnum : return "Calvingratey";
 		case CalvingFluxLevelsetEnum : return "CalvingFluxLevelset";
 		case CalvingMeltingFluxLevelsetEnum : return "CalvingMeltingFluxLevelset";
+		case ChannelDischargeEnum : return "ChannelDischarge";
 		case ConvergedEnum : return "Converged";
 		case CrevasseDepthEnum : return "CrevasseDepth";
 		case DamageDEnum : return "DamageD";
@@ -919,6 +921,12 @@ const char* EnumToStringx(int en){
 		case HydrologyGapHeightYYEnum : return "HydrologyGapHeightYY";
 		case HydrologyHeadEnum : return "HydrologyHead";
 		case HydrologyHeadOldEnum : return "HydrologyHeadOld";
+		case HydrologyLakeAreaEnum : return "HydrologyLakeArea";
+		case HydrologyLakeHeightEnum : return "HydrologyLakeHeight";
+		case HydrologyLakeHeightOldEnum : return "HydrologyLakeHeightOld";
+		case HydrologyLakeOutletQcEnum : return "HydrologyLakeOutletQc";
+		case HydrologyLakeOutletQcOldEnum : return "HydrologyLakeOutletQcOld";
+		case HydrologyLakeQinEnum : return "HydrologyLakeQin";
 		case HydrologyMeltRateEnum : return "HydrologyMeltRate";
 		case HydrologyMoulinInputEnum : return "HydrologyMoulinInput";
 		case HydrologyNeumannfluxEnum : return "HydrologyNeumannflux";
@@ -953,6 +961,7 @@ const char* EnumToStringx(int en){
 		case LoadingforceXEnum : return "LoadingforceX";
 		case LoadingforceYEnum : return "LoadingforceY";
 		case LoadingforceZEnum : return "LoadingforceZ";
+		case MaskLakeOutLevelsetEnum : return "MaskLakeOutLevelset";
 		case MaskOceanLevelsetEnum : return "MaskOceanLevelset";
 		case MaskIceLevelsetEnum : return "MaskIceLevelset";
 		case MaskIceRefLevelsetEnum : return "MaskIceRefLevelset";
@@ -1474,7 +1483,6 @@ const char* EnumToStringx(int en){
 		case ChannelEnum : return "Channel";
 		case ChannelAreaEnum : return "ChannelArea";
 		case ChannelAreaOldEnum : return "ChannelAreaOld";
-		case ChannelDischargeEnum : return "ChannelDischarge";
 		case ClosedEnum : return "Closed";
 		case ColinearEnum : return "Colinear";
 		case ConstraintsEnum : return "Constraints";

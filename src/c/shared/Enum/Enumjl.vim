@@ -268,6 +268,7 @@ syn keyword juliaConstC HydrologyIsIncludeSheetThicknessEnum
 syn keyword juliaConstC HydrologyCreepOpenFlagEnum
 syn keyword juliaConstC HydrologyIsTransitionEnum
 syn keyword juliaConstC HydrologyIsWaterPressureArmaEnum
+syn keyword juliaConstC HydrologyLakeFlagEnum
 syn keyword juliaConstC HydrologyMeltFlagEnum
 syn keyword juliaConstC HydrologyModelEnum
 syn keyword juliaConstC HydrologyNumBasinsEnum
@@ -794,6 +795,7 @@ syn keyword juliaConstC CalvingratexEnum
 syn keyword juliaConstC CalvingrateyEnum
 syn keyword juliaConstC CalvingFluxLevelsetEnum
 syn keyword juliaConstC CalvingMeltingFluxLevelsetEnum
+syn keyword juliaConstC ChannelDischargeEnum
 syn keyword juliaConstC ConvergedEnum
 syn keyword juliaConstC CrevasseDepthEnum
 syn keyword juliaConstC DamageDEnum
@@ -910,6 +912,12 @@ syn keyword juliaConstC HydrologyGapHeightYEnum
 syn keyword juliaConstC HydrologyGapHeightYYEnum
 syn keyword juliaConstC HydrologyHeadEnum
 syn keyword juliaConstC HydrologyHeadOldEnum
+syn keyword juliaConstC HydrologyLakeAreaEnum
+syn keyword juliaConstC HydrologyLakeHeightEnum
+syn keyword juliaConstC HydrologyLakeHeightOldEnum
+syn keyword juliaConstC HydrologyLakeOutletQcEnum
+syn keyword juliaConstC HydrologyLakeOutletQcOldEnum
+syn keyword juliaConstC HydrologyLakeQinEnum
 syn keyword juliaConstC HydrologyMeltRateEnum
 syn keyword juliaConstC HydrologyMoulinInputEnum
 syn keyword juliaConstC HydrologyNeumannfluxEnum
@@ -944,6 +952,7 @@ syn keyword juliaConstC LevelsetObservationEnum
 syn keyword juliaConstC LoadingforceXEnum
 syn keyword juliaConstC LoadingforceYEnum
 syn keyword juliaConstC LoadingforceZEnum
+syn keyword juliaConstC MaskLakeOutLevelsetEnum
 syn keyword juliaConstC MaskOceanLevelsetEnum
 syn keyword juliaConstC MaskIceLevelsetEnum
 syn keyword juliaConstC MaskIceRefLevelsetEnum
@@ -1465,7 +1474,6 @@ syn keyword juliaConstC CflevelsetmisfitEnum
 syn keyword juliaConstC ChannelEnum
 syn keyword juliaConstC ChannelAreaEnum
 syn keyword juliaConstC ChannelAreaOldEnum
-syn keyword juliaConstC ChannelDischargeEnum
 syn keyword juliaConstC ClosedEnum
 syn keyword juliaConstC ColinearEnum
 syn keyword juliaConstC ConstraintsEnum

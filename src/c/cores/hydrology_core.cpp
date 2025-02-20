@@ -236,10 +236,23 @@ void hydrology_core(FemModel* femmodel){ /*{{{*/
 		HydrologyGlaDSAnalysis* analysis = new HydrologyGlaDSAnalysis();
 		femmodel->SetCurrentConfiguration(HydrologyGlaDSAnalysisEnum);
 
+		bool islakes;
+		femmodel->parameters->FindParam(&islakes,HydrologyLakeFlagEnum);
+
 		/*Set fields as old*/
 		InputDuplicatex(femmodel,HydraulicPotentialEnum,HydraulicPotentialOldEnum);
 		InputDuplicatex(femmodel,HydrologySheetThicknessEnum,HydrologySheetThicknessOldEnum);
+		if(islakes){
+			if(VerboseSolution()) _printf0_("  renewing lake height\n");
+			InputDuplicatex(femmodel,HydrologyLakeHeightEnum,HydrologyLakeHeightOldEnum);
+			InputDuplicatex(femmodel,HydrologyLakeOutletQcEnum,HydrologyLakeOutletQcOldEnum);
+		}
 		analysis->SetChannelCrossSectionOld(femmodel);
+		/*reset boundary conditions*/
+
+		if(islakes){
+			ResetBoundaryConditions(femmodel,HydrologyGlaDSAnalysisEnum);
+		}
 
 		/*Solve for new potential*/
 		solutionsequence_glads_nonlinear(femmodel);

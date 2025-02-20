@@ -2371,6 +2371,17 @@ bool       Element::IsAllGrounded(){/*{{{*/
 		return true;
 	}
 }/*}}}*/
+bool	   Element::IsAnyLake(){/*{{{*/
+
+	Input* input=this->GetInput(MaskLakeOutLevelsetEnum); _assert_(input);
+	if(input->GetInputMax() >= 1){
+		return true;
+	}
+	else{
+		return false;
+	}
+
+}/*}}}*/
 bool       Element::IsGrounded(){/*{{{*/
 	/*At least ONE node is grounded (partially grounded returns true)*/
 

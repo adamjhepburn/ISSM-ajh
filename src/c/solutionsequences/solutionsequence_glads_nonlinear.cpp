@@ -70,10 +70,13 @@ void solutionsequence_glads_nonlinear(FemModel* femmodel){
 			}
 		}
 		if(VerboseConvergence()) _printf0_(setw(50) << left << "   Inner loop converged in "<<count_in<<" iterations\n");
-
+		if(VerboseSolution()) _printf0_("   updating lake depth\n");
+		analysis->UpdateLakeDepth(femmodel);
+		
 		if(VerboseConvergence()) _printf0_("   updating sheet thickness and channels cross section\n");
 		analysis->UpdateSheetThickness(femmodel);
 		analysis->UpdateChannelCrossSection(femmodel);
+		analysis->UpdateLakeOutletDischarge(femmodel);
 
 		/*Converged if inner loop converged in one solution*/
 		if(count_in==1) converged_out = true;
