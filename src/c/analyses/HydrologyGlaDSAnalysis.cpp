@@ -185,7 +185,6 @@ void HydrologyGlaDSAnalysis::UpdateElements(Elements* elements,Inputs* inputs,Io
 	}
 	iomodel->FetchDataToInput(inputs,elements,"md.mask.ice_levelset",MaskIceLevelsetEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.mask.ocean_levelset",MaskOceanLevelsetEnum);
-	iomodel->FetchDataToInput(inputs,elements,"md.mask.lake_levelset",MaskLakeOutLevelsetEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.mesh.vertexonboundary",MeshVertexonboundaryEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.hydrology.bump_height",HydrologyBumpHeightEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.hydrology.sheet_conductivity",HydrologySheetConductivityEnum);
@@ -196,11 +195,13 @@ void HydrologyGlaDSAnalysis::UpdateElements(Elements* elements,Inputs* inputs,Io
 	iomodel->FetchDataToInput(inputs,elements,"md.initialization.watercolumn",HydrologySheetThicknessEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.initialization.hydraulic_potential",HydraulicPotentialEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.hydrology.rheology_B_base",HydrologyRheologyBBaseEnum);
-	iomodel->FetchDataToInput(inputs,elements,"md.hydrology.lake_area",HydrologyLakeAreaEnum);
-	iomodel->FetchDataToInput(inputs,elements,"md.initialization.lake_outletQ",HydrologyLakeOutletQcEnum);
-	iomodel->FetchDataToInput(inputs,elements,"md.initialization.lake_depth",HydrologyLakeHeightEnum);
-	iomodel->FetchDataToInput(inputs,elements,"md.hydrology.lake_Qin",HydrologyLakeQinEnum);
-	
+	if(islakes){
+		iomodel->FetchDataToInput(inputs,elements,"md.mask.lake_levelset",MaskLakeOutLevelsetEnum);
+		iomodel->FetchDataToInput(inputs,elements,"md.hydrology.lake_area",HydrologyLakeAreaEnum);
+		iomodel->FetchDataToInput(inputs,elements,"md.initialization.lake_outletQ",HydrologyLakeOutletQcEnum);
+		iomodel->FetchDataToInput(inputs,elements,"md.initialization.lake_depth",HydrologyLakeHeightEnum);
+		iomodel->FetchDataToInput(inputs,elements,"md.hydrology.lake_Qin",HydrologyLakeQinEnum);
+	}
 	if(iomodel->domaintype==Domain2DhorizontalEnum){
 		iomodel->FetchDataToInput(inputs,elements,"md.initialization.vx",VxEnum);
 		iomodel->FetchDataToInput(inputs,elements,"md.initialization.vy",VyEnum);

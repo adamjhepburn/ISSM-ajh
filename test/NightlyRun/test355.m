@@ -9,6 +9,7 @@ md.miscellaneous.name='testChannels';
 %miscellaneous
 md=setmask(md,'',''); %everywhere grounded
 md=setflowequation(md,'SSA','all');
+md.mask.lake_levelset = zeros(md.mesh.numberofvertices,1);
 md.stressbalance.maxiter=2; %Make sure it runs quickly...
 
 %Some constants
@@ -27,7 +28,8 @@ md.initialization.vy = zeros(md.mesh.numberofvertices,1);
 md.initialization.temperature=(273.-20.)*ones(md.mesh.numberofvertices,1);
 md.initialization.watercolumn=0.03*ones(md.mesh.numberofvertices,1);
 md.initialization.hydraulic_potential = md.materials.rho_ice*md.constants.g*md.geometry.thickness;
-
+md.initialization.lake_outletQ = zeros(md.mesh.numberofvertices,1);
+md.initialization.lake_depth = zeros(md.mesh.numberofvertices,1);
 %Materials
 md.materials.rheology_B = (5e-25)^(-1/3) * ones(md.mesh.numberofvertices,1);
 md.materials.rheology_n = 3.*ones(md.mesh.numberofelements,1);
@@ -52,7 +54,8 @@ md.timestepping.final_time=.4/365;
 %Change hydrology class to Glads model
 md.hydrology=hydrologyglads();
 md.hydrology.ischannels=1;
-md.hydrology.englacial_void_ratio=1e-5;
+md.hydrology.islakes=0;
+md.hydrology.englacial_void_ratio=1e-5.*ones(md.mesh.numberofvertices,1);
 md.hydrology.moulin_input=zeros(md.mesh.numberofvertices,1);
 md.hydrology.neumannflux=zeros(md.mesh.numberofelements,1);
 md.hydrology.bump_height = 1e-1 * ones(md.mesh.numberofvertices,1);

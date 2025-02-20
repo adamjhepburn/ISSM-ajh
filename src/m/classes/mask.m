@@ -116,7 +116,7 @@ classdef mask
 				md = checkfield(md,'fieldname','mask.lake_levelset','timeseries',1,'NaN',1);
 				islake=(md.mask.lake_levelset>1);
 				if sum(islake)==0,
-					warning('no lakes present in the domain');
+					fprintf('no lakes present in the domain \n');
 				end
 			end
 		end % }}}

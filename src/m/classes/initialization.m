@@ -106,11 +106,13 @@ classdef initialization
 				if isa(md.hydrology,'hydrologyglads'),
 					md = checkfield(md,'fieldname','initialization.watercolumn','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
 					md = checkfield(md,'fieldname','initialization.hydraulic_potential','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
-					md = checkfield(md,'fieldname','initialization.channelarea','NaN',1,'Inf',1,'>=',0,'size',[md.mesh.numberofedges 1]);
-					md = checkfield(md,'fieldname','initialization.channel_discharge','NaN',1,'Inf',1,'>=',0,'size',[md.mesh.numberofedges 1]);
-					md = checkfield(md,'fieldname','initialization.lake_outletQ','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices]);
-					md = checkfield(md,'fieldname','initialization.lake_depth','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
-				end
+					if md.hydrology.islakes
+                        md = checkfield(md,'fieldname','initialization.channelarea','NaN',1,'Inf',1,'>=',0,'size',[md.mesh.numberofedges 1]);
+					    md = checkfield(md,'fieldname','initialization.channel_discharge','NaN',1,'Inf',1,'>=',0,'size',[md.mesh.numberofedges 1]);
+					    md = checkfield(md,'fieldname','initialization.lake_outletQ','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices]);
+					    md = checkfield(md,'fieldname','initialization.lake_depth','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
+                    end
+                end
 			end
 			if ismember('HydrologyDCInefficientAnalysis',analyses),
 				if isa(md.hydrology,'hydrologydc'),
