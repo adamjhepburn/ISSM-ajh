@@ -854,8 +854,8 @@ void          Channel::AddDischargeToVector(Vector<IssmDouble>* Qr_vec){/*{{{*/
 	GaussTria* gauss2=new GaussTria();	
 
 	/*Get Sid of 2 vertices*/
-	sid[0] = this->vertices[0]->Lid();
-	sid[1] = this->vertices[1]->Lid();
+	sid[0] = this->vertices[0]->Sid();
+	sid[1] = this->vertices[1]->Sid();
 
 	/*Retrieve all inputs and parameters*/
 	Input* phi_input    = element->GetInput(HydraulicPotentialEnum);           _assert_(phi_input);
@@ -943,6 +943,6 @@ void          Channel::AddDischargeToVector(Vector<IssmDouble>* Qr_vec){/*{{{*/
 	qc[1] = this->discharge;
 
 	/*Add to global vector*/
-	/*Qc_vec->SetValues(2,&sid[0], &qc[0],ADD_VAL)*/;
+	/*Qc_vec->SetValues(2,&pid[0], &qc[0],ADD_VAL)*/;
 }
 /*}}}*/
