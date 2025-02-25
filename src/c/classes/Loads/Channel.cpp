@@ -48,7 +48,7 @@ Channel::Channel(int channel_id,IssmDouble channelarea,IssmDouble channeldischar
 	this->S    = channelarea;
 	this->Sold = channelarea;
 	this->discharge	= channeldischarge;/*for output only*/
-	this->dischargeold = channeldischarge;/*for output only*/
+	this->dischargeold = 0.;/*for output only*/
 	
 
 	/*Get edge info*/

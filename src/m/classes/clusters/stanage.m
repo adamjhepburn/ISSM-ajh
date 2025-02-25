@@ -97,7 +97,7 @@ classdef stanage
              fprintf(fid,'module load intel CMake/3.24.3-GCCcore-12.2.0 Autotools\n\n');
 			 %fprintf(fid,'echo $PATH\n\n');
 			 fprintf(fid,'export ISSM_DIR="%s/../"\n',cluster.codepath); %FIXME
-             fprintf(fid,'source /users/gg4ahe/ISSM/etc/environment.sh\n\n');
+             fprintf(fid,'source /users/gg4ahe/ISSM-JOKULLHAUP/etc/environment.sh\n\n');
              %fprintf(fid,'export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK\n\n');
 			 fprintf(fid,'cd %s/%s\n\n',cluster.executionpath,dirname);
 			 fprintf(fid,'srun -n %i --export=ALL %s/issm.exe %s %s %s\n',cluster.np(),cluster.codepath,solution,[cluster.executionpath '/' dirname],modelname); 
