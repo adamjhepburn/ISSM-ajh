@@ -489,7 +489,7 @@ ElementVector* HydrologyGlaDSAnalysis::CreatePVector(Element* element){/*{{{*/
 		}
 		else{
 			Input* RO_input = element->GetInput(SmbRunoffEnum);_assert_(RO_input);
-			RO_input->GetInputValue(&melt,gauss);
+			RO_input->GetInputValue(&RO,gauss);
 			m = melt + RO;
 		}
 
