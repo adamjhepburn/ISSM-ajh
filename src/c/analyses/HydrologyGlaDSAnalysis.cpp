@@ -822,13 +822,13 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(Element* element){/*{{{*/
 	int numvertices = element->GetNumberOfVertices();
 
 	/*Initialize new lake depth*/
-	IssmDouble* lh_new = xNew<IssmDouble>(numvertices);
+	IssmDouble* lh = xNew<IssmDouble>(numvertices);
 	
 	/*Set to 0 if inactive element*/
 	if(element->IsAllFloating() || !element->IsIceInElement()){
-		for(int iv=0;iv<numvertices;iv++) lh_new[iv] = 0.;
-		element->AddInput(HydrologyLakeHeightEnum,lh_new,P1Enum);
-		xDelete<IssmDouble>(lh_new);
+		for(int iv=0;iv<numvertices;iv++) lh[iv] = 0.;
+		element->AddInput(HydrologyLakeHeightEnum,lh,P1Enum);
+		xDelete<IssmDouble>(lh);
 		return;
 	}
 
@@ -837,7 +837,7 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(Element* element){/*{{{*/
 	Input* qin_input = element->GetInput(HydrologyLakeQinEnum);           _assert_(qin_input); 
 	Input* qr_input = element->GetInput(HydrologyLakeOutletQcOldEnum);    _assert_(qr_input);
 	Input* la_input   = element->GetInput(HydrologyLakeAreaEnum);		  _assert_(la_input);
-	Input* lh_old_input = element->GetInput(HydrologyLakeHeightOldEnum);  _assert_(lh_old_input);
+	Input* lh_old_input = element->GetInput(HydrologyLakeHeightEnum);  _assert_(lh_old_input);
 	Input* oceanLS_input = element->GetInput(MaskOceanLevelsetEnum);      _assert_(oceanLS_input);
 	Input* iceLS_input = element->GetInput(MaskIceLevelsetEnum);          _assert_(iceLS_input);
 	Input* lakeLS_input = element->GetInput(MaskLakeOutLevelsetEnum);	  _assert_(lakeLS_input);
@@ -857,27 +857,42 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(Element* element){/*{{{*/
 		lakeLS_input->GetInputValue(&lakeLS,gauss);
 		/*Set lake depth to zero if floating or no ice*/
 		if(oceanLS<0. || lakeLS!=1. || iceLS>0.){
-			lh_new[iv] = 0.;
+			lh[iv] = 0.;
 		}
 		else{
-			/*Get A from B and n*/
-			A = 1./la;
-			B = qin - qr;
-			/*Define alpha and beta*/
-			alpha = 0.;
-			beta  = A*B;
-			/*Get new lake depth*/
-			lh_new[iv] = ODE1(alpha,beta,lh_old,dt,1);
+			bool converged = false;
+			int count = 0;
+			IssmDouble lh_new = 0.;
+			while(!converged){
+				count++;
+				/*Get A from B and n*/
+				A = 1./la;
+				B = qin - qr;
+				/*Define alpha and beta*/
+				alpha = 0.;
+				beta  = A*B;
+				/*Get new lake depth*/
+				lh_new = ODE1(alpha,beta,lh_old,dt,2);
+				_assert_(!xIsNan<IssmDouble>(lh_new));
+				/*Make sure it is positive*/
+                if(lh_new<AEPS) lh_new = AEPS;
 
-			/*Make sure it is positive*/
-			if(lh_new[iv]<AEPS) lh_new[iv] = AEPS;
+			    /*Check for convergence*/
+				if(fabs((lh_new - lh_old)/(lh_old))<1e-8 || count>=10){
+					converged = true;
+				}
+				/*Update lh_old for the next iteration*/
+				lh_old = lh_new;
+				if(count>10){
+					converged = true;
+				}
+			}
+			lh[iv] = lh_new;
 		}
 	}
-
-	element->AddInput(HydrologyLakeHeightEnum,lh_new,P1Enum);
-
+	element->AddInput(HydrologyLakeHeightEnum,lh,P1Enum);
 	/*Clean up and return*/
-	xDelete<IssmDouble>(lh_new);
+	xDelete<IssmDouble>(lh);
 	delete gauss;
 
 }/*}}}*/
@@ -1068,7 +1083,7 @@ void HydrologyGlaDSAnalysis::UpdateEffectivePressure(Element* element){/*{{{*/
 
 		/*Compute overburden potential*/
 		phi_0 = phi_m + p_i;
-		phi_0   = rho_water*g*b + rho_ice*g*H;
+		/*phi_0   = rho_water*g*b + rho_ice*g*H*/;
 		if(isincludesheetthickness) phi_0 += rho_water*g*h;
 
 		/*Calculate effective pressure*/
