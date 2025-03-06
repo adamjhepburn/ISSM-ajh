@@ -243,7 +243,6 @@ void hydrology_core(FemModel* femmodel){ /*{{{*/
 		InputDuplicatex(femmodel,HydraulicPotentialEnum,HydraulicPotentialOldEnum);
 		InputDuplicatex(femmodel,HydrologySheetThicknessEnum,HydrologySheetThicknessOldEnum);
 		if(islakes){
-			if(VerboseSolution()) _printf0_("  Updating lake height\n");
 			InputDuplicatex(femmodel,HydrologyLakeHeightEnum,HydrologyLakeHeightOldEnum);
 			InputDuplicatex(femmodel,HydrologyLakeOutletQcEnum,HydrologyLakeOutletQcOldEnum);
 		}

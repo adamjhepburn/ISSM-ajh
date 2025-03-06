@@ -42,6 +42,7 @@ void HydrologyGlaDSAnalysis::CreateConstraints(Constraints* constraints,IoModel*
 		/*Cleanup*/
 		xDelete<IssmDouble>(lake_data);
 		xDelete<IssmDouble>(spcphi);
+		xDelete<IssmDouble>(phi);
 	}
 
 
@@ -95,9 +96,15 @@ void HydrologyGlaDSAnalysis::CreateLoads(Loads* loads, IoModel* iomodel){/*{{{*/
 				if (Kd!=0 && Kd!=iomodel->numberoffaces) _error_("Unknown dimension for channel discharge initialization.");
 			}
 			iomodel->DeleteData(1,"md.initialization.channelarea");
-			iomodel->DeleteData(1,"md.initialization.channel_discharge");
+            iomodel->DeleteData(1,"md.initialization.channel_discharge");
 		}
+
 	}
+	/*iomodel->DeleteData(1,"md.initialization.channelarea");
+	iomodel->DeleteData(1,"md.initialization.channel_discharge");*/
+	xDelete<IssmDouble>(channelarea);
+    xDelete<IssmDouble>(channeldischarge);
+
 
 	/*Create discrete loads for Moulins*/
 	CreateSingleNodeToElementConnectivity(iomodel);
@@ -544,10 +551,10 @@ void           HydrologyGlaDSAnalysis::InputUpdateFromSolution(IssmDouble* solut
 	element->FindParam(&islakes,HydrologyLakeFlagEnum);
 	/*Update element general phi*/
 	element->InputUpdateFromSolutionOneDof(solution,HydraulicPotentialEnum);
-	/*Update lake outlet phi*/
+	/*Update lake outlet phi
 	if(islakes){
 		UpdateLakeOutletPhi(element);
-	}
+	}*/
 	/*Compute Hydrology Vx and Vy for time stepping purposes and Sheet Discharge as an optional output (These inputs do not affect GlaDS)*/
 
 	/*Intermediaries*/
