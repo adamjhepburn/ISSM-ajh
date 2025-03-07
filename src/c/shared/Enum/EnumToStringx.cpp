@@ -924,8 +924,8 @@ const char* EnumToStringx(int en){
 		case HydrologyLakeAreaEnum : return "HydrologyLakeArea";
 		case HydrologyLakeHeightEnum : return "HydrologyLakeHeight";
 		case HydrologyLakeHeightOldEnum : return "HydrologyLakeHeightOld";
-		case HydrologyLakeOutletQcEnum : return "HydrologyLakeOutletQc";
-		case HydrologyLakeOutletQcOldEnum : return "HydrologyLakeOutletQcOld";
+		case HydrologyLakeOutletQrEnum : return "HydrologyLakeOutletQr";
+		case HydrologyLakeOutletQrOldEnum : return "HydrologyLakeOutletQrOld";
 		case HydrologyLakeQinEnum : return "HydrologyLakeQin";
 		case HydrologyMeltRateEnum : return "HydrologyMeltRate";
 		case HydrologyMoulinInputEnum : return "HydrologyMoulinInput";

@@ -843,7 +843,6 @@ void          Channel::AddDischargeToVector(Vector<IssmDouble>* Qr_vec){/*{{{*/
 	int sid[2];
 	IssmDouble qr[2];
 
-
 	/*Initialize Element matrix and return if necessary*/
 	Tria*  tria=(Tria*)element;
 	/*if(!tria->IsIceOnlyInElement()) return NULL*/;
@@ -864,7 +863,6 @@ void          Channel::AddDischargeToVector(Vector<IssmDouble>* Qr_vec){/*{{{*/
 	Input* iceLS_input = element->GetInput(MaskIceLevelsetEnum);          _assert_(iceLS_input);
 	Input* vBound_input = element->GetInput(MeshVertexonboundaryEnum);	_assert_(vBound_input);
 
-
 	/* Evaluate values at both ends of the channel*/
 	gauss1->GaussVertex(index1);
 	gauss2->GaussVertex(index2);
@@ -879,7 +877,6 @@ void          Channel::AddDischargeToVector(Vector<IssmDouble>* Qr_vec){/*{{{*/
 	iceLS_input->GetInputValue(&iceLS2,gauss2);
 	vBound_input->GetInputValue(&vBound1,gauss1);
 	vBound_input->GetInputValue(&vBound2,gauss2);
-
 
 	/*Set outlet discharge to zero if floating*/
 	if(oceanLS1<0. || oceanLS2<0.){
@@ -926,7 +923,6 @@ void          Channel::AddDischargeToVector(Vector<IssmDouble>* Qr_vec){/*{{{*/
 			}
 		}
 
-
 		Qr_vec->SetValues(2,&sid[0], &qr[0],ADD_VAL);
 	}
 	/*Set outlet discharge to zero if no lake*/
@@ -937,12 +933,7 @@ void          Channel::AddDischargeToVector(Vector<IssmDouble>* Qr_vec){/*{{{*/
 		return;
 	}
 
-	/*Create discharge vector (copy twice)*/
-	/*IssmDouble qc[2];
-	qc[0] = this->discharge;
-	qc[1] = this->discharge;
-
-	/*Add to global vector*/
-	/*Qc_vec->SetValues(2,&pid[0], &qc[0],ADD_VAL)*/;
-}
-/*}}}*/
+	/*Clean up*/
+	delete gauss1;
+	delete gauss2;
+}/*}}}*/

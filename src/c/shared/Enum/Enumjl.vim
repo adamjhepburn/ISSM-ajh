@@ -915,8 +915,8 @@ syn keyword juliaConstC HydrologyHeadOldEnum
 syn keyword juliaConstC HydrologyLakeAreaEnum
 syn keyword juliaConstC HydrologyLakeHeightEnum
 syn keyword juliaConstC HydrologyLakeHeightOldEnum
-syn keyword juliaConstC HydrologyLakeOutletQcEnum
-syn keyword juliaConstC HydrologyLakeOutletQcOldEnum
+syn keyword juliaConstC HydrologyLakeOutletQrEnum
+syn keyword juliaConstC HydrologyLakeOutletQrOldEnum
 syn keyword juliaConstC HydrologyLakeQinEnum
 syn keyword juliaConstC HydrologyMeltRateEnum
 syn keyword juliaConstC HydrologyMoulinInputEnum

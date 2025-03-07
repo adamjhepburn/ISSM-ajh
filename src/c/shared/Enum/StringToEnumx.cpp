@@ -945,8 +945,8 @@ int  StringToEnumx(const char* name,bool notfounderror){
 	      else if (strcmp(name,"HydrologyLakeArea")==0) return HydrologyLakeAreaEnum;
 	      else if (strcmp(name,"HydrologyLakeHeight")==0) return HydrologyLakeHeightEnum;
 	      else if (strcmp(name,"HydrologyLakeHeightOld")==0) return HydrologyLakeHeightOldEnum;
-	      else if (strcmp(name,"HydrologyLakeOutletQc")==0) return HydrologyLakeOutletQcEnum;
-	      else if (strcmp(name,"HydrologyLakeOutletQcOld")==0) return HydrologyLakeOutletQcOldEnum;
+	      else if (strcmp(name,"HydrologyLakeOutletQr")==0) return HydrologyLakeOutletQrEnum;
+	      else if (strcmp(name,"HydrologyLakeOutletQrOld")==0) return HydrologyLakeOutletQrOldEnum;
 	      else if (strcmp(name,"HydrologyLakeQin")==0) return HydrologyLakeQinEnum;
 	      else if (strcmp(name,"HydrologyMeltRate")==0) return HydrologyMeltRateEnum;
 	      else if (strcmp(name,"HydrologyMoulinInput")==0) return HydrologyMoulinInputEnum;

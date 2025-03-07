@@ -49,7 +49,7 @@ classdef hydrologyglads
 		end % }}}
 		function list = defaultoutputs(self,md) % {{{
             if self.islakes
-			    list = {'EffectivePressure','HydraulicPotential','HydrologySheetThickness','ChannelArea','ChannelDischarge','HydrologyLakeOutletQc','HydrologyLakeHeight'};
+			    list = {'EffectivePressure','HydraulicPotential','HydrologySheetThickness','ChannelArea','ChannelDischarge','HydrologyLakeOutletQr','HydrologyLakeHeight'};
             else
                 list = {'EffectivePressure','HydraulicPotential','HydrologySheetThickness','ChannelArea','ChannelDischarge'};
             end  

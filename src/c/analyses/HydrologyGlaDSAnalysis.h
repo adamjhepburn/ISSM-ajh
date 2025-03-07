@@ -32,6 +32,7 @@ class HydrologyGlaDSAnalysis: public Analysis{
 		void           UpdateConstraints(FemModel* femmodel);
 
 		/*Specific to GlaDS*/
+		void UpdateLakeOutletPhi(FemModel* femmodel);
 		void UpdateLakeOutletPhi(Element* element);
 		void SetChannelCrossSectionOld(FemModel* femmodel);
 		void SetLakeOutletDischargeOld(FemModel* femmodel);
@@ -43,5 +44,6 @@ class HydrologyGlaDSAnalysis: public Analysis{
 		void UpdateLakeOutletDischarge(FemModel* femmodel);
 		void UpdateEffectivePressure(FemModel* femmodel);
 		void UpdateEffectivePressure(Element* element);
+
 };
 #endif
