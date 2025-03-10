@@ -156,7 +156,7 @@ bool lakelhQrconvergence(Vector<IssmDouble>* lh_new, Vector<IssmDouble>* lh_old,
             if (VerboseConvergence()) _printf0_(setw(50) << left << "              convergence criterion exceeded: lh/lh_old " << lh_diff_norm * 100 << " > " << eps_res * 100 << " %\n");
              lh_converged = false;
         }
-		// Calculate the norm of the difference between qr and qr_old
+		/*// Calculate the norm of the difference between qr and qr_old
 		IssmDouble nqr = qr_new->Norm(NORM_TWO);
 		IssmDouble nqr_old = qr_old->Norm(NORM_TWO);
 		IssmDouble qr_diff_norm = fabs((nqr-nqr_old)/nqr_old+AEPS);
@@ -166,7 +166,7 @@ bool lakelhQrconvergence(Vector<IssmDouble>* lh_new, Vector<IssmDouble>* lh_old,
 		} else {
 			if (VerboseConvergence()) _printf0_(setw(50) << left << "              convergence criterion exceeded: qr/qr_old " << qr_diff_norm * 100 << " > " << eps_res * 100 << " %\n");
 			qr_converged = false;
-		}
+		}*/
 	}
 	
 	if (!lh_converged || !qr_converged) converged = false;
