@@ -28,7 +28,7 @@ md.initialization.vy = zeros(md.mesh.numberofvertices,1);
 md.initialization.temperature=(273.-20.)*ones(md.mesh.numberofvertices,1);
 md.initialization.watercolumn=0.03*ones(md.mesh.numberofvertices,1);
 md.initialization.hydraulic_potential = md.materials.rho_ice*md.constants.g*md.geometry.thickness;
-md.initialization.lake_outletQ = zeros(md.mesh.numberofvertices,1);
+md.initialization.lake_outletQr = zeros(md.mesh.numberofvertices,1);
 md.initialization.lake_depth = zeros(md.mesh.numberofvertices,1);
 %Materials
 md.materials.rheology_B = (5e-25)^(-1/3) * ones(md.mesh.numberofvertices,1);

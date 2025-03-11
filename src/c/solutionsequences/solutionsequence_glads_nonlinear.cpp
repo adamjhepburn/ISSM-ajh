@@ -24,16 +24,6 @@ void solutionsequence_glads_nonlinear(FemModel* femmodel){
 	Vector<IssmDouble>* pf  = NULL;
 	Vector<IssmDouble>* df  = NULL;
 	Vector<IssmDouble>* ys  = NULL;
-
-	/*lh qr convergence criterion*/
-	Vector<IssmDouble>* lh_new = NULL;
-	/*Vector<IssmDouble>* lh = NULL;*/
-	Vector<IssmDouble>* lh_old = NULL;
-	Vector<IssmDouble>* qr_new = NULL;
-	/*Vector<IssmDouble>* qr = NULL;*/
-	Vector<IssmDouble>* qr_old = NULL;
-	GetVectorFromInputsx(&lh_old,femmodel,HydrologyLakeHeightOldEnum,VertexSIdEnum);
-	GetVectorFromInputsx(&qr_old,femmodel,HydrologyLakeOutletQrOldEnum,VertexSIdEnum);
 	
 	/*parameters:*/
 	int max_nonlinear_iterations;
@@ -48,6 +38,16 @@ void solutionsequence_glads_nonlinear(FemModel* femmodel){
 	femmodel->parameters->FindParam(&eps_abs,StressbalanceAbstolEnum);
 	femmodel->parameters->FindParam(&islakes,HydrologyLakeFlagEnum);
 	femmodel->UpdateConstraintsx();
+
+	/*lh qr convergence criterion*/
+	Vector<IssmDouble>* lh_new = NULL;
+	Vector<IssmDouble>* lh_old = NULL;
+	Vector<IssmDouble>* qr_new = NULL;
+	Vector<IssmDouble>* qr_old = NULL;
+	if(islakes){
+		GetVectorFromInputsx(&lh_old,femmodel,HydrologyLakeHeightOldEnum,VertexSIdEnum);
+		GetVectorFromInputsx(&qr_old,femmodel,HydrologyLakeOutletQrOldEnum,VertexSIdEnum);
+	}
 
 	int  count_out=0;
 	bool converged_out=false;
