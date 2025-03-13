@@ -135,6 +135,11 @@ void solutionsequence_glads_nonlinear(FemModel* femmodel){
 	delete uf;
 	delete ug;
 	delete old_uf;
+	delete lh_new;
+	delete lh_old;
+	delete qr_new;
+	delete qr_old;
+	
 	delete analysis;
 }/*}}}*/
 
@@ -147,7 +152,7 @@ bool lakelhQrconvergence(Vector<IssmDouble>* lh_new, Vector<IssmDouble>* lh_old,
     if (!xIsNan<IssmDouble>(eps_res)) {
         // Calculate the norm of the difference between lh and lh_old
         IssmDouble nlh = lh_new->Norm(NORM_TWO);
-		IssmDouble nlh_old = lh_old->Norm(NORM_TWO);
+		IssmDouble nlh_old = lh_old->Norm(NORM_TWO)+AEPS;
 		IssmDouble lh_diff_norm = fabs((nlh-nlh_old)/nlh_old+AEPS);
 
         if (lh_diff_norm < eps_res) {
@@ -158,8 +163,8 @@ bool lakelhQrconvergence(Vector<IssmDouble>* lh_new, Vector<IssmDouble>* lh_old,
         }
 		/*// Calculate the norm of the difference between qr and qr_old
 		IssmDouble nqr = qr_new->Norm(NORM_TWO);
-		IssmDouble nqr_old = qr_old->Norm(NORM_TWO);
-		IssmDouble qr_diff_norm = fabs((nqr-nqr_old)/nqr_old+AEPS);
+		IssmDouble nqr_old = qr_old->Norm(NORM_TWO)+AEPS;
+		IssmDouble qr_diff_norm = fabs(nqr-nqr_old);
 
 		if (qr_diff_norm <eps_res) {
 			if (VerboseConvergence()) _printf0_(setw(50) << left << "              convergence criterion met: qr/qr_old " << qr_diff_norm * 100 << " < " << eps_res * 100 << " %\n");
@@ -170,6 +175,7 @@ bool lakelhQrconvergence(Vector<IssmDouble>* lh_new, Vector<IssmDouble>* lh_old,
 	}
 	
 	if (!lh_converged || !qr_converged) converged = false;
+
 
 	/*assign output*/
 	return converged;
