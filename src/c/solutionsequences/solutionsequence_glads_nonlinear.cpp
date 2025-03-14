@@ -9,7 +9,7 @@
 #include "../modules/modules.h"
 #define AEPS        2.2204460492503131E-015
 /*local routine to check qr/lh convergence:{{{*/
-bool lakelhQrconvergence(Vector<IssmDouble>* lh_new,Vector<IssmDouble>* lh_old, IssmDouble eps_res);
+bool lakelhconvergence(Vector<IssmDouble>* lh_new,Vector<IssmDouble>* lh_old, IssmDouble eps_res);
 /*}}}*/
 
 /*main routine:{{{*/
@@ -110,7 +110,7 @@ void solutionsequence_glads_nonlinear(FemModel* femmodel){
 			/*initialise lh*/
 			Vector<IssmDouble>* lh_new = NULL;
 			GetVectorFromInputsx(&lh_new,femmodel,HydrologyLakeHeightEnum,VertexSIdEnum);
-				if(!lakelhQrconvergence(lh_new, lh_old, eps_res)){
+				if(!lakelhconvergence(lh_new, lh_old, eps_res)){
 					converged_out = false;
 				}
 			/*clean-up*/
