@@ -9,7 +9,7 @@
 #include "../modules/modules.h"
 #define AEPS        2.2204460492503131E-015
 /*local routine to check qr/lh convergence:{{{*/
-bool lakelhQrconvergence(Vector<IssmDouble>* lh_new,Vector<IssmDouble>* lh_old, Vector<IssmDouble>* qr_new,Vector<IssmDouble>* qr_old, IssmDouble eps_res);
+bool lakelhQrconvergence(Vector<IssmDouble>* lh_new,Vector<IssmDouble>* lh_old, IssmDouble eps_res);
 /*}}}*/
 
 /*main routine:{{{*/
@@ -39,12 +39,10 @@ void solutionsequence_glads_nonlinear(FemModel* femmodel){
 	femmodel->parameters->FindParam(&islakes,HydrologyLakeFlagEnum);
 	femmodel->UpdateConstraintsx();
 
-	/*lh qr convergence criterion*/
+	/*lh convergence criterion*/
 	Vector<IssmDouble>* lh_old = NULL;
-	Vector<IssmDouble>* qr_old = NULL;
 	if(islakes){
 		GetVectorFromInputsx(&lh_old,femmodel,HydrologyLakeHeightOldEnum,VertexSIdEnum);
-		GetVectorFromInputsx(&qr_old,femmodel,HydrologyLakeOutletQrOldEnum,VertexSIdEnum);
 	}
 
 	int  count_out=0;
@@ -109,17 +107,14 @@ void solutionsequence_glads_nonlinear(FemModel* femmodel){
 			if(VerboseConvergence()) _printf0_("   updating lake depth\n");
 			analysis->UpdateLakeDepth(femmodel);
 			/*check convergence of lake height*/
-			/*initialise lh qr input*/
+			/*initialise lh*/
 			Vector<IssmDouble>* lh_new = NULL;
-			Vector<IssmDouble>* qr_new = NULL;
 			GetVectorFromInputsx(&lh_new,femmodel,HydrologyLakeHeightEnum,VertexSIdEnum);
-			GetVectorFromInputsx(&qr_new,femmodel,HydrologyLakeOutletQrEnum,VertexSIdEnum);
-				if(!lakelhQrconvergence(lh_new, lh_old, qr_new, qr_old, eps_res)){
+				if(!lakelhQrconvergence(lh_new, lh_old, eps_res)){
 					converged_out = false;
 				}
 			/*clean-up*/
 			delete lh_new;
-			delete qr_new;
 		}
 
 		/*Increase count: */
@@ -137,45 +132,32 @@ void solutionsequence_glads_nonlinear(FemModel* femmodel){
 	delete ug;
 	delete old_uf;
 	delete lh_old;
-	delete qr_old;
 	
 	delete analysis;
 }/*}}}*/
 
 
-bool lakelhQrconvergence(Vector<IssmDouble>* lh_new, Vector<IssmDouble>* lh_old, Vector<IssmDouble>* qr_new, Vector<IssmDouble>* qr_old, IssmDouble eps_res){/*}}}*/
+bool lakelhconvergence(Vector<IssmDouble>* lh_new, Vector<IssmDouble>* lh_old, IssmDouble eps_res){/*}}}*/
     bool converged = true;
-    bool lh_converged = true;
-    bool qr_converged = true;
+	// Calculate the norm of the difference between lh and lh_old
+	IssmDouble nlh = lh_new->Norm(NORM_TWO)+AEPS;
+	IssmDouble nlh_old = lh_old->Norm(NORM_TWO)+AEPS;
+	IssmDouble lh_diff_norm = fabs((nlh-nlh_old)/nlh_old);
 
     if (!xIsNan<IssmDouble>(eps_res)) {
-        // Calculate the norm of the difference between lh and lh_old
-        IssmDouble nlh = lh_new->Norm(NORM_TWO);
-		IssmDouble nlh_old = lh_old->Norm(NORM_TWO)+AEPS;
-		IssmDouble lh_diff_norm = fabs((nlh-nlh_old)/nlh_old+AEPS);
 
         if (lh_diff_norm < eps_res) {
             if (VerboseConvergence()) _printf0_(setw(50) << left << "              convergence criterion met: lh/lh_old " << lh_diff_norm * 100 << " < " << eps_res * 100 << " %\n");
         } else {
             if (VerboseConvergence()) _printf0_(setw(50) << left << "              convergence criterion exceeded: lh/lh_old " << lh_diff_norm * 100 << " > " << eps_res * 100 << " %\n");
-             lh_converged = false;
+             converged = false;
         }
-		/*// Calculate the norm of the difference between qr and qr_old
-		IssmDouble nqr = qr_new->Norm(NORM_TWO);
-		IssmDouble nqr_old = qr_old->Norm(NORM_TWO)+AEPS;
-		IssmDouble qr_diff_norm = fabs(nqr-nqr_old);
-
-		if (qr_diff_norm <eps_res) {
-			if (VerboseConvergence()) _printf0_(setw(50) << left << "              convergence criterion met: qr/qr_old " << qr_diff_norm * 100 << " < " << eps_res * 100 << " %\n");
-		} else {
-			if (VerboseConvergence()) _printf0_(setw(50) << left << "              convergence criterion exceeded: qr/qr_old " << qr_diff_norm * 100 << " > " << eps_res * 100 << " %\n");
-			qr_converged = false;
-		}*/
 	}
 	
-	if (!lh_converged || !qr_converged) converged = false;
-
-
+	if(nlh < 1e-10 && nlh_old < 1e-10){
+		converged = true;
+	}
+	
 	/*assign output*/
 	return converged;
 } /*}}}*/
