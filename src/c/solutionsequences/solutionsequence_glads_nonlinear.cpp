@@ -40,9 +40,7 @@ void solutionsequence_glads_nonlinear(FemModel* femmodel){
 	femmodel->UpdateConstraintsx();
 
 	/*lh qr convergence criterion*/
-	Vector<IssmDouble>* lh_new = NULL;
 	Vector<IssmDouble>* lh_old = NULL;
-	Vector<IssmDouble>* qr_new = NULL;
 	Vector<IssmDouble>* qr_old = NULL;
 	if(islakes){
 		GetVectorFromInputsx(&lh_old,femmodel,HydrologyLakeHeightOldEnum,VertexSIdEnum);
@@ -59,10 +57,7 @@ void solutionsequence_glads_nonlinear(FemModel* femmodel){
 	Reducevectorgtofx(&uf, ug, femmodel->nodes,femmodel->parameters);
 
 	while(!converged_out){
-		/*save pointers to old lh and qr*/
-		/*delete lh;lh=lh_new;
-		delete qr;qr=qr_new;*/
-
+	
 		count_in=0;
 		converged_in=false;
 		if(islakes){
@@ -114,11 +109,17 @@ void solutionsequence_glads_nonlinear(FemModel* femmodel){
 			if(VerboseConvergence()) _printf0_("   updating lake depth\n");
 			analysis->UpdateLakeDepth(femmodel);
 			/*check convergence of lake height*/
+			/*initialise lh qr input*/
+			Vector<IssmDouble>* lh_new = NULL;
+			Vector<IssmDouble>* qr_new = NULL;
 			GetVectorFromInputsx(&lh_new,femmodel,HydrologyLakeHeightEnum,VertexSIdEnum);
 			GetVectorFromInputsx(&qr_new,femmodel,HydrologyLakeOutletQrEnum,VertexSIdEnum);
 				if(!lakelhQrconvergence(lh_new, lh_old, qr_new, qr_old, eps_res)){
 					converged_out = false;
 				}
+			/*clean-up*/
+			delete lh_new;
+			delete qr_new;
 		}
 
 		/*Increase count: */
@@ -135,9 +136,7 @@ void solutionsequence_glads_nonlinear(FemModel* femmodel){
 	delete uf;
 	delete ug;
 	delete old_uf;
-	delete lh_new;
 	delete lh_old;
-	delete qr_new;
 	delete qr_old;
 	
 	delete analysis;
