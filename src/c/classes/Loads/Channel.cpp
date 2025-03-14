@@ -883,14 +883,12 @@ void          Channel::AddDischargeToVector(Vector<IssmDouble>* Qr_vec){/*{{{*/
 		qr[0] = 0.;
 		qr[1] = 0.;
 		Qr_vec->SetValues(2,&sid[0], &qr[0],ADD_VAL);
-		return;
 	}
 	/*Set outlet discharge to zero if no ice*/
 	if(iceLS1>0. || iceLS2>0.){
 		qr[0] = 0.;
 		qr[1] = 0.;
 		Qr_vec->SetValues(2,&sid[0], &qr[0],ADD_VAL);
-		return;
 	}
 
 	/*set qr = 0 for channel entirely on edge*/
@@ -898,7 +896,6 @@ void          Channel::AddDischargeToVector(Vector<IssmDouble>* Qr_vec){/*{{{*/
 		qr[0] = 0.;
 		qr[1] = 0.;
 		Qr_vec->SetValues(2,&sid[0], &qr[0],ADD_VAL);
-		return;
 	}
 
 	if(lakeLS1>0. || lakeLS2>0.){
@@ -930,7 +927,6 @@ void          Channel::AddDischargeToVector(Vector<IssmDouble>* Qr_vec){/*{{{*/
 		qr[0] = 0.;
 		qr[1] = 0.;
 		Qr_vec->SetValues(2,&sid[0], &qr[0],ADD_VAL);
-		return;
 	}
 
 	/*Clean up*/
