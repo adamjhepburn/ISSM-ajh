@@ -167,7 +167,7 @@ class hydrologyglads(object):
         md = checkfield(md, 'fieldname', 'hydrology.requested_outputs', 'stringrow', 1)
         md = checkfield(md, 'fieldname', 'hydrology.melt_flag', 'numel', [1], 'values', [0, 1])
         md = checkfield(md, 'fieldname', 'hydrology.istransition', 'numel', [1], 'values', [0, 1])
-        if self.lakeflag == 1:
+        if self.islakes == 1:
             md = checkfield(md,'fieldname','mask.lake_levelset','Inf',1,'NaN',1,'timeseries',1)
             md = checkfield(md,'fieldname','hydrology.lake_area','size',[md.mesh.numberofvertices],'>=',0,'NaN',1,'Inf',1)
             md = checkfield(md,'fieldname','hydrology.lake_Qin','timeseries',1,'>=',0,'NaN',1,'Inf',1)
