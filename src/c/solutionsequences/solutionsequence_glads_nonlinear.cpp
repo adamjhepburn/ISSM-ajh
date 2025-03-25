@@ -1,7 +1,7 @@
 /*!\file: solutionsequence_nonlinear.cpp
  * \brief: core of a non-linear solution, using fixed-point method 
  */ 
-
+#include "../cores/cores.h"
 #include "./solutionsequences.h"
 #include "../toolkits/toolkits.h"
 #include "../classes/classes.h"
@@ -39,6 +39,7 @@ void solutionsequence_glads_nonlinear(FemModel* femmodel){
 	femmodel->parameters->FindParam(&islakes,HydrologyLakeFlagEnum);
 	femmodel->UpdateConstraintsx();
 
+
 	/*lh convergence criterion*/
 	Vector<IssmDouble>* lh_old = NULL;
 	if(islakes){
@@ -59,8 +60,9 @@ void solutionsequence_glads_nonlinear(FemModel* femmodel){
 		count_in=0;
 		converged_in=false;
 		if(islakes){
+			/*reset boundary conditions*/
 			if(VerboseConvergence()) _printf0_("   updating phi at the lake outlet\n");
-			analysis->UpdateLakeOutletPhi(femmodel);
+			ResetBoundaryConditions(femmodel,HydrologyGlaDSAnalysisEnum);
 		}
 		
 		/*begin inner loop*/

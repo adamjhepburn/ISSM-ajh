@@ -32,6 +32,8 @@ class HydrologyGlaDSAnalysis: public Analysis{
 		void           UpdateConstraints(FemModel* femmodel);
 
 		/*Specific to GlaDS*/
+		void UpdateLakeOutletPhiOld(FemModel* femmodel);
+		void UpdateLakeOutletPhiOld(Element* element);
 		void UpdateLakeOutletPhi(FemModel* femmodel);
 		void UpdateLakeOutletPhi(Element* element);
 		void SetChannelCrossSectionOld(FemModel* femmodel);

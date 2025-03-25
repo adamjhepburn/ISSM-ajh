@@ -705,15 +705,15 @@ void           HydrologyGlaDSAnalysis::UpdateConstraints(FemModel* femmodel){/*{
 }/*}}}*/
 
 /*GlaDS specifics*/
-void HydrologyGlaDSAnalysis::UpdateLakeOutletPhi(FemModel* femmodel){/*{{{*/
+void HydrologyGlaDSAnalysis::UpdateLakeOutletPhiOld(FemModel* femmodel){/*{{{*/
 
 	for(Object* & object : femmodel->elements->objects){
 		Element* element=xDynamicCast<Element*>(object);
-		UpdateLakeOutletPhi(element);
+		UpdateLakeOutletPhiOld(element);
 	}
 
 }/*}}}*/
-void HydrologyGlaDSAnalysis::UpdateLakeOutletPhi(Element* element){/*{{{*/
+void HydrologyGlaDSAnalysis::UpdateLakeOutletPhiOld(Element* element){/*{{{*/
 
 	if(!element->IsAnyLake()){
 			return;
@@ -768,6 +768,71 @@ void HydrologyGlaDSAnalysis::UpdateLakeOutletPhi(Element* element){/*{{{*/
 	}		
 
 }/*}}}*/
+
+void HydrologyGlaDSAnalysis::UpdateLakeOutletPhi(FemModel* femmodel){/*{{{*/
+
+	for(Object* & object : femmodel->elements->objects){
+		Element* element=xDynamicCast<Element*>(object);
+		UpdateLakeOutletPhi(element);
+	}
+
+}/*}}}*/
+void HydrologyGlaDSAnalysis::UpdateLakeOutletPhi(Element* element){/*{{{*/
+
+	if(!element->IsAnyLake()){
+			return;
+	}
+	else if(element->IsAnyLake()){
+		/*Intermediaries*/
+		IssmDouble bed, thickness, lh;
+		IssmDouble lakeLS;
+		IssmDouble phi;
+
+		/*Get number of vertices for this element*/
+		int numvertices = element->GetNumberOfVertices();
+
+		/*initialise phiLO*/
+		IssmDouble *phiLO = xNew<IssmDouble>(numvertices);
+
+		/*Retrieve all parameters*/
+		IssmDouble rho_ice = element->FindParam(MaterialsRhoIceEnum);
+		IssmDouble rho_water = element->FindParam(MaterialsRhoFreshwaterEnum);
+		IssmDouble g = element->FindParam(ConstantsGEnum);
+		Input *bed_input = element->GetInput(BaseEnum);_assert_(bed_input);
+		Input *thickness_input = element->GetInput(ThicknessEnum);_assert_(thickness_input);
+		Input *lh_input = element->GetInput(HydrologyLakeHeightEnum);_assert_(lh_input);
+		Input *phi_input = element->GetInput(HydraulicPotentialEnum);_assert_(phi_input);
+		Input *lakeLS_input = element->GetInput(MaskLakeOutLevelsetEnum);_assert_(lakeLS_input);
+
+		/*Get values at gauss points*/
+		Gauss *gauss = element->NewGauss();
+		for (int in = 0; in < numvertices; in++){
+			gauss->GaussVertex(in);
+
+			/*Get input values at gauss points*/
+			bed_input->GetInputValue(&bed, gauss);
+			thickness_input->GetInputValue(&thickness, gauss);
+			lh_input->GetInputValue(&lh, gauss);
+			phi_input->GetInputValue(&phi, gauss);
+			lakeLS_input->GetInputValue(&lakeLS, gauss);
+
+			if (lakeLS > 0.)
+			{
+				phiLO[in] = rho_water * g * bed + rho_water * g * lh;
+			}
+			else
+			{
+				phiLO[in] = phi;
+			}
+		}
+		element->AddInput(HydraulicPotentialEnum, phiLO, P1Enum);
+		/*clean up*/
+		xDelete<IssmDouble>(phiLO);
+		delete gauss;
+	}		
+
+}/*}}}*/
+
 void HydrologyGlaDSAnalysis::SetChannelCrossSectionOld(FemModel* femmodel){/*{{{*/
 
 	bool ischannels;
@@ -1044,7 +1109,7 @@ void HydrologyGlaDSAnalysis::UpdateEffectivePressure(Element* element){/*{{{*/
 	bool isincludesheetthickness;
 	element->FindParam(&isincludesheetthickness,HydrologyIsIncludeSheetThicknessEnum);
 	Input *h_input       = element->GetInput(HydrologySheetThicknessEnum);    _assert_(h_input);
-   IssmDouble* N = xNew<IssmDouble>(numnodes);
+   	IssmDouble* N = xNew<IssmDouble>(numnodes);
 	IssmDouble  rho_ice   = element->FindParam(MaterialsRhoIceEnum);
 	IssmDouble  rho_water = element->FindParam(MaterialsRhoFreshwaterEnum);
 	IssmDouble  g         = element->FindParam(ConstantsGEnum);

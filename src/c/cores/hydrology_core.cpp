@@ -247,11 +247,7 @@ void hydrology_core(FemModel* femmodel){ /*{{{*/
 			InputDuplicatex(femmodel,HydrologyLakeOutletQrEnum,HydrologyLakeOutletQrOldEnum);
 		}
 		analysis->SetChannelCrossSectionOld(femmodel);
-		/*reset boundary conditions*/
-
-		if(islakes){
-			ResetBoundaryConditions(femmodel,HydrologyGlaDSAnalysisEnum);
-		}
+		
 
 		/*Solve for new potential*/
 		solutionsequence_glads_nonlinear(femmodel);
