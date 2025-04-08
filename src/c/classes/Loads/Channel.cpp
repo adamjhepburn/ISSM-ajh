@@ -805,9 +805,9 @@ void           Channel::UpdateChannelCrossSection(void){/*{{{*/
 		this->S = ODE1(alpha,beta,this->Sold,dt,2);
 		_assert_(!xIsNan<IssmDouble>(this->S)); 
 
-		/*Constrain the cross section to be between 0 and 1000 m^2*/
+		/*Constrain the cross section to be between 0 and 500 m^2*/
 		if(this->S<0.)   this->S = 0.;
-		if(this->S>1000.) this->S = 1000.;
+		if(this->S>500.) this->S = 500.;
 
 		count++;
 
