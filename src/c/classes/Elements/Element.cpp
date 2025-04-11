@@ -2373,7 +2373,7 @@ bool       Element::IsAllGrounded(){/*{{{*/
 }/*}}}*/
 bool	   Element::IsAnyLake(){/*{{{*/
 
-	Input* input=this->GetInput(MaskLakeOutLevelsetEnum); _assert_(input);
+	Input* input=this->GetInput(HydrologyLakeMaskEnum); _assert_(input);
 	if(input->GetInputMax() >= 1){
 		return true;
 	}

@@ -39,7 +39,8 @@ class HydrologyGlaDSAnalysis: public Analysis{
 		void SetChannelCrossSectionOld(FemModel* femmodel);
 		void SetLakeOutletDischargeOld(FemModel* femmodel);
 		void UpdateLakeDepth(FemModel* femmodel);
-		void UpdateLakeDepth(Element* element);
+		/*void SumLakeChannelFlux(Element* element);
+		void StoreLakeDepth(Element* element);*/
 		void UpdateSheetThickness(FemModel* femmodel);
 		void UpdateSheetThickness(Element*  element);
 		void UpdateChannelCrossSection(FemModel* femmodel);

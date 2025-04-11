@@ -280,6 +280,7 @@ const char* EnumToStringx(int en){
 		case HydrologyMeltFlagEnum : return "HydrologyMeltFlag";
 		case HydrologyModelEnum : return "HydrologyModel";
 		case HydrologyNumBasinsEnum : return "HydrologyNumBasins";
+		case HydrologyNumLakesEnum : return "HydrologyNumLakes";
 		case HydrologyNumRequestedOutputsEnum : return "HydrologyNumRequestedOutputs";
 		case HydrologyOmegaEnum : return "HydrologyOmega";
 		case HydrologyPressureMeltCoefficientEnum : return "HydrologyPressureMeltCoefficient";
@@ -924,6 +925,7 @@ const char* EnumToStringx(int en){
 		case HydrologyLakeAreaEnum : return "HydrologyLakeArea";
 		case HydrologyLakeHeightEnum : return "HydrologyLakeHeight";
 		case HydrologyLakeHeightOldEnum : return "HydrologyLakeHeightOld";
+		case HydrologyLakeMaskEnum : return "HydrologyLakeMask";
 		case HydrologyLakeOutletQrEnum : return "HydrologyLakeOutletQr";
 		case HydrologyLakeOutletQrOldEnum : return "HydrologyLakeOutletQrOld";
 		case HydrologyLakeQinEnum : return "HydrologyLakeQin";
@@ -961,7 +963,6 @@ const char* EnumToStringx(int en){
 		case LoadingforceXEnum : return "LoadingforceX";
 		case LoadingforceYEnum : return "LoadingforceY";
 		case LoadingforceZEnum : return "LoadingforceZ";
-		case MaskLakeOutLevelsetEnum : return "MaskLakeOutLevelset";
 		case MaskOceanLevelsetEnum : return "MaskOceanLevelset";
 		case MaskIceLevelsetEnum : return "MaskIceLevelset";
 		case MaskIceRefLevelsetEnum : return "MaskIceRefLevelset";

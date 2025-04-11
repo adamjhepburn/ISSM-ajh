@@ -24,7 +24,7 @@ void HydrologyGlaDSAnalysis::CreateConstraints(Constraints* constraints,IoModel*
 		IssmDouble* lake_data = NULL;
 		IssmDouble* spcphi    = NULL;
 		IssmDouble* phi       = NULL;
-		iomodel->FetchData(&lake_data,NULL,NULL,"md.mask.lake_levelset");
+		iomodel->FetchData(&lake_data,NULL,NULL,"md.hydrology.lake_mask");
 		iomodel->FetchData(&spcphi,NULL,NULL,"md.hydrology.spcphi");
 		iomodel->FetchData(&phi,NULL,NULL,"md.initialization.hydraulic_potential");
 
@@ -203,7 +203,7 @@ void HydrologyGlaDSAnalysis::UpdateElements(Elements* elements,Inputs* inputs,Io
 	iomodel->FetchDataToInput(inputs,elements,"md.initialization.hydraulic_potential",HydraulicPotentialEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.hydrology.rheology_B_base",HydrologyRheologyBBaseEnum);
 	if(islakes){
-		iomodel->FetchDataToInput(inputs,elements,"md.mask.lake_levelset",MaskLakeOutLevelsetEnum);
+		iomodel->FetchDataToInput(inputs,elements,"md.hydrology.lake_mask",HydrologyLakeMaskEnum);
 		iomodel->FetchDataToInput(inputs,elements,"md.hydrology.lake_area",HydrologyLakeAreaEnum);
 		iomodel->FetchDataToInput(inputs,elements,"md.initialization.lake_outletQr",HydrologyLakeOutletQrEnum);
 		iomodel->FetchDataToInput(inputs,elements,"md.initialization.lake_depth",HydrologyLakeHeightEnum);
@@ -251,6 +251,7 @@ void HydrologyGlaDSAnalysis::UpdateParameters(Parameters* parameters,IoModel* io
 	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.isincludesheetthickness",HydrologyIsIncludeSheetThicknessEnum));
 	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.creep_open_flag",HydrologyCreepOpenFlagEnum));
 	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.islakes",HydrologyLakeFlagEnum));
+	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.num_lakes",HydrologyNumLakesEnum));
 	
 
 	/*Friction*/
@@ -721,7 +722,7 @@ void HydrologyGlaDSAnalysis::UpdateLakeOutletPhiOld(Element* element){/*{{{*/
 	else if(element->IsAnyLake()){
 		/*Intermediaries*/
 		IssmDouble bed, thickness, lh_old;
-		IssmDouble lakeLS;
+		IssmDouble LakeID;
 		IssmDouble phi;
 
 		/*Get number of vertices for this element*/
@@ -738,7 +739,7 @@ void HydrologyGlaDSAnalysis::UpdateLakeOutletPhiOld(Element* element){/*{{{*/
 		Input *thickness_input = element->GetInput(ThicknessEnum);_assert_(thickness_input);
 		Input *lh_old_input = element->GetInput(HydrologyLakeHeightOldEnum);_assert_(lh_old_input);
 		Input *phi_input = element->GetInput(HydraulicPotentialEnum);_assert_(phi_input);
-		Input *lakeLS_input = element->GetInput(MaskLakeOutLevelsetEnum);_assert_(lakeLS_input);
+		Input *LakeID_input = element->GetInput(HydrologyLakeMaskEnum);_assert_(LakeID_input);
 
 		/*Get values at gauss points*/
 		Gauss *gauss = element->NewGauss();
@@ -750,9 +751,9 @@ void HydrologyGlaDSAnalysis::UpdateLakeOutletPhiOld(Element* element){/*{{{*/
 			thickness_input->GetInputValue(&thickness, gauss);
 			lh_old_input->GetInputValue(&lh_old, gauss);
 			phi_input->GetInputValue(&phi, gauss);
-			lakeLS_input->GetInputValue(&lakeLS, gauss);
+			LakeID_input->GetInputValue(&LakeID, gauss);
 
-			if (lakeLS > 0.)
+			if (LakeID > 0.)
 			{
 				phiLO[in] = rho_water * g * bed + rho_water * g * lh_old;
 			}
@@ -785,7 +786,7 @@ void HydrologyGlaDSAnalysis::UpdateLakeOutletPhi(Element* element){/*{{{*/
 	else if(element->IsAnyLake()){
 		/*Intermediaries*/
 		IssmDouble bed, thickness, lh;
-		IssmDouble lakeLS;
+		IssmDouble LakeID;
 		IssmDouble phi;
 
 		/*Get number of vertices for this element*/
@@ -802,7 +803,7 @@ void HydrologyGlaDSAnalysis::UpdateLakeOutletPhi(Element* element){/*{{{*/
 		Input *thickness_input = element->GetInput(ThicknessEnum);_assert_(thickness_input);
 		Input *lh_input = element->GetInput(HydrologyLakeHeightEnum);_assert_(lh_input);
 		Input *phi_input = element->GetInput(HydraulicPotentialEnum);_assert_(phi_input);
-		Input *lakeLS_input = element->GetInput(MaskLakeOutLevelsetEnum);_assert_(lakeLS_input);
+		Input *LakeID_input = element->GetInput(HydrologyLakeMaskEnum);_assert_(LakeID_input);
 
 		/*Get values at gauss points*/
 		Gauss *gauss = element->NewGauss();
@@ -814,9 +815,9 @@ void HydrologyGlaDSAnalysis::UpdateLakeOutletPhi(Element* element){/*{{{*/
 			thickness_input->GetInputValue(&thickness, gauss);
 			lh_input->GetInputValue(&lh, gauss);
 			phi_input->GetInputValue(&phi, gauss);
-			lakeLS_input->GetInputValue(&lakeLS, gauss);
+			LakeID_input->GetInputValue(&LakeID, gauss);
 
-			if (lakeLS > 0.)
+			if (LakeID > 0.)
 			{
 				phiLO[in] = rho_water * g * bed + rho_water * g * lh;
 			}
@@ -876,90 +877,145 @@ void HydrologyGlaDSAnalysis::SetLakeOutletDischargeOld(FemModel* femmodel){/*{{{
 	}
 }/*}}}*/
 
-void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femmodel){/*{{{*/
+void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
 
 	bool islakes;
-	femmodel->parameters->FindParam(&islakes,HydrologyLakeFlagEnum);
+	femodel->parameters->FindParam(&islakes,HydrologyLakeFlagEnum);
 	if(!islakes) return;
 	else if(islakes){
-		for(Object* & object : femmodel->elements->objects){
-			Element* element=xDynamicCast<Element*>(object);
-			UpdateLakeDepth(element);
-		}
-	}
-	
-}/*}}}*/
 
-void HydrologyGlaDSAnalysis::UpdateLakeDepth(Element* element){/*{{{*/
+		int numlakes,lakeID;
+		femodel->parameters->FindParam(&numlakes,HydrologyNumLakesEnum);
+		IssmDouble* dt = xNewZeroInit<IssmDouble>(numlakes+1);
+		IssmDouble* lake_Qin = xNewZeroInit<IssmDouble>(numlakes+1);
+		IssmDouble* lake_area = xNewZeroInit<IssmDouble>(numlakes+1);
+		IssmDouble* lake_depth_old = xNewZeroInit<IssmDouble>(numlakes+1);
+		IssmDouble* lake_depth = xNewZeroInit<IssmDouble>(numlakes+1);
+		
+		for (int lake=1;lake<=numlakes;lake++){
 
-	/* Intermediries */
-	IssmDouble lh_old, la;
-	IssmDouble qr, qin;
-	IssmDouble A,B,alpha,beta;
-	IssmDouble oceanLS,iceLS,lakeLS;
+			IssmDouble local_qr = 0;
+			IssmDouble total_qr;
+			IssmDouble la,lh_old,qr,qin;
+			IssmDouble A,B,alpha,beta;
+			IssmDouble oceanLS,iceLS,LakeID;
 
-	/*Fetch number vertices for this element*/
-	int numvertices = element->GetNumberOfVertices();
+			/*Add contribution of each sum element qr to lake total qr and get relevant values for lake area and Qin*/
 
-	/*Initialize new lake depth*/
-	IssmDouble* lh_new = xNew<IssmDouble>(numvertices);
-	
-	/*Set to 0 if inactive element*/
-	if(element->IsAllFloating() || !element->IsIceInElement()){
-		for(int iv=0;iv<numvertices;iv++) lh_new[iv] = 0.;
-		element->AddInput(HydrologyLakeHeightEnum,lh_new,P1Enum);
-		xDelete<IssmDouble>(lh_new);
-		return;
-	}
+			for (Object* & object : femodel->elements->objects){
+				Element* element=xDynamicCast<Element*>(object);
+				
+				/*fetch number of vertices*/
+				int numvertices = element->GetNumberOfVertices();
+				/*Skip if inactive element*/
+				if(element->IsAllFloating() || !element->IsIceInElement()){
+					continue;
+				}
+				dt[lake]       = element->FindParam(TimesteppingTimeStepEnum);
+				Input* qin_input = element->GetInput(HydrologyLakeQinEnum);           _assert_(qin_input); 
+				Input* qr_input = element->GetInput(HydrologyLakeOutletQrEnum);    	  _assert_(qr_input);
+				Input* la_input   = element->GetInput(HydrologyLakeAreaEnum);		  _assert_(la_input);
+				Input* lh_old_input = element->GetInput(HydrologyLakeHeightOldEnum);  _assert_(lh_old_input);
+				Input* oceanLS_input = element->GetInput(MaskOceanLevelsetEnum);      _assert_(oceanLS_input);
+				Input* iceLS_input = element->GetInput(MaskIceLevelsetEnum);          _assert_(iceLS_input);
+				Input* LakeID_input = element->GetInput(HydrologyLakeMaskEnum);	  	  _assert_(LakeID_input);
 
-	/*Retrieve all inputs and parameters*/
-	IssmDouble  dt       = element->FindParam(TimesteppingTimeStepEnum);
-	Input* qin_input = element->GetInput(HydrologyLakeQinEnum);           _assert_(qin_input); 
-	Input* qr_input = element->GetInput(HydrologyLakeOutletQrEnum);    _assert_(qr_input);
-	Input* la_input   = element->GetInput(HydrologyLakeAreaEnum);		  _assert_(la_input);
-	Input* lh_old_input = element->GetInput(HydrologyLakeHeightOldEnum);  _assert_(lh_old_input);
-	Input* oceanLS_input = element->GetInput(MaskOceanLevelsetEnum);      _assert_(oceanLS_input);
-	Input* iceLS_input = element->GetInput(MaskIceLevelsetEnum);          _assert_(iceLS_input);
-	Input* lakeLS_input = element->GetInput(MaskLakeOutLevelsetEnum);	  _assert_(lakeLS_input);
+				/* Start  looping on the number of gaussian points: */
+				Gauss* gauss=element->NewGauss();
+				for(int iv=0;iv<numvertices;iv++){
+					gauss->GaussVertex(iv);
 
-	/* Start  looping on the number of gaussian points: */
-	Gauss* gauss=element->NewGauss();
-	for(int iv=0;iv<numvertices;iv++){
-		gauss->GaussVertex(iv);
+					/*Get input values at gauss points*/
+					qin_input->GetInputValue(&qin,gauss);
+					qr_input->GetInputValue(&qr,gauss);
+					la_input->GetInputValue(&la,gauss);
+					lh_old_input->GetInputValue(&lh_old,gauss);
+						
+					oceanLS_input->GetInputValue(&oceanLS,gauss);
+					iceLS_input->GetInputValue(&iceLS,gauss);
+					LakeID_input->GetInputValue(&LakeID,gauss);
+					/*Set lake depth to zero if floating or no ice*/
+					if(oceanLS<0. || LakeID==0. || iceLS>0.){
+						continue;
+					}
 
-		/*Get input values at gauss points*/
-		qin_input->GetInputValue(&qin,gauss);
-		qr_input->GetInputValue(&qr,gauss);
-		la_input->GetInputValue(&la,gauss);
-		lh_old_input->GetInputValue(&lh_old,gauss);
-		oceanLS_input->GetInputValue(&oceanLS,gauss);
-		iceLS_input->GetInputValue(&iceLS,gauss);
-		lakeLS_input->GetInputValue(&lakeLS,gauss);
-		/*Set lake depth to zero if floating or no ice*/
-		if(oceanLS<0. || lakeLS!=1. || iceLS>0.){
-			lh_new[iv] = 0.;
-		}
-		else if(lakeLS==1.){
+					if(LakeID==lake) {
+						local_qr+=qr;
+						lake_depth_old[lake] = lh_old;
+						lake_Qin[lake] = qin;
+						lake_area[lake] = la;
+					}
+					
+				}
+				/*clean up*/
+				delete gauss;
+			}
+		
+			/*collapse and recover qr into/out lakeN from everywhere else*/
+			ISSM_MPI_Reduce(&local_qr,&total_qr,1,ISSM_MPI_DOUBLE,ISSM_MPI_SUM,0,IssmComm::GetComm());
+			ISSM_MPI_Bcast(&total_qr,1,ISSM_MPI_DOUBLE,0,IssmComm::GetComm());
 			
-			/*_printf0_(setw(50) << left << "old lake height at vertex" << iv <<": " << lh_old <<"\n");*/
-			/*Get A from B and n*/
-			A = 1./la;
-			B = qin - qr;
+			/*only solve for lake depth when lake_depth[lakes] (which is numlakes i+1 long) is lakes==1 */
+			/*ODE solver for new lake height*/
+			A = 1./lake_area[lake];
+			B = lake_Qin[lake] - total_qr;
 			/*Define alpha and beta*/
 			alpha = 0.;
 			beta  = A*B;
-			lh_new[iv] = ODE1(alpha,beta,lh_old,dt,2);
+			lake_depth[lake] = ODE1(alpha,beta,lake_depth_old[lake],dt[lake],2);
 			/*Make sure it is positive*/
-			if(lh_new[iv]<AEPS) lh_new[iv] = AEPS;
-			/*_printf0_(setw(50) << left << "ODE1 lake height at vertex" << iv <<": " << lh_new[iv] <<"\n");*/
-		}
-		
-	}
-	element->AddInput(HydrologyLakeHeightEnum,lh_new,P1Enum);
-	/*Clean up and return*/
-	xDelete<IssmDouble>(lh_new);
-	delete gauss;
+			if(lake_depth[lake]<AEPS) lake_depth[lake] = AEPS;
+			
+			/*store lake depth per vertices*/
+			for (Object* & object : femodel->elements->objects){
+				Element* element=xDynamicCast<Element*>(object);
+				/*fetch number of vertices*/
+				int numvertices = element->GetNumberOfVertices();
+				
+				/*Skip if inactive element*/
+				if(element->IsAllFloating() || !element->IsIceInElement()){
+					continue;
+				}
+				/*Initialize new lake depth*/
+				IssmDouble* lh_new = xNew<IssmDouble>(numvertices);
+				/*Retrieve all inputs and parameters*/
+				Input* oceanLS_input = element->GetInput(MaskOceanLevelsetEnum);      _assert_(oceanLS_input);
+				Input* iceLS_input = element->GetInput(MaskIceLevelsetEnum);          _assert_(iceLS_input);
+				Input* LakeID_input = element->GetInput(HydrologyLakeMaskEnum);	  _assert_(LakeID_input);
+				/* Start  looping on the number of gaussian points: */
+				Gauss* gauss=element->NewGauss();
+				for(int iv=0;iv<numvertices;iv++){
+					gauss->GaussVertex(iv);
+					/*Get input values at gauss points*/
+					oceanLS_input->GetInputValue(&oceanLS,gauss);
+					iceLS_input->GetInputValue(&iceLS,gauss);
+					LakeID_input->GetInputValue(&LakeID,gauss);
+					/*Set lake depth to zero if floating or no ice*/
+					if(oceanLS<0. || LakeID==0. || iceLS>0.){
+						lh_new[iv] = 0.;
+					}
+					else if(LakeID==lake){
+						lh_new[iv] = lake_depth[lake];
+					}
+				}
+				/*Add new lake depth to element*/
+				element->AddInput(HydrologyLakeHeightEnum,lh_new,P1Enum);
+				/*clean up*/
+				delete gauss;
+				xDelete<IssmDouble>(lh_new);
+				
+			}
 
+		}
+
+		/*clean up*/
+		xDelete<IssmDouble>(dt);
+		xDelete<IssmDouble>(lake_Qin);
+		xDelete<IssmDouble>(lake_area);
+		xDelete<IssmDouble>(lake_depth_old);
+		xDelete<IssmDouble>(lake_depth);
+	}
+	
 }/*}}}*/
 
 void HydrologyGlaDSAnalysis::UpdateSheetThickness(FemModel* femmodel){/*{{{*/

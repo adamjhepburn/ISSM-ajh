@@ -32,6 +32,8 @@ classdef hydrologyglads
 		requested_outputs    = {};
 		melt_flag            = 0;
 		islakes              = 0;
+		lake_mask		     = 0;
+		num_lakes		     = 0;
 		lake_area			 = 0;
 		lake_Qin			 = 0;
 		istransition         = 0;
@@ -75,6 +77,8 @@ classdef hydrologyglads
 			self.requested_outputs={'default'};
 			self.melt_flag=0;
 			self.islakes=false; % by default no lakes at margin
+			self.lake_mask = 0; %By default no lakes
+			self.num_lakes = 0; %By default no lakes
 			self.lake_area=0; % m2 the area of any ice-marginal lakes; 
 			self.lake_Qin=0; %m3s-1, recharge rate of ice marginal lakes Kingslake and Ng 2013 use 1e-2;
 			self.istransition = 0; %by default use GlaDS default turbulent code
@@ -112,17 +116,19 @@ classdef hydrologyglads
 			md = checkfield(md,'fieldname','hydrology.requested_outputs','stringrow',1);
 			md = checkfield(md,'fieldname','hydrology.melt_flag','numel',[1],'values',[0 1 2]);
 			md = checkfield(md,'fieldname','hydrology.islakes','numel',[1],'values',[0 1]);
+			md = checkfield(md,'fieldname','hydrology.lake_mask','size',[md.mesh.numberofvertices 1],'NaN',1,'Inf',1);
+			md = checkfield(md,'fieldname','hydrology.num_lakes','numel',[1],'values',[0 1]);
 			md = checkfield(md,'fieldname','hydrology.istransition','numel',[1],'values',[0 1]);
 			md = checkfield(md,'fieldname','hydrology.creep_open_flag','numel',[1],'values',[0 1]);
 			if self.melt_flag==1 || self.melt_flag==2
 				md = checkfield(md,'fieldname','basalforcings.groundedice_melting_rate','NaN',1,'Inf',1,'timeseries',1);
 			end
 			if self.islakes==1
-				md = checkfield(md,'fieldname','mask.lake_levelset','Inf',1,'NaN',1,'timeseries',1);
+				md = checkfield(md,'fieldname','hydrology.lake_mask','Inf',1,'NaN',1,'timeseries',1);
 				md = checkfield(md,'fieldname','hydrology.lake_area','size',[md.mesh.numberofvertices 1],'>=',0,'NaN',1,'Inf',1);
 				md = checkfield(md,'fieldname','hydrology.lake_Qin','timeseries',1,'>=',0,'NaN',1,'Inf',1);
             elseif self.islakes==0
-                md = checkfield(md,'fieldname','mask.lake_levelset','size',[md.mesh.numberofvertices,1]);
+                md = checkfield(md,'fieldname','hydrology.lake_mask','size',[md.mesh.numberofvertices 1]);
             end
  
 		end % }}}
@@ -152,7 +158,9 @@ classdef hydrologyglads
 			fielddisplay(self,'englacial_void_ratio','englacial void ratio (e_v)');
 			fielddisplay(self,'requested_outputs','additional outputs requested');
 			fielddisplay(self,'melt_flag','User specified basal melt? 0: no (default), 1: use md.basalforcings.groundedice_melting_rate');
-			fielddisplay(self,'islakes','User specified lake? 0: no (default), 1: use md.mask.lake_levelset to identify lake outlets');
+			fielddisplay(self,'islakes','User specified lake? 0: no (default), 1: use md.hydrology.lake_mask to identify lake outlets');
+			fielddisplay(self,'lake_mask','lake mask (0: for no lake, 1,2,...n for n lakes) [m]');
+			fielddisplay(self,'num_lakes','Number of lakes (0: no lakes, 1: one lake, ... n: n lakes) [m]');
 			fielddisplay(self,'lake_area','Lake area at vertex (Qr) [m^2]');
 			fielddisplay(self,'lake_Qin','Lake refill rate (Qin) [m^3/s]');
 			fielddisplay(self,'istransition','do we use standard [0, default] or transition model [1]');
@@ -190,6 +198,8 @@ classdef hydrologyglads
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','englacial_void_ratio','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','melt_flag','format','Integer');
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','islakes','format','Boolean');
+			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','lake_mask','format','DoubleMat','mattype',1,'timeserieslength',md.mesh.numberofvertices+1,'yts',md.constants.yts);
+			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','num_lakes','format','Integer');
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','lake_area','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','lake_Qin','format','DoubleMat','mattype',1,'timeserieslength',md.mesh.numberofvertices+1,'yts',md.constants.yts);
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','istransition','format','Boolean');

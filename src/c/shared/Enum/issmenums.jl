@@ -267,6 +267,7 @@
 	HydrologyMeltFlagEnum
 	HydrologyModelEnum
 	HydrologyNumBasinsEnum
+	HydrologyNumLakesEnum
 	HydrologyNumRequestedOutputsEnum
 	HydrologyOmegaEnum
 	HydrologyPressureMeltCoefficientEnum
@@ -911,6 +912,7 @@
 	HydrologyLakeAreaEnum
 	HydrologyLakeHeightEnum
 	HydrologyLakeHeightOldEnum
+	HydrologyLakeMaskEnum
 	HydrologyLakeOutletQrEnum
 	HydrologyLakeOutletQrOldEnum
 	HydrologyLakeQinEnum
@@ -948,7 +950,6 @@
 	LoadingforceXEnum
 	LoadingforceYEnum
 	LoadingforceZEnum
-	MaskLakeOutLevelsetEnum
 	MaskOceanLevelsetEnum
 	MaskIceLevelsetEnum
 	MaskIceRefLevelsetEnum
@@ -2101,6 +2102,7 @@ function EnumToString(enum::IssmEnum)
 	if(enum==HydrologyMeltFlagEnum) return "HydrologyMeltFlag" end
 	if(enum==HydrologyModelEnum) return "HydrologyModel" end
 	if(enum==HydrologyNumBasinsEnum) return "HydrologyNumBasins" end
+	if(enum==HydrologyNumLakesEnum) return "HydrologyNumLakes" end
 	if(enum==HydrologyNumRequestedOutputsEnum) return "HydrologyNumRequestedOutputs" end
 	if(enum==HydrologyOmegaEnum) return "HydrologyOmega" end
 	if(enum==HydrologyPressureMeltCoefficientEnum) return "HydrologyPressureMeltCoefficient" end
@@ -2745,6 +2747,7 @@ function EnumToString(enum::IssmEnum)
 	if(enum==HydrologyLakeAreaEnum) return "HydrologyLakeArea" end
 	if(enum==HydrologyLakeHeightEnum) return "HydrologyLakeHeight" end
 	if(enum==HydrologyLakeHeightOldEnum) return "HydrologyLakeHeightOld" end
+	if(enum==HydrologyLakeMaskEnum) return "HydrologyLakeMask" end
 	if(enum==HydrologyLakeOutletQrEnum) return "HydrologyLakeOutletQr" end
 	if(enum==HydrologyLakeOutletQrOldEnum) return "HydrologyLakeOutletQrOld" end
 	if(enum==HydrologyLakeQinEnum) return "HydrologyLakeQin" end
@@ -2782,7 +2785,6 @@ function EnumToString(enum::IssmEnum)
 	if(enum==LoadingforceXEnum) return "LoadingforceX" end
 	if(enum==LoadingforceYEnum) return "LoadingforceY" end
 	if(enum==LoadingforceZEnum) return "LoadingforceZ" end
-	if(enum==MaskLakeOutLevelsetEnum) return "MaskLakeOutLevelset" end
 	if(enum==MaskOceanLevelsetEnum) return "MaskOceanLevelset" end
 	if(enum==MaskIceLevelsetEnum) return "MaskIceLevelset" end
 	if(enum==MaskIceRefLevelsetEnum) return "MaskIceRefLevelset" end
@@ -3935,6 +3937,7 @@ function StringToEnum(name::String)
 	if(name=="HydrologyMeltFlag") return HydrologyMeltFlagEnum  end
 	if(name=="HydrologyModel") return HydrologyModelEnum  end
 	if(name=="HydrologyNumBasins") return HydrologyNumBasinsEnum  end
+	if(name=="HydrologyNumLakes") return HydrologyNumLakesEnum  end
 	if(name=="HydrologyNumRequestedOutputs") return HydrologyNumRequestedOutputsEnum  end
 	if(name=="HydrologyOmega") return HydrologyOmegaEnum  end
 	if(name=="HydrologyPressureMeltCoefficient") return HydrologyPressureMeltCoefficientEnum  end
@@ -4579,6 +4582,7 @@ function StringToEnum(name::String)
 	if(name=="HydrologyLakeArea") return HydrologyLakeAreaEnum  end
 	if(name=="HydrologyLakeHeight") return HydrologyLakeHeightEnum  end
 	if(name=="HydrologyLakeHeightOld") return HydrologyLakeHeightOldEnum  end
+	if(name=="HydrologyLakeMask") return HydrologyLakeMaskEnum  end
 	if(name=="HydrologyLakeOutletQr") return HydrologyLakeOutletQrEnum  end
 	if(name=="HydrologyLakeOutletQrOld") return HydrologyLakeOutletQrOldEnum  end
 	if(name=="HydrologyLakeQin") return HydrologyLakeQinEnum  end
@@ -4616,7 +4620,6 @@ function StringToEnum(name::String)
 	if(name=="LoadingforceX") return LoadingforceXEnum  end
 	if(name=="LoadingforceY") return LoadingforceYEnum  end
 	if(name=="LoadingforceZ") return LoadingforceZEnum  end
-	if(name=="MaskLakeOutLevelset") return MaskLakeOutLevelsetEnum  end
 	if(name=="MaskOceanLevelset") return MaskOceanLevelsetEnum  end
 	if(name=="MaskIceLevelset") return MaskIceLevelsetEnum  end
 	if(name=="MaskIceRefLevelset") return MaskIceRefLevelsetEnum  end

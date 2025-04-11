@@ -7,7 +7,6 @@ classdef mask
 	properties (SetAccess=public) 
 		ocean_levelset = NaN;
 		ice_levelset   = NaN;
-		lake_levelset  = NaN;
 	end
 	methods (Static)
 		function self = loadobj(self) % {{{
@@ -32,9 +31,6 @@ classdef mask
 					disp('WARNING: automatically updated md.mask as groundedice_levelset is now ocean_levelset');
 					selfnew.ocean_levelset = self.groundedice_levelset;
 				end
-				if isfield(self,'lake_levelset')
-					selfnew.lake_levelset = self.lake_levelset;
-				end
 				self = selfnew;
 			end
 		end % }}}
@@ -45,14 +41,12 @@ classdef mask
 
 			fielddisplay(self,'ocean_levelset','presence of ocean if < 0, coastline/grounding line if = 0, no ocean if > 0');
 			fielddisplay(self,'ice_levelset','presence of ice if < 0, icefront position if = 0, no ice if > 0');
-			fielddisplay(self,'lake_levelset', 'presence of lake at node if >0, no lake if = 0');
 		end % }}}
 		function self = setdefaultparameters(self) % {{{
 		end % }}}
 		function self = extrude(self,md) % {{{
 			self.ocean_levelset=project3d(md,'vector',self.ocean_levelset,'type','node');
 			self.ice_levelset=project3d(md,'vector',self.ice_levelset,'type','node');
-			self.lake_levelset=project3d(md,'vector',self.lake_levelset,'type','node');
 		end % }}}
 		function self = mask(varargin) % {{{
 			switch nargin
@@ -108,17 +102,6 @@ classdef mask
 				end
 			end
 
-			if isa(self.lake_levelset,'cell'),
-				for i=1:length(self.lake_levelset),
-					md = checkfield(md,'field',self.lake_levelset{i},'NaN',0,'Inf',1,'timeserieslength',1,'Inf',1);
-				end
-			else
-				md = checkfield(md,'fieldname','mask.lake_levelset','timeseries',1,'NaN',1);
-				islake=(md.mask.lake_levelset>1);
-				if sum(islake)==0,
-					fprintf('no lakes present in the domain \n');
-				end
-			end
 		end % }}}
 		function marshall(self,prefix,md,fid) % {{{
 
@@ -134,17 +117,11 @@ classdef mask
 				WriteData(fid,prefix,'object',self,'fieldname','ice_levelset','format','DoubleMat','mattype',1,'timeseries',1,'timeserieslength',md.mesh.numberofvertices+1,'yts',md.constants.yts);
 			end
 
-			if isa(self.lake_levelset,'cell')
-				WriteData(fid,prefix,'object',self,'fieldname','lake_levelset','name','md.mask.lake_levelset','format','MatArray','timeseries',1,'timeserieslength',md.mesh.numberofvertices+1,'yts',md.constants.yts);
-			else
-				WriteData(fid,prefix,'object',self,'fieldname','lake_levelset','format','DoubleMat','mattype',1,'timeseries',1,'timeserieslength',md.mesh.numberofvertices+1,'yts',md.constants.yts);
-			end
 		end % }}}
 		function savemodeljs(self,fid,modelname) % {{{
 		
 			writejs1Darray(fid,[modelname '.mask.ocean_levelset'],self.ocean_levelset);
 			writejs1Darray(fid,[modelname '.mask.ice_levelset'],self.ice_levelset);
-			writejs1Darray(fid,[modelname '.mask.lake_levelset'],self.lake_levelset);
 
 		end % }}}
 	end

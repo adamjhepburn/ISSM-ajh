@@ -858,7 +858,7 @@ void          Channel::AddDischargeToVector(Vector<IssmDouble>* Qr_vec){/*{{{*/
 
 	/*Retrieve all inputs and parameters*/
 	Input* phi_input    = element->GetInput(HydraulicPotentialEnum);           _assert_(phi_input);
-	Input* lakeLS_input 		= element->GetInput(MaskLakeOutLevelsetEnum);  _assert_(lakeLS_input);
+	Input* lakeLS_input 		= element->GetInput(HydrologyLakeMaskEnum);  _assert_(lakeLS_input);
 	Input* oceanLS_input = element->GetInput(MaskOceanLevelsetEnum);      _assert_(oceanLS_input);
 	Input* iceLS_input = element->GetInput(MaskIceLevelsetEnum);          _assert_(iceLS_input);
 	Input* vBound_input = element->GetInput(MeshVertexonboundaryEnum);	_assert_(vBound_input);

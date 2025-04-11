@@ -271,6 +271,7 @@ syn keyword juliaConstC HydrologyLakeFlagEnum
 syn keyword juliaConstC HydrologyMeltFlagEnum
 syn keyword juliaConstC HydrologyModelEnum
 syn keyword juliaConstC HydrologyNumBasinsEnum
+syn keyword juliaConstC HydrologyNumLakesEnum
 syn keyword juliaConstC HydrologyNumRequestedOutputsEnum
 syn keyword juliaConstC HydrologyOmegaEnum
 syn keyword juliaConstC HydrologyPressureMeltCoefficientEnum
@@ -915,6 +916,7 @@ syn keyword juliaConstC HydrologyHeadOldEnum
 syn keyword juliaConstC HydrologyLakeAreaEnum
 syn keyword juliaConstC HydrologyLakeHeightEnum
 syn keyword juliaConstC HydrologyLakeHeightOldEnum
+syn keyword juliaConstC HydrologyLakeMaskEnum
 syn keyword juliaConstC HydrologyLakeOutletQrEnum
 syn keyword juliaConstC HydrologyLakeOutletQrOldEnum
 syn keyword juliaConstC HydrologyLakeQinEnum
@@ -952,7 +954,6 @@ syn keyword juliaConstC LevelsetObservationEnum
 syn keyword juliaConstC LoadingforceXEnum
 syn keyword juliaConstC LoadingforceYEnum
 syn keyword juliaConstC LoadingforceZEnum
-syn keyword juliaConstC MaskLakeOutLevelsetEnum
 syn keyword juliaConstC MaskOceanLevelsetEnum
 syn keyword juliaConstC MaskIceLevelsetEnum
 syn keyword juliaConstC MaskIceRefLevelsetEnum
