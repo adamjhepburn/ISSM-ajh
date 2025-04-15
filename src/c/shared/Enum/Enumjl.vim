@@ -269,6 +269,7 @@ syn keyword juliaConstC HydrologyIsTransitionEnum
 syn keyword juliaConstC HydrologyIsWaterPressureArmaEnum
 syn keyword juliaConstC HydrologyLakeFlagEnum
 syn keyword juliaConstC HydrologyMeltFlagEnum
+syn keyword juliaConstC HydrologyMeanEdgeLengthEnum
 syn keyword juliaConstC HydrologyModelEnum
 syn keyword juliaConstC HydrologyNumBasinsEnum
 syn keyword juliaConstC HydrologyNumLakesEnum

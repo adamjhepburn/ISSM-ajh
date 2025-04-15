@@ -276,6 +276,7 @@ syn keyword cConstant HydrologyIsTransitionEnum
 syn keyword cConstant HydrologyIsWaterPressureArmaEnum
 syn keyword cConstant HydrologyLakeFlagEnum
 syn keyword cConstant HydrologyMeltFlagEnum
+syn keyword cConstant HydrologyMeanEdgeLengthEnum
 syn keyword cConstant HydrologyModelEnum
 syn keyword cConstant HydrologyNumBasinsEnum
 syn keyword cConstant HydrologyNumLakesEnum

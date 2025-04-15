@@ -265,6 +265,7 @@
 	HydrologyIsWaterPressureArmaEnum
 	HydrologyLakeFlagEnum
 	HydrologyMeltFlagEnum
+	HydrologyMeanEdgeLengthEnum
 	HydrologyModelEnum
 	HydrologyNumBasinsEnum
 	HydrologyNumLakesEnum
@@ -2100,6 +2101,7 @@ function EnumToString(enum::IssmEnum)
 	if(enum==HydrologyIsWaterPressureArmaEnum) return "HydrologyIsWaterPressureArma" end
 	if(enum==HydrologyLakeFlagEnum) return "HydrologyLakeFlag" end
 	if(enum==HydrologyMeltFlagEnum) return "HydrologyMeltFlag" end
+	if(enum==HydrologyMeanEdgeLengthEnum) return "HydrologyMeanEdgeLength" end
 	if(enum==HydrologyModelEnum) return "HydrologyModel" end
 	if(enum==HydrologyNumBasinsEnum) return "HydrologyNumBasins" end
 	if(enum==HydrologyNumLakesEnum) return "HydrologyNumLakes" end
@@ -3935,6 +3937,7 @@ function StringToEnum(name::String)
 	if(name=="HydrologyIsWaterPressureArma") return HydrologyIsWaterPressureArmaEnum  end
 	if(name=="HydrologyLakeFlag") return HydrologyLakeFlagEnum  end
 	if(name=="HydrologyMeltFlag") return HydrologyMeltFlagEnum  end
+	if(name=="HydrologyMeanEdgeLength") return HydrologyMeanEdgeLengthEnum  end
 	if(name=="HydrologyModel") return HydrologyModelEnum  end
 	if(name=="HydrologyNumBasins") return HydrologyNumBasinsEnum  end
 	if(name=="HydrologyNumLakes") return HydrologyNumLakesEnum  end
