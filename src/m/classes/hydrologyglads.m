@@ -37,6 +37,7 @@ classdef hydrologyglads
 		lake_area			 = 0;
 		lake_Qin			 = 0;
 		istransition         = 0;
+		mean_edge_length     = 0;
 	end
 	methods
 		function self = hydrologyglads(varargin) % {{{
@@ -51,7 +52,7 @@ classdef hydrologyglads
 		end % }}}
 		function list = defaultoutputs(self,md) % {{{
             if self.islakes
-			    list = {'EffectivePressure','HydraulicPotential','HydrologySheetThickness','ChannelArea','ChannelDischarge','HydrologyLakeOutletQr','HydrologyLakeHeight'};
+			    list = {'EffectivePressure','HydraulicPotential','HydrologySheetThickness','HydrologySheetDischarge','ChannelArea','ChannelDischarge','HydrologyLakeOutletQr','HydrologyLakeHeight'};
             else
                 list = {'EffectivePressure','HydraulicPotential','HydrologySheetThickness','ChannelArea','ChannelDischarge'};
             end  
@@ -83,6 +84,7 @@ classdef hydrologyglads
 			self.lake_Qin=0; %m3s-1, recharge rate of ice marginal lakes Kingslake and Ng 2013 use 1e-2;
 			self.istransition = 0; %by default use GlaDS default turbulent code
 			self.creep_open_flag = 1;
+			self.mean_edge_length = 100; %m by default assume 100m edge length
 		end % }}}
 		function md = checkconsistency(self,md,solution,analyses) % {{{
 
@@ -127,6 +129,7 @@ classdef hydrologyglads
 				md = checkfield(md,'fieldname','hydrology.lake_mask','Inf',1,'NaN',1,'timeseries',1);
 				md = checkfield(md,'fieldname','hydrology.lake_area','size',[md.mesh.numberofvertices 1],'>=',0,'NaN',1,'Inf',1);
 				md = checkfield(md,'fieldname','hydrology.lake_Qin','timeseries',1,'>=',0,'NaN',1,'Inf',1);
+				md = checkfield(md,'fieldname','hydrology.mean_edge_length','numel',[1],'>=',1);
             elseif self.islakes==0
                 md = checkfield(md,'fieldname','hydrology.lake_mask','size',[md.mesh.numberofvertices 1]);
             end
@@ -163,6 +166,7 @@ classdef hydrologyglads
 			fielddisplay(self,'num_lakes','Number of lakes (0: no lakes, 1: one lake, ... n: n lakes) [m]');
 			fielddisplay(self,'lake_area','Lake area at vertex (Qr) [m^2]');
 			fielddisplay(self,'lake_Qin','Lake refill rate (Qin) [m^3/s]');
+			fielddisplay(self,'mean_edge_length','Mean edge length (le) [m]');
 			fielddisplay(self,'istransition','do we use standard [0, default] or transition model [1]');
 		end % }}}
 		function marshall(self,prefix,md,fid) % {{{
@@ -202,6 +206,7 @@ classdef hydrologyglads
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','num_lakes','format','Integer');
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','lake_area','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','lake_Qin','format','DoubleMat','mattype',1,'timeserieslength',md.mesh.numberofvertices+1,'yts',md.constants.yts);
+			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','mean_edge_length','format','Double');
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','istransition','format','Boolean');
 			outputs = self.requested_outputs;
 			pos  = find(ismember(outputs,'default'));

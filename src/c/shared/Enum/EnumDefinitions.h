@@ -270,6 +270,7 @@ enum definitions{
 	HydrologyIsWaterPressureArmaEnum,
 	HydrologyLakeFlagEnum,
 	HydrologyMeltFlagEnum,
+	HydrologyMeanEdgeLengthEnum,
 	HydrologyModelEnum,
 	HydrologyNumBasinsEnum,
 	HydrologyNumLakesEnum,
