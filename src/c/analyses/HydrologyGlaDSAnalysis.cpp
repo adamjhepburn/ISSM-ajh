@@ -33,7 +33,7 @@ void HydrologyGlaDSAnalysis::CreateConstraints(Constraints* constraints,IoModel*
 		for(int i=0;i<iomodel->numberofvertices;i++){
 			if(iomodel->my_vertices[i]){
 				if(xIsNan(spcphi[i]) && lake_data[i]>0.){
-					constraints->AddObject(new SpcDynamic(count+1,i+1,0,phi[i], HydrologyGlaDSAnalysisEnum));
+					constraints->AddObject(new SpcDynamic(count+1,i+1,0,0., HydrologyGlaDSAnalysisEnum));
 					count++;
 				}
 			}
@@ -208,6 +208,8 @@ void HydrologyGlaDSAnalysis::UpdateElements(Elements* elements,Inputs* inputs,Io
 		iomodel->FetchDataToInput(inputs,elements,"md.initialization.lake_outletQr",HydrologyLakeOutletQrEnum);
 		iomodel->FetchDataToInput(inputs,elements,"md.initialization.lake_depth",HydrologyLakeHeightEnum);
 		iomodel->FetchDataToInput(inputs,elements,"md.hydrology.lake_Qin",HydrologyLakeQinEnum);
+		/*Necessary to initialise lake model...*/
+		iomodel->FetchDataToInput(inputs,elements,"md.initialization.sheet_discharge",HydrologySheetDischargeEnum); 
 	}
 	if(iomodel->domaintype==Domain2DhorizontalEnum){
 		iomodel->FetchDataToInput(inputs,elements,"md.initialization.vx",VxEnum);
@@ -553,10 +555,10 @@ void           HydrologyGlaDSAnalysis::InputUpdateFromSolution(IssmDouble* solut
 	element->FindParam(&islakes,HydrologyLakeFlagEnum);
 	/*Update element general phi*/
 	element->InputUpdateFromSolutionOneDof(solution,HydraulicPotentialEnum);
-	/*Update lake outlet phi
+	/*Update lake outlet phi*/
 	if(islakes){
 		UpdateLakeOutletPhi(element);
-	}*/
+	}
 	/*Compute Hydrology Vx and Vy for time stepping purposes and Sheet Discharge as an optional output (These inputs do not affect GlaDS)*/
 
 	/*Intermediaries*/
@@ -758,6 +760,12 @@ void HydrologyGlaDSAnalysis::UpdateLakeOutletPhi(Element* element){/*{{{*/
 			if (LakeID > 0.)
 			{
 				phiLO[in] = rho_water * g * bed + rho_water * g * lh;
+				/*if(lh>AEPS){
+					
+				/*}
+				/*else{
+					phiLO[in] = phi;
+				}*/
 			}
 			else
 			{

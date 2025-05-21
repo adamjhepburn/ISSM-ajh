@@ -134,3 +134,4 @@ for i=1:numcolors
 		patch('Faces',reshape(1:3*num,num,3),'Vertices',[[xq;xq+(-tx+px);xq+(-tx-px)],[yq;yq+(-ty+py);yq+(-ty-py)]],'FaceColor',palette(i,:),'EdgeColor','none');
 	end
 end
+

@@ -133,9 +133,15 @@ classdef stanage
 		 function Download(cluster,dirname,filelist)% {{{
 
 			 %copy files from cluster to current directory
-			 directory=[cluster.executionpath '/' dirname '/'];
-			 issmscpin(cluster.name,cluster.login,cluster.port,directory,filelist);
+			 directory=[cluster.executionpath dirname '/'];
+			 %issmscpin(cluster.name,cluster.login,cluster.port,directory,filelist);
+             fileliststr='{';
+		     for i=1:numel(filelist)-1,
+			    fileliststr=[fileliststr filelist{i} ','];
+		    end
+		    fileliststr=[fileliststr filelist{end} '}'];
 
+            eval(['!scp ' cluster.login '@' cluster.name ':' directory fileliststr ' ./'])
 		 end %}}}
 	end
 end

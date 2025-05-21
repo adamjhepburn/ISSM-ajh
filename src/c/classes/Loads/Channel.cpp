@@ -756,7 +756,7 @@ void           Channel::UpdateChannelCrossSection(void){/*{{{*/
 	/*d(phi - phi_m)/ds*/
 	IssmDouble dPw = dphids - dphimds;
 
-	/*Approx. discharge in the sheet flowing folwing in the direction of the channel ofver a width lc, use transition model if necessary*/
+	/*Approx. discharge in the sheet flowing in the direction of the channel ofver a width lc, use transition model if necessary*/
 	IssmDouble qc;
 	if (istransition==1 && omega>=AEPS){
 	IssmDouble hratio = h/h_r;

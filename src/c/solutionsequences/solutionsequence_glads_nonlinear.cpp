@@ -60,6 +60,9 @@ void solutionsequence_glads_nonlinear(FemModel* femmodel){
 		count_in=0;
 		converged_in=false;
 		if(islakes){
+			/*update lake height based on Qr i) from previous timestep, then ii) from each iteration of this outer loop*/
+			if(VerboseConvergence()) _printf0_("   updating lake depth\n");
+			analysis->UpdateLakeDepth(femmodel);
 			/*reset boundary conditions*/
 			if(VerboseConvergence()) _printf0_("   updating phi at the lake outlet\n");
 			ResetBoundaryConditions(femmodel,HydrologyGlaDSAnalysisEnum);
@@ -106,8 +109,7 @@ void solutionsequence_glads_nonlinear(FemModel* femmodel){
 			if(VerboseConvergence()) _printf0_("   updating channel cross section and lake outlet flux\n");
 			analysis->UpdateChannelCrossSection(femmodel);
 			analysis->UpdateLakeOutletDischarge(femmodel);
-			if(VerboseConvergence()) _printf0_("   updating lake depth\n");
-			analysis->UpdateLakeDepth(femmodel);
+			
 			/*check convergence of lake height*/
 			/*initialise lh*/
 			Vector<IssmDouble>* lh_new = NULL;
@@ -115,8 +117,10 @@ void solutionsequence_glads_nonlinear(FemModel* femmodel){
 				if(!lakelhconvergence(lh_new, lh_old, eps_res)){
 					converged_out = false;
 				}
-			/*clean-up*/
-			delete lh_new;
+			/* Update lh_old to lh_new for next iteration */
+			delete lh_old;
+			lh_old = lh_new;
+			lh_new = NULL;
 		}
 
 		/*Increase count: */
