@@ -269,7 +269,6 @@ syn keyword juliaConstC HydrologyIsTransitionEnum
 syn keyword juliaConstC HydrologyIsWaterPressureArmaEnum
 syn keyword juliaConstC HydrologyLakeFlagEnum
 syn keyword juliaConstC HydrologyMeltFlagEnum
-syn keyword juliaConstC HydrologyMeanEdgeLengthEnum
 syn keyword juliaConstC HydrologyModelEnum
 syn keyword juliaConstC HydrologyNumBasinsEnum
 syn keyword juliaConstC HydrologyNumLakesEnum
@@ -282,6 +281,11 @@ syn keyword juliaConstC HydrologySedimentKmaxEnum
 syn keyword juliaConstC HydrologySheetAlphaEnum
 syn keyword juliaConstC HydrologySheetBetaEnum
 syn keyword juliaConstC HydrologyStepsPerStepEnum
+syn keyword juliaConstC HydrologyIsIncludeElasticSheetEnum
+syn keyword juliaConstC HydrologyElasticSheetDepthScaleEnum
+syn keyword juliaConstC HydrologyElasticSheetExponentEnum
+syn keyword juliaConstC HydrologyUpliftRegRateEnum
+syn keyword juliaConstC HydrologyRegPressureForUpliftEnum
 syn keyword juliaConstC HydrologydcEplColapseThicknessEnum
 syn keyword juliaConstC HydrologydcEplConductivityEnum
 syn keyword juliaConstC HydrologydcEplInitialThicknessEnum
@@ -931,6 +935,7 @@ syn keyword juliaConstC HydrologySheetConductivityEnum
 syn keyword juliaConstC HydrologySheetDischargeEnum
 syn keyword juliaConstC HydrologySheetThicknessEnum
 syn keyword juliaConstC HydrologySheetThicknessOldEnum
+syn keyword juliaConstC HydrologyElasticSheetThicknessEnum
 syn keyword juliaConstC HydrologyStorageEnum
 syn keyword juliaConstC HydrologyTwsEnum
 syn keyword juliaConstC HydrologyTwsSpcEnum

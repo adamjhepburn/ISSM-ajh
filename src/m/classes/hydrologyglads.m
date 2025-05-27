@@ -16,6 +16,11 @@ classdef hydrologyglads
 		rheology_B_base           = NaN;
 		isincludesheetthickness   = 0;
 		creep_open_flag  		  = 1;
+		elastic_sheet_flag        = 0;
+		elastic_sheet_depth_scale = 0;
+		elastic_sheet_exponent    = 0;
+		uplift_reg_rate           = 0;
+		reg_pressure              = 0;
 
 		%Channels
 		ischannels           = 0;
@@ -37,7 +42,6 @@ classdef hydrologyglads
 		lake_area			 = 0;
 		lake_Qin			 = 0;
 		istransition         = 0;
-		mean_edge_length     = 0;
 	end
 	methods
 		function self = hydrologyglads(varargin) % {{{
@@ -53,8 +57,14 @@ classdef hydrologyglads
 		function list = defaultoutputs(self,md) % {{{
             if self.islakes
 			    list = {'EffectivePressure','HydraulicPotential','HydrologySheetThickness','HydrologySheetDischarge','ChannelArea','ChannelDischarge','HydrologyLakeOutletQr','HydrologyLakeHeight'};
-            else
+				if self.elastic_sheet_flag
+					list = [list {'HydrologyElasticSheetThickness'}];
+				end
+			else
                 list = {'EffectivePressure','HydraulicPotential','HydrologySheetThickness','ChannelArea','ChannelDischarge'};
+				if self.elastic_sheet_flag
+					list = [list {'HydrologyElasticSheetThickness'}];
+				end
             end  
         end % }}}   
 		function self = setdefaultparameters(self) % {{{
@@ -65,6 +75,10 @@ classdef hydrologyglads
 			self.sheet_alpha = 5.0/4.0;
 			self.sheet_beta = 3.0/2.0;
 			self.omega = 1./2000.; 
+			self.elastic_sheet_depth_scale = 0; %m, see git repo for Stevens et al., 2022
+			self.elastic_sheet_exponent = 1; 
+			self.uplift_reg_rate = 0.01/1e3/9.81; % m Pa^-1, ~1 m uplift for 100 m excess head
+			self.reg_pressure = 1e4; %Pa, see git repo for Stevens et al., 2022
 
 			%Channel parameters
 			self.ischannels=false;
@@ -84,7 +98,7 @@ classdef hydrologyglads
 			self.lake_Qin=0; %m3s-1, recharge rate of ice marginal lakes Kingslake and Ng 2013 use 1e-2;
 			self.istransition = 0; %by default use GlaDS default turbulent code
 			self.creep_open_flag = 1;
-			self.mean_edge_length = 100; %m by default assume 100m edge length
+			self.elastic_sheet_flag = 0; % by default no elastic sheet
 		end % }}}
 		function md = checkconsistency(self,md,solution,analyses) % {{{
 
@@ -103,6 +117,11 @@ classdef hydrologyglads
 			md = checkfield(md,'fieldname','hydrology.sheet_beta', 'numel', [1], '>', 0); 
 			md = checkfield(md,'fieldname','hydrology.rheology_B_base','size',[md.mesh.numberofvertices 1],'>=',0,'NaN',1,'Inf',1);
 			md = checkfield(md,'fieldname','hydrology.isincludesheetthickness','numel',[1],'values',[0 1]);
+			md = checkfield(md,'fieldname','hydrology.elastic_sheet_flag','numel',[1],'values',[0 1]);
+			md = checkfield(md,'fieldname','hydrology.elastic_sheet_depth_scale','numel',[1],'>=',0);
+			md = checkfield(md,'fieldname','hydrology.elastic_sheet_exponent','numel',[1],'>=',0);
+			md = checkfield(md,'fieldname','hydrology.uplift_reg_rate','numel',[1],'>=',0);
+			md = checkfield(md,'fieldname','hydrology.reg_pressure','numel',[1],'>=',0);
 			%Channels
 			md = checkfield(md,'fieldname','hydrology.ischannels','numel',[1],'values',[0 1]);
 			md = checkfield(md,'fieldname','hydrology.channel_conductivity','size',[md.mesh.numberofvertices 1],'>=',0,'NaN',1,'Inf',1);
@@ -129,7 +148,6 @@ classdef hydrologyglads
 				md = checkfield(md,'fieldname','hydrology.lake_mask','Inf',1,'NaN',1,'timeseries',1);
 				md = checkfield(md,'fieldname','hydrology.lake_area','size',[md.mesh.numberofvertices 1],'>=',0,'NaN',1,'Inf',1);
 				md = checkfield(md,'fieldname','hydrology.lake_Qin','timeseries',1,'>=',0,'NaN',1,'Inf',1);
-				md = checkfield(md,'fieldname','hydrology.mean_edge_length','numel',[1],'>=',1);
             elseif self.islakes==0
                 md = checkfield(md,'fieldname','hydrology.lake_mask','size',[md.mesh.numberofvertices 1]);
             end
@@ -148,6 +166,12 @@ classdef hydrologyglads
 			fielddisplay(self,'rheology_B_base','Ice rheology factor B at base of ice (B) [Pa s^(-1/3)]');
 			fielddisplay(self,'isincludesheetthickness','Do we add rho_w*g*h in effective pressure calculation? 1: yes, 0: no');
 			fielddisplay(self,'creep_open_flag','Do we allow cavities to open by creep when N<0? 1: yes, 0: no');
+			fielddisplay(self,'elastic_sheet_flag','Does sheet thickness include we an elastic sheet? 1: yes, 0: no');
+			fielddisplay(self,'elastic_sheet_depth_scale','Elastic sheet depth scale (c_e) [m]');
+			fielddisplay(self,'elastic_sheet_exponent','Elastic sheet exponent (\gamma) []');
+			fielddisplay(self,'uplift_reg_rate','Uplift regularization rate (h_{\varepsilon}) [m Pa^-1]');
+			fielddisplay(self,'reg_pressure','Regularizing pressure for uplift regularisation (N_{\varepsilon}) [Pa]');
+
 			disp(sprintf('      CHANNELS'));
 			fielddisplay(self,'ischannels','Do we allow for channels? 1: yes, 0: no');
 			fielddisplay(self,'channel_conductivity','channel conductivity (k_c) [m^(3/2) kg^(-1/2)]');
@@ -166,7 +190,6 @@ classdef hydrologyglads
 			fielddisplay(self,'num_lakes','Number of lakes (0: no lakes, 1: one lake, ... n: n lakes) [m]');
 			fielddisplay(self,'lake_area','Lake area at vertex (Qr) [m^2]');
 			fielddisplay(self,'lake_Qin','Lake refill rate (Qin) [m^3/s]');
-			fielddisplay(self,'mean_edge_length','Mean edge length (le) [m]');
 			fielddisplay(self,'istransition','do we use standard [0, default] or transition model [1]');
 		end % }}}
 		function marshall(self,prefix,md,fid) % {{{
@@ -187,6 +210,11 @@ classdef hydrologyglads
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','rheology_B_base','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','isincludesheetthickness','format','Boolean');
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','creep_open_flag','format','Boolean');
+			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','elastic_sheet_flag','format','Boolean');
+			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','elastic_sheet_depth_scale','format','Double');
+			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','elastic_sheet_exponent','format','Double');
+			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','uplift_reg_rate','format','Double');
+			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','reg_pressure','format','Double');
 
 			%Channels
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','ischannels','format','Boolean');
@@ -206,7 +234,6 @@ classdef hydrologyglads
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','num_lakes','format','Integer');
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','lake_area','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','lake_Qin','format','DoubleMat','mattype',1,'timeserieslength',md.mesh.numberofvertices+1,'yts',md.constants.yts);
-			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','mean_edge_length','format','Double');
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','istransition','format','Boolean');
 			outputs = self.requested_outputs;
 			pos  = find(ismember(outputs,'default'));

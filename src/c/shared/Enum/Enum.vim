@@ -276,7 +276,6 @@ syn keyword cConstant HydrologyIsTransitionEnum
 syn keyword cConstant HydrologyIsWaterPressureArmaEnum
 syn keyword cConstant HydrologyLakeFlagEnum
 syn keyword cConstant HydrologyMeltFlagEnum
-syn keyword cConstant HydrologyMeanEdgeLengthEnum
 syn keyword cConstant HydrologyModelEnum
 syn keyword cConstant HydrologyNumBasinsEnum
 syn keyword cConstant HydrologyNumLakesEnum
@@ -289,6 +288,11 @@ syn keyword cConstant HydrologySedimentKmaxEnum
 syn keyword cConstant HydrologySheetAlphaEnum
 syn keyword cConstant HydrologySheetBetaEnum
 syn keyword cConstant HydrologyStepsPerStepEnum
+syn keyword cConstant HydrologyIsIncludeElasticSheetEnum
+syn keyword cConstant HydrologyElasticSheetDepthScaleEnum
+syn keyword cConstant HydrologyElasticSheetExponentEnum
+syn keyword cConstant HydrologyUpliftRegRateEnum
+syn keyword cConstant HydrologyRegPressureForUpliftEnum
 syn keyword cConstant HydrologydcEplColapseThicknessEnum
 syn keyword cConstant HydrologydcEplConductivityEnum
 syn keyword cConstant HydrologydcEplInitialThicknessEnum
@@ -938,6 +942,7 @@ syn keyword cConstant HydrologySheetConductivityEnum
 syn keyword cConstant HydrologySheetDischargeEnum
 syn keyword cConstant HydrologySheetThicknessEnum
 syn keyword cConstant HydrologySheetThicknessOldEnum
+syn keyword cConstant HydrologyElasticSheetThicknessEnum
 syn keyword cConstant HydrologyStorageEnum
 syn keyword cConstant HydrologyTwsEnum
 syn keyword cConstant HydrologyTwsSpcEnum
