@@ -242,6 +242,7 @@ void hydrology_core(FemModel* femmodel){ /*{{{*/
 		/*Set fields as old*/
 		InputDuplicatex(femmodel,HydraulicPotentialEnum,HydraulicPotentialOldEnum);
 		InputDuplicatex(femmodel,HydrologySheetThicknessEnum,HydrologySheetThicknessOldEnum);
+		InputDuplicatex(femmodel,HydrologyElasticSheetThicknessEnum,HydrologyElasticSheetThicknessOldEnum);
 		if(islakes){
 			InputDuplicatex(femmodel,HydrologyLakeHeightEnum,HydrologyLakeHeightOldEnum);
 			InputDuplicatex(femmodel,HydrologyLakeOutletQrEnum,HydrologyLakeOutletQrOldEnum);

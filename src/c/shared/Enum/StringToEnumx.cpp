@@ -966,6 +966,7 @@ int  StringToEnumx(const char* name,bool notfounderror){
 	      else if (strcmp(name,"HydrologySheetThickness")==0) return HydrologySheetThicknessEnum;
 	      else if (strcmp(name,"HydrologySheetThicknessOld")==0) return HydrologySheetThicknessOldEnum;
 	      else if (strcmp(name,"HydrologyElasticSheetThickness")==0) return HydrologyElasticSheetThicknessEnum;
+	      else if (strcmp(name,"HydrologyElasticSheetThicknessOld")==0) return HydrologyElasticSheetThicknessOldEnum;
 	      else if (strcmp(name,"HydrologyStorage")==0) return HydrologyStorageEnum;
 	      else if (strcmp(name,"HydrologyTws")==0) return HydrologyTwsEnum;
 	      else if (strcmp(name,"HydrologyTwsSpc")==0) return HydrologyTwsSpcEnum;
@@ -996,11 +997,11 @@ int  StringToEnumx(const char* name,bool notfounderror){
 	      else if (strcmp(name,"MasstransportSpcthickness")==0) return MasstransportSpcthicknessEnum;
 	      else if (strcmp(name,"MmemasstransportThickness")==0) return MmemasstransportThicknessEnum;
 	      else if (strcmp(name,"MmemasstransportMaskIceLevelset")==0) return MmemasstransportMaskIceLevelsetEnum;
-	      else if (strcmp(name,"MmemasstransportMaskOceanLevelset")==0) return MmemasstransportMaskOceanLevelsetEnum;
          else stage=9;
    }
    if(stage==9){
-	      if (strcmp(name,"MaterialsRheologyB")==0) return MaterialsRheologyBEnum;
+	      if (strcmp(name,"MmemasstransportMaskOceanLevelset")==0) return MmemasstransportMaskOceanLevelsetEnum;
+	      else if (strcmp(name,"MaterialsRheologyB")==0) return MaterialsRheologyBEnum;
 	      else if (strcmp(name,"MaterialsRheologyBbar")==0) return MaterialsRheologyBbarEnum;
 	      else if (strcmp(name,"MaterialsRheologyE")==0) return MaterialsRheologyEEnum;
 	      else if (strcmp(name,"MaterialsRheologyEbar")==0) return MaterialsRheologyEbarEnum;
@@ -1119,11 +1120,11 @@ int  StringToEnumx(const char* name,bool notfounderror){
 	      else if (strcmp(name,"SmbAccumulatedMelt")==0) return SmbAccumulatedMeltEnum;
 	      else if (strcmp(name,"SmbAccumulatedPrecipitation")==0) return SmbAccumulatedPrecipitationEnum;
 	      else if (strcmp(name,"SmbAccumulatedRain")==0) return SmbAccumulatedRainEnum;
-	      else if (strcmp(name,"SmbAccumulatedRefreeze")==0) return SmbAccumulatedRefreezeEnum;
          else stage=10;
    }
    if(stage==10){
-	      if (strcmp(name,"SmbAccumulatedRunoff")==0) return SmbAccumulatedRunoffEnum;
+	      if (strcmp(name,"SmbAccumulatedRefreeze")==0) return SmbAccumulatedRefreezeEnum;
+	      else if (strcmp(name,"SmbAccumulatedRunoff")==0) return SmbAccumulatedRunoffEnum;
 	      else if (strcmp(name,"SmbAccumulatedECSubstep")==0) return SmbAccumulatedECSubstepEnum;
 	      else if (strcmp(name,"SmbAccumulatedMassBalanceSubstep")==0) return SmbAccumulatedMassBalanceSubstepEnum;
 	      else if (strcmp(name,"SmbAccumulatedMeltSubstep")==0) return SmbAccumulatedMeltSubstepEnum;
@@ -1242,11 +1243,11 @@ int  StringToEnumx(const char* name,bool notfounderror){
 	      else if (strcmp(name,"SmbSizeini")==0) return SmbSizeiniEnum;
 	      else if (strcmp(name,"SmbSmbCorr")==0) return SmbSmbCorrEnum;
 	      else if (strcmp(name,"SmbSmbref")==0) return SmbSmbrefEnum;
-	      else if (strcmp(name,"SmbSzaValue")==0) return SmbSzaValueEnum;
          else stage=11;
    }
    if(stage==11){
-	      if (strcmp(name,"SmbSummerMelt")==0) return SmbSummerMeltEnum;
+	      if (strcmp(name,"SmbSzaValue")==0) return SmbSzaValueEnum;
+	      else if (strcmp(name,"SmbSummerMelt")==0) return SmbSummerMeltEnum;
 	      else if (strcmp(name,"SmbSummerAlbedo")==0) return SmbSummerAlbedoEnum;
 	      else if (strcmp(name,"SmbSnowheight")==0) return SmbSnowheightEnum;
 	      else if (strcmp(name,"SmbT")==0) return SmbTEnum;
@@ -1365,11 +1366,11 @@ int  StringToEnumx(const char* name,bool notfounderror){
 	      else if (strcmp(name,"WeightsVxObservation")==0) return WeightsVxObservationEnum;
 	      else if (strcmp(name,"WeightsVyObservation")==0) return WeightsVyObservationEnum;
 	      else if (strcmp(name,"WeightsSurfaceObservation")==0) return WeightsSurfaceObservationEnum;
-	      else if (strcmp(name,"OldAccumulatedDeltaBottomPressure")==0) return OldAccumulatedDeltaBottomPressureEnum;
          else stage=12;
    }
    if(stage==12){
-	      if (strcmp(name,"OldAccumulatedDeltaIceThickness")==0) return OldAccumulatedDeltaIceThicknessEnum;
+	      if (strcmp(name,"OldAccumulatedDeltaBottomPressure")==0) return OldAccumulatedDeltaBottomPressureEnum;
+	      else if (strcmp(name,"OldAccumulatedDeltaIceThickness")==0) return OldAccumulatedDeltaIceThicknessEnum;
 	      else if (strcmp(name,"OldAccumulatedDeltaTws")==0) return OldAccumulatedDeltaTwsEnum;
 	      else if (strcmp(name,"Outputdefinition1")==0) return Outputdefinition1Enum;
 	      else if (strcmp(name,"Outputdefinition10")==0) return Outputdefinition10Enum;
@@ -1488,11 +1489,11 @@ int  StringToEnumx(const char* name,bool notfounderror){
 	      else if (strcmp(name,"BalancethicknessAnalysis")==0) return BalancethicknessAnalysisEnum;
 	      else if (strcmp(name,"BalancethicknessApparentMassbalance")==0) return BalancethicknessApparentMassbalanceEnum;
 	      else if (strcmp(name,"BalancethicknessSoftAnalysis")==0) return BalancethicknessSoftAnalysisEnum;
-	      else if (strcmp(name,"BalancethicknessSoftSolution")==0) return BalancethicknessSoftSolutionEnum;
          else stage=13;
    }
    if(stage==13){
-	      if (strcmp(name,"BalancethicknessSolution")==0) return BalancethicknessSolutionEnum;
+	      if (strcmp(name,"BalancethicknessSoftSolution")==0) return BalancethicknessSoftSolutionEnum;
+	      else if (strcmp(name,"BalancethicknessSolution")==0) return BalancethicknessSolutionEnum;
 	      else if (strcmp(name,"BalancevelocityAnalysis")==0) return BalancevelocityAnalysisEnum;
 	      else if (strcmp(name,"BalancevelocitySolution")==0) return BalancevelocitySolutionEnum;
 	      else if (strcmp(name,"BasalforcingsIsmip6")==0) return BasalforcingsIsmip6Enum;
@@ -1611,11 +1612,11 @@ int  StringToEnumx(const char* name,bool notfounderror){
 	      else if (strcmp(name,"GroundingOnly")==0) return GroundingOnlyEnum;
 	      else if (strcmp(name,"GroundinglineMassFlux")==0) return GroundinglineMassFluxEnum;
 	      else if (strcmp(name,"Gset")==0) return GsetEnum;
-	      else if (strcmp(name,"Gsl")==0) return GslEnum;
          else stage=14;
    }
    if(stage==14){
-	      if (strcmp(name,"HOApproximation")==0) return HOApproximationEnum;
+	      if (strcmp(name,"Gsl")==0) return GslEnum;
+	      else if (strcmp(name,"HOApproximation")==0) return HOApproximationEnum;
 	      else if (strcmp(name,"HOFSApproximation")==0) return HOFSApproximationEnum;
 	      else if (strcmp(name,"Hook")==0) return HookEnum;
 	      else if (strcmp(name,"HydrologyArmapwAnalysis")==0) return HydrologyArmapwAnalysisEnum;
@@ -1734,11 +1735,11 @@ int  StringToEnumx(const char* name,bool notfounderror){
 	      else if (strcmp(name,"NoMeltOnPartiallyFloating")==0) return NoMeltOnPartiallyFloatingEnum;
 	      else if (strcmp(name,"Nodal")==0) return NodalEnum;
 	      else if (strcmp(name,"Nodalvalue")==0) return NodalvalueEnum;
-	      else if (strcmp(name,"NodeSId")==0) return NodeSIdEnum;
          else stage=15;
    }
    if(stage==15){
-	      if (strcmp(name,"NoneApproximation")==0) return NoneApproximationEnum;
+	      if (strcmp(name,"NodeSId")==0) return NodeSIdEnum;
+	      else if (strcmp(name,"NoneApproximation")==0) return NoneApproximationEnum;
 	      else if (strcmp(name,"None")==0) return NoneEnum;
 	      else if (strcmp(name,"Numberedcostfunction")==0) return NumberedcostfunctionEnum;
 	      else if (strcmp(name,"NyeCO2")==0) return NyeCO2Enum;
@@ -1857,11 +1858,11 @@ int  StringToEnumx(const char* name,bool notfounderror){
 	      else if (strcmp(name,"TotalGroundedBmb")==0) return TotalGroundedBmbEnum;
 	      else if (strcmp(name,"TotalGroundedBmbScaled")==0) return TotalGroundedBmbScaledEnum;
 	      else if (strcmp(name,"TotalSmb")==0) return TotalSmbEnum;
-	      else if (strcmp(name,"TotalSmbScaled")==0) return TotalSmbScaledEnum;
          else stage=16;
    }
    if(stage==16){
-	      if (strcmp(name,"TotalSmbRefreeze")==0) return TotalSmbRefreezeEnum;
+	      if (strcmp(name,"TotalSmbScaled")==0) return TotalSmbScaledEnum;
+	      else if (strcmp(name,"TotalSmbRefreeze")==0) return TotalSmbRefreezeEnum;
 	      else if (strcmp(name,"TotalSmbMelt")==0) return TotalSmbMeltEnum;
 	      else if (strcmp(name,"TransientArrayParam")==0) return TransientArrayParamEnum;
 	      else if (strcmp(name,"TransientInput")==0) return TransientInputEnum;

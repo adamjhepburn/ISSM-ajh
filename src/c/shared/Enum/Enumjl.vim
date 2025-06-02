@@ -936,6 +936,7 @@ syn keyword juliaConstC HydrologySheetDischargeEnum
 syn keyword juliaConstC HydrologySheetThicknessEnum
 syn keyword juliaConstC HydrologySheetThicknessOldEnum
 syn keyword juliaConstC HydrologyElasticSheetThicknessEnum
+syn keyword juliaConstC HydrologyElasticSheetThicknessOldEnum
 syn keyword juliaConstC HydrologyStorageEnum
 syn keyword juliaConstC HydrologyTwsEnum
 syn keyword juliaConstC HydrologyTwsSpcEnum

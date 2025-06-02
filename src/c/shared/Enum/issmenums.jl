@@ -932,6 +932,7 @@
 	HydrologySheetThicknessEnum
 	HydrologySheetThicknessOldEnum
 	HydrologyElasticSheetThicknessEnum
+	HydrologyElasticSheetThicknessOldEnum
 	HydrologyStorageEnum
 	HydrologyTwsEnum
 	HydrologyTwsSpcEnum
@@ -2773,6 +2774,7 @@ function EnumToString(enum::IssmEnum)
 	if(enum==HydrologySheetThicknessEnum) return "HydrologySheetThickness" end
 	if(enum==HydrologySheetThicknessOldEnum) return "HydrologySheetThicknessOld" end
 	if(enum==HydrologyElasticSheetThicknessEnum) return "HydrologyElasticSheetThickness" end
+	if(enum==HydrologyElasticSheetThicknessOldEnum) return "HydrologyElasticSheetThicknessOld" end
 	if(enum==HydrologyStorageEnum) return "HydrologyStorage" end
 	if(enum==HydrologyTwsEnum) return "HydrologyTws" end
 	if(enum==HydrologyTwsSpcEnum) return "HydrologyTwsSpc" end
@@ -4614,6 +4616,7 @@ function StringToEnum(name::String)
 	if(name=="HydrologySheetThickness") return HydrologySheetThicknessEnum  end
 	if(name=="HydrologySheetThicknessOld") return HydrologySheetThicknessOldEnum  end
 	if(name=="HydrologyElasticSheetThickness") return HydrologyElasticSheetThicknessEnum  end
+	if(name=="HydrologyElasticSheetThicknessOld") return HydrologyElasticSheetThicknessOldEnum  end
 	if(name=="HydrologyStorage") return HydrologyStorageEnum  end
 	if(name=="HydrologyTws") return HydrologyTwsEnum  end
 	if(name=="HydrologyTwsSpc") return HydrologyTwsSpcEnum  end

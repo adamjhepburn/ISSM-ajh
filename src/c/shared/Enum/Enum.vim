@@ -943,6 +943,7 @@ syn keyword cConstant HydrologySheetDischargeEnum
 syn keyword cConstant HydrologySheetThicknessEnum
 syn keyword cConstant HydrologySheetThicknessOldEnum
 syn keyword cConstant HydrologyElasticSheetThicknessEnum
+syn keyword cConstant HydrologyElasticSheetThicknessOldEnum
 syn keyword cConstant HydrologyStorageEnum
 syn keyword cConstant HydrologyTwsEnum
 syn keyword cConstant HydrologyTwsSpcEnum

@@ -939,6 +939,7 @@ enum definitions{
 	HydrologySheetThicknessEnum,
 	HydrologySheetThicknessOldEnum,
 	HydrologyElasticSheetThicknessEnum,
+	HydrologyElasticSheetThicknessOldEnum,
 	HydrologyStorageEnum,
 	HydrologyTwsEnum,
 	HydrologyTwsSpcEnum,
