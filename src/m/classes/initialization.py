@@ -26,7 +26,9 @@ class initialization(object):
         self.epl_head            = np.nan
         self.epl_thickness       = np.nan
         self.watercolumn         = np.nan
+        self.elastic_sheet       = np.nan
         self.hydraulic_potential = np.nan
+        self.sheet_discharge     = np.nan
         self.channelarea         = np.nan
         self.channel_discharge   = np.nan
         self.lake_outletQr       = np.nan
@@ -52,13 +54,15 @@ class initialization(object):
         s += '{}\n'.format(fielddisplay(self, 'temperature', 'temperature [K]'))
         s += '{}\n'.format(fielddisplay(self, 'enthalpy', 'enthalpy [J]'))
         s += '{}\n'.format(fielddisplay(self, 'waterfraction', 'fraction of water in the ice'))
+        s += '{}\n'.format(fielddisplay(self, 'elastic_sheet', 'elastic sheet thickness (for GlaDS with elastic sheet = 1) [m]'))
         s += '{}\n'.format(fielddisplay(self, 'watercolumn', 'thickness of subglacial water [m]'))
         s += '{}\n'.format(fielddisplay(self, 'sediment_head', 'sediment water head of subglacial system [m]'))
         s += '{}\n'.format(fielddisplay(self, 'epl_head', 'epl water head of subglacial system [m]'))
         s += '{}\n'.format(fielddisplay(self, 'epl_thickness', 'thickness of the epl [m]'))
         s += '{}\n'.format(fielddisplay(self, 'hydraulic_potential', 'Hydraulic potential (for GlaDS) [Pa]'))
-        s += '{}\n'.format(fielddisplay(self, 'channelarea', 'subglaciale water channel area (for GlaDS) [m2]'))
-        s += '{}\n'.format(fielddisplay(self, 'channel_discharge', 'subglacial water channel discharge (for GlaDS) [m3s-1]'))
+        s += '{}\n'.format(fielddisplay(self, 'sheet_discharge', 'subglacial water sheet discharge (for GlaDS with lakes) [m2/s]'))
+        s += '{}\n'.format(fielddisplay(self, 'channelarea', 'subglacial water channel area (for GlaDS) [m2]'))
+        s += '{}\n'.format(fielddisplay(self, 'channel_discharge', 'subglacial water channel discharge (for GlaDS with lakes) [m3s-1]'))
         s += '{}\n'.format(fielddisplay(self, 'lake_outletQr', 'sum channel flux at lake outlet (for GlaDS with lakes) [m3/s]'))
         s += '{}\n'.format(fielddisplay(self, 'lake_depth', 'Lake depth (for GlaDS with lakes) [m]'))
         s += '{}\n'.format(fielddisplay(self, 'sample', 'Realization of a Gaussian random field'))
@@ -117,10 +121,12 @@ class initialization(object):
         if 'HydrologyGlaDSAnalysis' in analyses:
             if type(md.hydrology).__name__ == 'hydrologyglads':
                 md = checkfield(md, 'fieldname', 'initialization.watercolumn', 'NaN', 1, 'Inf', 1, 'size', [md.mesh.numberofvertices])
+                md = checkfield(md, 'fieldname', 'initialization.elastic_sheet', 'NaN', 1, 'Inf', 1, 'size', [md.mesh.numberofvertices])
                 md = checkfield(md, 'fieldname', 'initialization.hydraulic_potential', 'NaN', 1, 'Inf', 1, 'size', [md.mesh.numberofvertices])
                 md = checkfield(md, 'fieldname', 'initialization.channelarea', 'NaN', 1, 'Inf', 1, '>=', 0, 'size', [md.mesh.numberofelements])
                 if md.hydrology.islakes:
                     md = checkfield(md,'fieldname','initialization.channel_discharge','NaN',1,'Inf',1,'>=',0,'size',[md.mesh.numberofedges])
+                    md = checkfield(md,'fieldname','initialization.sheet_discharge','NaN',1,'Inf',1,'>=',0,'size',[md.mesh.numberofvertices])
                     md = checkfield(md,'fieldname','initialization.lake_outletQr','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices])
                     md = checkfield(md,'fieldname','initialization.lake_depth','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices])
         if 'HydrologyDCInefficientAnalysis' in analyses:
@@ -162,7 +168,9 @@ class initialization(object):
         WriteData(fid, prefix, 'object', self, 'fieldname', 'epl_head', 'format', 'DoubleMat', 'mattype', 1)
         WriteData(fid, prefix, 'object', self, 'fieldname', 'epl_thickness', 'format', 'DoubleMat', 'mattype', 1)
         WriteData(fid, prefix, 'object', self, 'fieldname', 'watercolumn', 'format', 'DoubleMat', 'mattype', 1)
+        WriteData(fid, prefix, 'object', self, 'fieldname', 'elastic_sheet', 'format', 'DoubleMat', 'mattype', 1)
         WriteData(fid, prefix, 'object', self, 'fieldname', 'channelarea', 'format', 'DoubleMat', 'mattype', 1)
+        WriteData(fid, prefix, 'object', self, 'fieldname', 'sheet_discharge', 'format', 'DoubleMat', 'mattype', 1)
         WriteData(fid,prefix,'object',self,'fieldname','channel_discharge','format','DoubleMat','mattype',1)
         WriteData(fid,prefix,'object',self,'fieldname','lake_outletQr','format','DoubleMat','mattype',1)
         WriteData(fid,prefix,'object',self,'fieldname','lake_depth','format','DoubleMat','mattype',1)

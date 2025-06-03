@@ -99,6 +99,8 @@ classdef hydrologyglads
 			self.istransition = 0; %by default use GlaDS default turbulent code
 			self.creep_open_flag = 1;
 			self.elastic_sheet_flag = 0; % by default no elastic sheet
+			
+			
 		end % }}}
 		function md = checkconsistency(self,md,solution,analyses) % {{{
 
@@ -186,8 +188,8 @@ classdef hydrologyglads
 			fielddisplay(self,'requested_outputs','additional outputs requested');
 			fielddisplay(self,'melt_flag','User specified basal melt? 0: no (default), 1: use md.basalforcings.groundedice_melting_rate');
 			fielddisplay(self,'islakes','User specified lake? 0: no (default), 1: use md.hydrology.lake_mask to identify lake outlets');
-			fielddisplay(self,'lake_mask','lake mask (0: for no lake, 1,2,...n for n lakes) [m]');
-			fielddisplay(self,'num_lakes','Number of lakes (0: no lakes, 1: one lake, ... n: n lakes) [m]');
+			fielddisplay(self,'lake_mask','lake mask (0: for no lake, 1,2,...n for n lakes)');
+			fielddisplay(self,'num_lakes','Number of lakes (0: no lakes, 1: one lake, ... n: n lakes)');
 			fielddisplay(self,'lake_area','Lake area at vertex (Qr) [m^2]');
 			fielddisplay(self,'lake_Qin','Lake refill rate (Qin) [m^3/s]');
 			fielddisplay(self,'istransition','do we use standard [0, default] or transition model [1]');

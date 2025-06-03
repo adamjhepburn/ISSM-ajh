@@ -109,8 +109,8 @@ classdef initialization
 					md = checkfield(md,'fieldname','initialization.watercolumn','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
 					md = checkfield(md,'fieldname','initialization.elastic_sheet','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
 					md = checkfield(md,'fieldname','initialization.hydraulic_potential','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
+					md = checkfield(md,'fieldname','initialization.channelarea','NaN',1,'Inf',1,'>=',0,'size',[md.mesh.numberofedges 1]);
 					if md.hydrology.islakes
-                        md = checkfield(md,'fieldname','initialization.channelarea','NaN',1,'Inf',1,'>=',0,'size',[md.mesh.numberofedges 1]);
 						md = checkfield(md,'filename','initialization.sheet_discharge','NaN',1,'Inf',1,'>=',0,'size',[md.mesh.numberofvertices 1]);
 					    md = checkfield(md,'fieldname','initialization.channel_discharge','NaN',1,'Inf',1,'size',[md.mesh.numberofedges 1]);
 					    md = checkfield(md,'fieldname','initialization.lake_outletQr','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices]);
