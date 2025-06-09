@@ -29,7 +29,7 @@ class hydrologyglads(object):
         self.elastic_sheet_depth_scale = 0.
         self.elastic_sheet_exponent = 0.
         self.uplift_reg_rate = 0.
-        self.uplift_reg_pressure = 0.
+        self.reg_pressure = 0.
 
         # Channels
         self.ischannels = 0
@@ -79,7 +79,7 @@ class hydrologyglads(object):
         s += '{}\n'.format(fielddisplay(self, 'elastic_sheet_depth_scale', 'Elastic sheet depth scale ($c_e$) [m]')) #AJH   
         s += '{}\n'.format(fielddisplay(self, 'elastic_sheet_exponent', 'Elastic sheet exponent ($\\gamma$)')) #AJH
         s += '{}\n'.format(fielddisplay(self, 'uplift_reg_rate', 'Uplift regularization rate ($h_{\\varepsilon}$) [m Pa$^{-1}$]')) #AJH
-        s += '{}\n'.format(fielddisplay(self, 'uplift_reg_pressure', 'Regularizing pressure for uplift regularisation ($N_{\\varepsilon}$) [Pa]')) #AJH
+        s += '{}\n'.format(fielddisplay(self, 'reg_pressure', 'Regularizing pressure for uplift regularisation ($N_{\\varepsilon}$) [Pa]')) #AJH
 
         s += '\t--CHANNELS\n'
         s += '{}\n'.format(fielddisplay(self, 'ischannels', 'Do we allow for channels? 1: yes, 0: no'))
@@ -135,7 +135,7 @@ class hydrologyglads(object):
         self.elastic_sheet_depth_scale = 0.  #m see git repo for Stevens et al., 2022
         self.elastic_sheet_exponent = 0.  #dimensionless
         self.uplift_reg_rate = 0.01/1e3/9.81  #m Pa^-1 ~1 m uplift for 100 m excess head
-        self.uplift_reg_pressure = 1e4  #Pa
+        self.reg_pressure = 1e4  #Pa
 
         # Channel parameters
         self.ischannels = False
@@ -179,7 +179,7 @@ class hydrologyglads(object):
         md = checkfield(md, 'fieldname', 'hydrology.elastic_sheet_depth_scale', 'numel', [1], '>=', 0)
         md = checkfield(md, 'fieldname', 'hydrology.elastic_sheet_exponent', 'numel', [1], '>=', 0)
         md = checkfield(md, 'fieldname', 'hydrology.uplift_reg_rate', 'numel', [1], '>=', 0)
-        md = checkfield(md, 'fieldname', 'hydrology.uplift_reg_pressure', 'numel', [1], '>=', 0)
+        md = checkfield(md, 'fieldname', 'hydrology.reg_pressure', 'numel', [1], '>=', 0)
 
         # Channels
         md = checkfield(md, 'fieldname', 'hydrology.ischannels', 'numel', [1], 'values', [0, 1])
@@ -224,7 +224,7 @@ class hydrologyglads(object):
         WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'elastic_sheet_depth_scale', 'format', 'Double')
         WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'elastic_sheet_exponent', 'format', 'Double')
         WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'uplift_reg_rate', 'format', 'Double')
-        WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'uplift_reg_pressure', 'format', 'Double')
+        WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'reg_pressure', 'format', 'Double')
 
 
         # Channels
