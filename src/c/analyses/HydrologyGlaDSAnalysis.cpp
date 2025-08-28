@@ -3,7 +3,7 @@
 #include "../classes/classes.h"
 #include "../shared/shared.h"
 #include "../modules/modules.h"
-
+#include <mpi.h> // <-- Add this line
 #define AEPS 2.2204460492503131E-015
 
 /*Model processing*/
@@ -831,171 +831,163 @@ void HydrologyGlaDSAnalysis::SetLakeOutletDischargeOld(FemModel* femmodel){/*{{{
 
 void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
 
-	bool islakes;
-	femodel->parameters->FindParam(&islakes,HydrologyLakeFlagEnum);
-	if(!islakes) return;
-	else if(islakes){
+    bool islakes;
+    femodel->parameters->FindParam(&islakes,HydrologyLakeFlagEnum);
+    if(!islakes) return;
+    
+    int numlakes;
+    femodel->parameters->FindParam(&numlakes,HydrologyNumLakesEnum);
 
-		int numlakes,lakeID;
-		femodel->parameters->FindParam(&numlakes,HydrologyNumLakesEnum);
-		IssmDouble* dt = xNewZeroInit<IssmDouble>(numlakes+1);
-		IssmDouble* lake_Qin = xNewZeroInit<IssmDouble>(numlakes+1);
-		IssmDouble* lake_area = xNewZeroInit<IssmDouble>(numlakes+1);
-		IssmDouble* lake_depth_old = xNewZeroInit<IssmDouble>(numlakes+1);
-		IssmDouble* lake_depth = xNewZeroInit<IssmDouble>(numlakes+1);
+    // Initialize arrays for all lakes, skip index 0 (no lake)
+    IssmDouble* dt             = xNewZeroInit<IssmDouble>(numlakes+1);
+    IssmDouble* local_qr       = xNewZeroInit<IssmDouble>(numlakes+1);
+    IssmDouble* total_qr       = xNewZeroInit<IssmDouble>(numlakes+1);
+    IssmDouble* lake_Qin       = xNewZeroInit<IssmDouble>(numlakes+1);
+    IssmDouble* lake_area      = xNewZeroInit<IssmDouble>(numlakes+1);
+    IssmDouble* lake_depth_old = xNewZeroInit<IssmDouble>(numlakes+1);
+    IssmDouble* lake_depth     = xNewZeroInit<IssmDouble>(numlakes+1);
 
-		
-		for (int lake=1;lake<=numlakes;lake++){
+    // --- AGGREGATION LOOP ---
+    // First, loop over all elements to gather data for each lake.
+    for (Object* & object : femodel->elements->objects){
+        Element* element=xDynamicCast<Element*>(object);
+        
+        if(element->IsAllFloating() || !element->IsIceInElement()){
+            continue;
+        }
 
-			IssmDouble local_qr = 0;
-			IssmDouble total_qr;
-			IssmDouble qs, lc, le;
-			IssmDouble la,lh_old,qrc,qin;
-			IssmDouble A,B,alpha,beta;
-			IssmDouble oceanLS,iceLS,LakeID;
+        int numvertices = element->GetNumberOfVertices();
+        IssmDouble ele_dt = element->FindParam(TimesteppingTimeStepEnum);
+        IssmDouble lc     = element->FindParam(HydrologyCavitySpacingEnum);
+        int le            = element->CharacteristicLength();
 
-			/*Add contribution of each sum element qr to lake total qr and get relevant values for lake area and Qin*/
+        Input* qin_input    = element->GetInput(HydrologyLakeQinEnum);           _assert_(qin_input); 
+        Input* qrc_input    = element->GetInput(HydrologyLakeChannelQrEnum);     _assert_(qrc_input);
+        Input* qs_input     = element->GetInput(HydrologySheetDischargeEnum);    _assert_(qs_input);
+        Input* la_input     = element->GetInput(HydrologyLakeAreaEnum);          _assert_(la_input);
+        Input* lh_old_input = element->GetInput(HydrologyLakeHeightOldEnum);     _assert_(lh_old_input);
+        Input* LakeID_input = element->GetInput(HydrologyLakeMaskEnum);          _assert_(LakeID_input);
+        
+        Gauss* gauss=element->NewGauss();
+        for(int iv=0;iv<numvertices;iv++){
+            gauss->GaussVertex(iv);
+            
+            IssmDouble qin, qrc, qs, la, lh_old;
+            
+            // --- FIX START ---
+            // Read LakeID safely by using an intermediate IssmDouble variable.
+            // This prevents memory corruption from casting pointers of different types.
+            IssmDouble lake_id_double;
+            LakeID_input->GetInputValue(&lake_id_double, gauss);
+            int LakeID = (int)lake_id_double;
+            // --- FIX END ---
 
-			for (Object* & object : femodel->elements->objects){
-				Element* element=xDynamicCast<Element*>(object);
-				
-				/*fetch number of vertices*/
-				IssmDouble connectivity;
-				int numvertices = element->GetNumberOfVertices();
-				/*Skip if inactive element*/
-				if(element->IsAllFloating() || !element->IsIceInElement()){
-					continue;
-				}
-				dt[lake]       = element->FindParam(TimesteppingTimeStepEnum);
-				lc             = element->FindParam(HydrologyCavitySpacingEnum);
-				int le         = element->CharacteristicLength();
-				Input* qin_input = element->GetInput(HydrologyLakeQinEnum);           _assert_(qin_input); 
-				Input* qrc_input = element->GetInput(HydrologyLakeChannelQrEnum);      _assert_(qrc_input);
-				Input* qs_input = element->GetInput(HydrologySheetDischargeEnum);     _assert_(qs_input);
-				Input* la_input   = element->GetInput(HydrologyLakeAreaEnum);		  _assert_(la_input);
-				Input* lh_old_input = element->GetInput(HydrologyLakeHeightOldEnum);  _assert_(lh_old_input);
-				Input* oceanLS_input = element->GetInput(MaskOceanLevelsetEnum);      _assert_(oceanLS_input);
-				Input* iceLS_input = element->GetInput(MaskIceLevelsetEnum);          _assert_(iceLS_input);
-				Input* LakeID_input = element->GetInput(HydrologyLakeMaskEnum);	  	  _assert_(LakeID_input);
+            qin_input->GetInputValue(&qin,gauss);
+            qrc_input->GetInputValue(&qrc,gauss);
+            qs_input->GetInputValue(&qs,gauss);
+            la_input->GetInputValue(&la,gauss);
+            lh_old_input->GetInputValue(&lh_old,gauss);
 
-				/* Start  looping on the number of gaussian points: */
-				Gauss* gauss=element->NewGauss();
-				for(int iv=0;iv<numvertices;iv++){
-					gauss->GaussVertex(iv);
+            if(LakeID > 0){
+                // Aggregate Qr contribution, dividing by connectivity to avoid double-counting
+                IssmDouble connectivity = (IssmDouble)element->VertexConnectivity(iv);
+                local_qr[LakeID] += qrc/connectivity;
+                if (qrc > 0.) local_qr[LakeID] += qs*(le)/connectivity;
+                else if (qrc < 0.) local_qr[LakeID] += -qs*(le)/connectivity;
 
-					/*Get input values at gauss points*/
-					qs_input->GetInputValue(&qs,gauss);
-					qin_input->GetInputValue(&qin,gauss);
-					qrc_input->GetInputValue(&qrc,gauss);
-					la_input->GetInputValue(&la,gauss);
-					lh_old_input->GetInputValue(&lh_old,gauss);
-						
-					oceanLS_input->GetInputValue(&oceanLS,gauss);
-					iceLS_input->GetInputValue(&iceLS,gauss);
-					LakeID_input->GetInputValue(&LakeID,gauss);
-					/*Set lake depth to zero if floating or no ice*/
-					if(oceanLS<0. || LakeID==0. || iceLS>0.){
-						continue;
-					}
+                // Assign lake-wide properties. Since they are constant for a given lake,
+                // we can just let them be written; the last value will be correct for this processor.
+                lake_area[LakeID]      = la;
+                lake_Qin[LakeID]       = qin;
+                lake_depth_old[LakeID] = lh_old;
+                dt[LakeID]             = ele_dt;
+            }
+        }
+        delete gauss;
+    }
 
-					if(LakeID==lake){
-						/*divide nodal contributions to qr/qs by element connectivity to avoid issues with multiple counts of the same vertices*/
-						connectivity=(IssmDouble)element->VertexConnectivity(iv);
-						
-						local_qr+=qrc/connectivity;
-						/*add approx sheet contribution*/
-						
-						if (qrc>0.){
-							local_qr += qs*(le)/connectivity;
-						}
-						else if (qrc<0.){
-							local_qr += -qs*(le)/connectivity;
-						}
-						lake_depth_old[lake] = lh_old;
-						lake_Qin[lake] = qin;
-						lake_area[lake] = la;
-					}
-					
-				}
-				/*clean up*/
-				delete gauss;
-			}
-		
-			/*collapse and recover qr into/out lakeN from everywhere else*/
-			ISSM_MPI_Reduce(&local_qr,&total_qr,1,ISSM_MPI_DOUBLE,ISSM_MPI_SUM,0,IssmComm::GetComm());
-			ISSM_MPI_Bcast(&total_qr,1,ISSM_MPI_DOUBLE,0,IssmComm::GetComm());
-			
-			/*only solve for lake depth when lake_depth[lakes] (which is numlakes i+1 long) is lakes==1 */
-			/*ODE solver for new lake height*/
-			A = 1./lake_area[lake];
-			B = lake_Qin[lake] - total_qr;
+    // --- MPI COMMUNICATION ---
+    // Sum the local_qr contributions from all processors into total_qr.
+    ISSM_MPI_Allreduce(local_qr, total_qr, numlakes+1, ISSM_MPI_DOUBLE, ISSM_MPI_SUM, IssmComm::GetComm());
 
-			if(lake_Qin[lake]==0 && lake_area[lake]==0){
-				continue;
-			}
+    // Use MPI_MAX for properties that should be a single value, not summed.
+    // This ensures the non-zero value from the processor that owns the lake element propagates to all others.
+    ISSM_MPI_Allreduce(MPI_IN_PLACE, lake_area,      numlakes+1, ISSM_MPI_DOUBLE, ISSM_MPI_MAX, IssmComm::GetComm());
+    ISSM_MPI_Allreduce(MPI_IN_PLACE, lake_Qin,       numlakes+1, ISSM_MPI_DOUBLE, ISSM_MPI_MAX, IssmComm::GetComm());
+    ISSM_MPI_Allreduce(MPI_IN_PLACE, lake_depth_old, numlakes+1, ISSM_MPI_DOUBLE, ISSM_MPI_MAX, IssmComm::GetComm());
+    ISSM_MPI_Allreduce(MPI_IN_PLACE, dt,             numlakes+1, ISSM_MPI_DOUBLE, ISSM_MPI_MAX, IssmComm::GetComm());
+    
+    // --- CALCULATION ---
+    // Calculate new lake depth for ALL lakes using the globally aggregated data.
+    for (int lake=1; lake<=numlakes; lake++){
+        if(lake_area[lake] < 1e-9){ // Use a small tolerance to check for zero area
+            continue;
+        }
 
-			/*Define alpha and beta*/
-			alpha = 0.;
-			beta  = A*B;
-			lake_depth[lake] = ODE1(alpha,beta,lake_depth_old[lake],dt[lake],2);
-			/*Make sure it is positive*/
-			if(lake_depth[lake]<AEPS) lake_depth[lake] = AEPS;
-			
-			/*store lake depth per vertices*/
-			for (Object* & object : femodel->elements->objects){
-				Element* element=xDynamicCast<Element*>(object);
-				/*fetch number of vertices*/
-				int numvertices = element->GetNumberOfVertices();
-				
-				/*Skip if inactive element*/
-				if(element->IsAllFloating() || !element->IsIceInElement()){
-					continue;
-				}
-				/*Initialize new lake depth*/
-				IssmDouble* lh_new = xNew<IssmDouble>(numvertices);
-				IssmDouble* Qr = xNew<IssmDouble>(numvertices);
-				/*Retrieve all inputs and parameters*/
-				Input* oceanLS_input = element->GetInput(MaskOceanLevelsetEnum);      _assert_(oceanLS_input);
-				Input* iceLS_input = element->GetInput(MaskIceLevelsetEnum);          _assert_(iceLS_input);
-				Input* LakeID_input = element->GetInput(HydrologyLakeMaskEnum);	  _assert_(LakeID_input);
-				/* Start  looping on the number of gaussian points: */
-				Gauss* gauss=element->NewGauss();
-				for(int iv=0;iv<numvertices;iv++){
-					gauss->GaussVertex(iv);
-					/*Get input values at gauss points*/
-					oceanLS_input->GetInputValue(&oceanLS,gauss);
-					iceLS_input->GetInputValue(&iceLS,gauss);
-					LakeID_input->GetInputValue(&LakeID,gauss);
-					/*Set lake depth to zero if floating or no ice*/
-					if(oceanLS<0. || LakeID==0. || iceLS>0.){
-						lh_new[iv] = 0.;
-						Qr[iv] = 0.;
-					}
-					else if(LakeID==lake){
-						lh_new[iv] = lake_depth[lake];
-						Qr[iv] = total_qr;
-					}
-				}
-				/*Add new lake depth to element*/
-				element->AddInput(HydrologyLakeHeightEnum,lh_new,P1Enum);
-				element->AddInput(HydrologyLakeOutletQrEnum,Qr,P1DGEnum);
-				/*clean up*/
-				delete gauss;
-				xDelete<IssmDouble>(lh_new);
-				xDelete<IssmDouble>(Qr);
-				
-			}
+        IssmDouble A = 1.0 / lake_area[lake];
+        IssmDouble B = lake_Qin[lake] - total_qr[lake];
+        
+        IssmDouble alpha = 0.0;
+        IssmDouble beta  = A * B;
+        
+        lake_depth[lake] = ODE1(alpha, beta, lake_depth_old[lake], dt[lake], 2);
+        
+        if(lake_depth[lake] < AEPS) lake_depth[lake] = AEPS;
+    }
+    
+    // --- WRITING LOOP ---
+    // Write the calculated results back to the elements.
+    for (Object* & object : femodel->elements->objects){
+        Element* element=xDynamicCast<Element*>(object);
 
-		}
+        if(element->IsAllFloating() || !element->IsIceInElement()){
+            continue;
+        }
+        
+        int numvertices = element->GetNumberOfVertices();
+        IssmDouble* lh_new = xNew<IssmDouble>(numvertices);
+        IssmDouble* Qr_out = xNew<IssmDouble>(numvertices);
 
-		/*clean up*/
-		xDelete<IssmDouble>(dt);
-		xDelete<IssmDouble>(lake_Qin);
-		xDelete<IssmDouble>(lake_area);
-		xDelete<IssmDouble>(lake_depth_old);
-		xDelete<IssmDouble>(lake_depth);
-	}
-	
+        Input* LakeID_input = element->GetInput(HydrologyLakeMaskEnum); _assert_(LakeID_input);
+
+        Gauss* gauss=element->NewGauss();
+        for(int iv=0;iv<numvertices;iv++){
+            gauss->GaussVertex(iv);
+            
+            // --- FIX START ---
+            // Read LakeID safely here as well.
+            IssmDouble lake_id_double;
+            LakeID_input->GetInputValue(&lake_id_double, gauss);
+            int LakeID = (int)lake_id_double;
+            // --- FIX END ---
+
+            if(LakeID > 0){
+                // Use the pre-calculated values from our arrays
+                lh_new[iv] = lake_depth[LakeID];
+                Qr_out[iv] = total_qr[LakeID];
+            } else {
+                lh_new[iv] = 0.0;
+                Qr_out[iv] = 0.0;
+            }
+        }
+        delete gauss;
+
+        element->AddInput(HydrologyLakeHeightEnum, lh_new, P1Enum);
+        element->AddInput(HydrologyLakeOutletQrEnum, Qr_out, P1Enum);
+        
+        xDelete<IssmDouble>(lh_new);
+        xDelete<IssmDouble>(Qr_out);
+    }
+    
+    // --- CLEANUP ---
+    xDelete<IssmDouble>(dt);
+    xDelete<IssmDouble>(local_qr);
+    xDelete<IssmDouble>(total_qr);
+    xDelete<IssmDouble>(lake_Qin);
+    xDelete<IssmDouble>(lake_area);
+    xDelete<IssmDouble>(lake_depth_old);
+    xDelete<IssmDouble>(lake_depth);
+
 }/*}}}*/
 
 void HydrologyGlaDSAnalysis::UpdateSheetThickness(FemModel* femmodel){/*{{{*/
