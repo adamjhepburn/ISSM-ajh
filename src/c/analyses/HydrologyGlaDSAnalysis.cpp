@@ -847,8 +847,7 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
     IssmDouble* lake_depth_old = xNewZeroInit<IssmDouble>(numlakes+1);
     IssmDouble* lake_depth     = xNewZeroInit<IssmDouble>(numlakes+1);
 
-    // --- AGGREGATION LOOP ---
-    // First, loop over all elements to gather data for each lake.
+    /* First, loop over all elements to gather data for each lake. */
     for (Object* & object : femodel->elements->objects){
         Element* element=xDynamicCast<Element*>(object);
         
@@ -874,13 +873,11 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
             
             IssmDouble qin, qrc, qs, la, lh_old;
             
-            // --- FIX START ---
-            // Read LakeID safely by using an intermediate IssmDouble variable.
-            // This prevents memory corruption from casting pointers of different types.
+			/* Read LakeID safely by using an intermediate IssmDouble variable.
+            This prevents memory corruption from casting pointers of different types */
             IssmDouble lake_id_double;
             LakeID_input->GetInputValue(&lake_id_double, gauss);
             int LakeID = (int)lake_id_double;
-            // --- FIX END ---
 
             qin_input->GetInputValue(&qin,gauss);
             qrc_input->GetInputValue(&qrc,gauss);
@@ -889,14 +886,14 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
             lh_old_input->GetInputValue(&lh_old,gauss);
 
             if(LakeID > 0){
-                // Aggregate Qr contribution, dividing by connectivity to avoid double-counting
+                /* Aggregate Qr contribution, dividing by connectivity to avoid double-counting */
                 IssmDouble connectivity = (IssmDouble)element->VertexConnectivity(iv);
                 local_qr[LakeID] += qrc/connectivity;
                 if (qrc > 0.) local_qr[LakeID] += qs*(le)/connectivity;
                 else if (qrc < 0.) local_qr[LakeID] += -qs*(le)/connectivity;
 
-                // Assign lake-wide properties. Since they are constant for a given lake,
-                // we can just let them be written; the last value will be correct for this processor.
+                /* Assign lake-wide properties. Since they are constant for a given lake,
+                we can just let them be written; the last value will be correct for this processor. */
                 lake_area[LakeID]      = la;
                 lake_Qin[LakeID]       = qin;
                 lake_depth_old[LakeID] = lh_old;
@@ -906,19 +903,16 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
         delete gauss;
     }
 
-    // --- MPI COMMUNICATION ---
-    // Sum the local_qr contributions from all processors into total_qr.
+    /* Sum the local_qr contributions from all processors into total_qr.*/
     ISSM_MPI_Allreduce(local_qr, total_qr, numlakes+1, ISSM_MPI_DOUBLE, ISSM_MPI_SUM, IssmComm::GetComm());
 
-    // Use MPI_MAX for properties that should be a single value, not summed.
-    // This ensures the non-zero value from the processor that owns the lake element propagates to all others.
+    /* MPI_MAX ensures the non-zero value from the processor that owns the lake element propagates to all others. */
     ISSM_MPI_Allreduce(MPI_IN_PLACE, lake_area,      numlakes+1, ISSM_MPI_DOUBLE, ISSM_MPI_MAX, IssmComm::GetComm());
     ISSM_MPI_Allreduce(MPI_IN_PLACE, lake_Qin,       numlakes+1, ISSM_MPI_DOUBLE, ISSM_MPI_MAX, IssmComm::GetComm());
     ISSM_MPI_Allreduce(MPI_IN_PLACE, lake_depth_old, numlakes+1, ISSM_MPI_DOUBLE, ISSM_MPI_MAX, IssmComm::GetComm());
     ISSM_MPI_Allreduce(MPI_IN_PLACE, dt,             numlakes+1, ISSM_MPI_DOUBLE, ISSM_MPI_MAX, IssmComm::GetComm());
     
-    // --- CALCULATION ---
-    // Calculate new lake depth for ALL lakes using the globally aggregated data.
+    /* Calculate new lake depth for ALL lakes using the globally aggregated data. */
     for (int lake=1; lake<=numlakes; lake++){
         if(lake_area[lake] < 1e-9){ // Use a small tolerance to check for zero area
             continue;
@@ -935,8 +929,7 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
         if(lake_depth[lake] < AEPS) lake_depth[lake] = AEPS;
     }
     
-    // --- WRITING LOOP ---
-    // Write the calculated results back to the elements.
+    /* Write the calculated results back to the elements. */
     for (Object* & object : femodel->elements->objects){
         Element* element=xDynamicCast<Element*>(object);
 
@@ -954,15 +947,13 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
         for(int iv=0;iv<numvertices;iv++){
             gauss->GaussVertex(iv);
             
-            // --- FIX START ---
-            // Read LakeID safely here as well.
+            /* Read LakeID safely here as well. */
             IssmDouble lake_id_double;
             LakeID_input->GetInputValue(&lake_id_double, gauss);
             int LakeID = (int)lake_id_double;
-            // --- FIX END ---
 
             if(LakeID > 0){
-                // Use the pre-calculated values from our arrays
+                /* Use the pre-calculated values from our arrays */
                 lh_new[iv] = lake_depth[LakeID];
                 Qr_out[iv] = total_qr[LakeID];
             } else {
@@ -979,7 +970,7 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
         xDelete<IssmDouble>(Qr_out);
     }
     
-    // --- CLEANUP ---
+    /* Clean up */
     xDelete<IssmDouble>(dt);
     xDelete<IssmDouble>(local_qr);
     xDelete<IssmDouble>(total_qr);
