@@ -926,6 +926,8 @@ syn keyword cConstant HydrologyGapHeightYYEnum
 syn keyword cConstant HydrologyHeadEnum
 syn keyword cConstant HydrologyHeadOldEnum
 syn keyword cConstant HydrologyLakeAreaEnum
+syn keyword cConstant HydrologyLakeChannelQrEnum
+syn keyword cConstant HydrologyLakeChannelQrOldEnum
 syn keyword cConstant HydrologyLakeHeightEnum
 syn keyword cConstant HydrologyLakeHeightOldEnum
 syn keyword cConstant HydrologyLakeMaskEnum

@@ -922,6 +922,8 @@ enum definitions{
 	HydrologyHeadEnum,
 	HydrologyHeadOldEnum,
 	HydrologyLakeAreaEnum,
+	HydrologyLakeChannelQrEnum,
+	HydrologyLakeChannelQrOldEnum,
 	HydrologyLakeHeightEnum,
 	HydrologyLakeHeightOldEnum,
 	HydrologyLakeMaskEnum,

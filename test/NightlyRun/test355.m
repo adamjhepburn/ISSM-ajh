@@ -9,7 +9,7 @@ md.miscellaneous.name='testChannels';
 %miscellaneous
 md=setmask(md,'',''); %everywhere grounded
 md=setflowequation(md,'SSA','all');
-md.mask.lake_levelset = zeros(md.mesh.numberofvertices,1);
+
 md.stressbalance.maxiter=2; %Make sure it runs quickly...
 
 %Some constants
@@ -28,8 +28,7 @@ md.initialization.vy = zeros(md.mesh.numberofvertices,1);
 md.initialization.temperature=(273.-20.)*ones(md.mesh.numberofvertices,1);
 md.initialization.watercolumn=0.03*ones(md.mesh.numberofvertices,1);
 md.initialization.hydraulic_potential = md.materials.rho_ice*md.constants.g*md.geometry.thickness;
-md.initialization.lake_outletQr = zeros(md.mesh.numberofvertices,1);
-md.initialization.lake_depth = zeros(md.mesh.numberofvertices,1);
+md.initialization.elastic_sheet = zeros(md.mesh.numberofvertices,1);
 %Materials
 md.materials.rheology_B = (5e-25)^(-1/3) * ones(md.mesh.numberofvertices,1);
 md.materials.rheology_n = 3.*ones(md.mesh.numberofelements,1);
@@ -55,6 +54,7 @@ md.timestepping.final_time=.4/365;
 md.hydrology=hydrologyglads();
 md.hydrology.ischannels=1;
 md.hydrology.islakes=0;
+md.hydrology.lake_mask = zeros(md.mesh.numberofvertices,1);
 md.hydrology.englacial_void_ratio=1e-5.*ones(md.mesh.numberofvertices,1);
 md.hydrology.moulin_input=zeros(md.mesh.numberofvertices,1);
 md.hydrology.neumannflux=zeros(md.mesh.numberofelements,1);
@@ -95,3 +95,7 @@ field_values={...
 	md.results.TransientSolution(4).HydrologySheetThickness, ...
 	md.results.TransientSolution(4).HydraulicPotential,...
 	md.results.TransientSolution(4).ChannelArea};
+
+sprintf('mean sheet sheet thickness is %0.4f\n',mean(field_values{1}(:)))
+sprintf('mean Phi is %0.4f\n',mean(field_values{2}))
+sprintf('mean Channel Area is %0.4f\n',mean(field_values{3}))

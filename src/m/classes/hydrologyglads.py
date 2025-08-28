@@ -107,7 +107,7 @@ class hydrologyglads(object):
         list = ['EffectivePressure', 'HydraulicPotential', 'HydrologySheetThickness', 'ChannelArea', 'ChannelDischarge']
 
         if self.islakes==1:
-            list = ['EffectivePressure', 'HydraulicPotential', 'HydrologySheetThickness', 'ChannelArea', 'ChannelDischarge','HydrologyLakeOutletQr','HydrologyLakeHeight']
+            list = ['EffectivePressure', 'HydraulicPotential', 'HydrologySheetThickness', 'ChannelArea', 'ChannelDischarge','HydrologyLakeChannelQr','HydrologyLakeOutletQr','HydrologyLakeHeight']
         if self.elastic_sheet_flag == 1:
             list += ['HydrologyElasticSheetThickness']
         return list

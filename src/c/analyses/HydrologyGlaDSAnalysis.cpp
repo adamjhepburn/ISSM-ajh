@@ -206,6 +206,7 @@ void HydrologyGlaDSAnalysis::UpdateElements(Elements* elements,Inputs* inputs,Io
 	if(islakes){
 		iomodel->FetchDataToInput(inputs,elements,"md.hydrology.lake_mask",HydrologyLakeMaskEnum);
 		iomodel->FetchDataToInput(inputs,elements,"md.hydrology.lake_area",HydrologyLakeAreaEnum);
+		iomodel->FetchDataToInput(inputs,elements,"md.initialization.lake_channelQr",HydrologyLakeChannelQrEnum);
 		iomodel->FetchDataToInput(inputs,elements,"md.initialization.lake_outletQr",HydrologyLakeOutletQrEnum);
 		iomodel->FetchDataToInput(inputs,elements,"md.initialization.lake_depth",HydrologyLakeHeightEnum);
 		iomodel->FetchDataToInput(inputs,elements,"md.hydrology.lake_Qin",HydrologyLakeQinEnum);
@@ -823,7 +824,7 @@ void HydrologyGlaDSAnalysis::SetLakeOutletDischargeOld(FemModel* femmodel){/*{{{
  		Qr->Assemble();
 
  		/*Update inputs*/
-  		InputUpdateFromVectorx(femmodel, Qr, HydrologyLakeOutletQrOldEnum, VertexSIdEnum);
+  		InputUpdateFromVectorx(femmodel, Qr, HydrologyLakeChannelQrOldEnum, VertexSIdEnum);
   		delete Qr;
 	}
 }/*}}}*/
@@ -842,13 +843,14 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
 		IssmDouble* lake_area = xNewZeroInit<IssmDouble>(numlakes+1);
 		IssmDouble* lake_depth_old = xNewZeroInit<IssmDouble>(numlakes+1);
 		IssmDouble* lake_depth = xNewZeroInit<IssmDouble>(numlakes+1);
+
 		
 		for (int lake=1;lake<=numlakes;lake++){
 
 			IssmDouble local_qr = 0;
 			IssmDouble total_qr;
 			IssmDouble qs, lc, le;
-			IssmDouble la,lh_old,qr,qin;
+			IssmDouble la,lh_old,qrc,qin;
 			IssmDouble A,B,alpha,beta;
 			IssmDouble oceanLS,iceLS,LakeID;
 
@@ -868,7 +870,7 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
 				lc             = element->FindParam(HydrologyCavitySpacingEnum);
 				int le         = element->CharacteristicLength();
 				Input* qin_input = element->GetInput(HydrologyLakeQinEnum);           _assert_(qin_input); 
-				Input* qr_input = element->GetInput(HydrologyLakeOutletQrEnum);    	  _assert_(qr_input);
+				Input* qrc_input = element->GetInput(HydrologyLakeChannelQrEnum);      _assert_(qrc_input);
 				Input* qs_input = element->GetInput(HydrologySheetDischargeEnum);     _assert_(qs_input);
 				Input* la_input   = element->GetInput(HydrologyLakeAreaEnum);		  _assert_(la_input);
 				Input* lh_old_input = element->GetInput(HydrologyLakeHeightOldEnum);  _assert_(lh_old_input);
@@ -884,7 +886,7 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
 					/*Get input values at gauss points*/
 					qs_input->GetInputValue(&qs,gauss);
 					qin_input->GetInputValue(&qin,gauss);
-					qr_input->GetInputValue(&qr,gauss);
+					qrc_input->GetInputValue(&qrc,gauss);
 					la_input->GetInputValue(&la,gauss);
 					lh_old_input->GetInputValue(&lh_old,gauss);
 						
@@ -900,13 +902,13 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
 						/*divide nodal contributions to qr/qs by element connectivity to avoid issues with multiple counts of the same vertices*/
 						connectivity=(IssmDouble)element->VertexConnectivity(iv);
 						
-						local_qr+=qr/connectivity;
+						local_qr+=qrc/connectivity;
 						/*add approx sheet contribution*/
 						
-						if (qr>0.){
+						if (qrc>0.){
 							local_qr += qs*(le)/connectivity;
 						}
-						else if (qr<0.){
+						else if (qrc<0.){
 							local_qr += -qs*(le)/connectivity;
 						}
 						lake_depth_old[lake] = lh_old;
@@ -951,6 +953,7 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
 				}
 				/*Initialize new lake depth*/
 				IssmDouble* lh_new = xNew<IssmDouble>(numvertices);
+				IssmDouble* Qr = xNew<IssmDouble>(numvertices);
 				/*Retrieve all inputs and parameters*/
 				Input* oceanLS_input = element->GetInput(MaskOceanLevelsetEnum);      _assert_(oceanLS_input);
 				Input* iceLS_input = element->GetInput(MaskIceLevelsetEnum);          _assert_(iceLS_input);
@@ -966,16 +969,20 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
 					/*Set lake depth to zero if floating or no ice*/
 					if(oceanLS<0. || LakeID==0. || iceLS>0.){
 						lh_new[iv] = 0.;
+						Qr[iv] = 0.;
 					}
 					else if(LakeID==lake){
 						lh_new[iv] = lake_depth[lake];
+						Qr[iv] = total_qr;
 					}
 				}
 				/*Add new lake depth to element*/
 				element->AddInput(HydrologyLakeHeightEnum,lh_new,P1Enum);
+				element->AddInput(HydrologyLakeOutletQrEnum,Qr,P1DGEnum);
 				/*clean up*/
 				delete gauss;
 				xDelete<IssmDouble>(lh_new);
+				xDelete<IssmDouble>(Qr);
 				
 			}
 
@@ -1270,23 +1277,23 @@ void HydrologyGlaDSAnalysis::UpdateLakeOutletDischarge(FemModel* femmodel){/*{{{
 		return;
 	}
 	else if(islakes){
-		/*Initialize Qr vector*/
+		/*Initialize Qrc vector*/
 		int nv = femmodel->vertices->NumberOfVertices();
-		Vector<IssmDouble>* Qr = new Vector<IssmDouble>(nv);
+		Vector<IssmDouble>* Qrc = new Vector<IssmDouble>(nv);
 
 		/*Loop over all channels, and have them add their discharge*/
 		for(int i=0;i<femmodel->loads->Size();i++){
 			if(femmodel->loads->GetEnum(i)==ChannelEnum){
 	   			Channel* channel=(Channel*)femmodel->loads->GetObjectByOffset(i);
-	   		channel->AddDischargeToVector(Qr);
+	   		channel->AddDischargeToVector(Qrc);
 			}
  		}
 
  		/*Now assemble vector*/
- 		Qr->Assemble();
+ 		Qrc->Assemble();
 
  		/*Update inputs*/
-  		InputUpdateFromVectorx(femmodel, Qr, HydrologyLakeOutletQrEnum, VertexSIdEnum);
-  		delete Qr;
+  		InputUpdateFromVectorx(femmodel, Qrc, HydrologyLakeChannelQrEnum, VertexSIdEnum);
+  		delete Qrc;
 	}
 }/*}}}*/

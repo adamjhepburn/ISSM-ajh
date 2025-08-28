@@ -100,8 +100,9 @@ classdef stanage
              fprintf(fid,'source /users/gg4ahe/ISSM-JOKULLHAUP/etc/environment.sh\n\n');
              %fprintf(fid,'export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK\n\n');
 			 fprintf(fid,'cd %s/%s\n\n',cluster.executionpath,dirname);
-			 fprintf(fid,'srun -n %i --export=ALL %s/issm.exe %s %s %s\n',cluster.np(),cluster.codepath,solution,[cluster.executionpath '/' dirname],modelname); 
-			 if ~io_gather, %concatenate the output files:
+			 %fprintf(fid,'srun -n %i --export=ALL %s/issm.exe %s %s %s\n',cluster.np(),cluster.codepath,solution,[cluster.executionpath '/' dirname],modelname); 
+			 fprintf(fid,'srun --export=ALL %s/issm.exe %s %s %s\n',cluster.codepath,solution,[cluster.executionpath '/' dirname],modelname);
+             if ~io_gather, %concatenate the output files:
 				 fprintf(fid,'cat %s.outbin.* > %s.outbin',modelname,modelname);
 			 end
 			 fclose(fid);
