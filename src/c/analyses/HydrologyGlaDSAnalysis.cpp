@@ -806,26 +806,45 @@ void HydrologyGlaDSAnalysis::SetLakeOutletDischargeOld(FemModel* femmodel){/*{{{
 	femmodel->parameters->FindParam(&ischannels,HydrologyIschannelsEnum);
 	bool islakes;
 	femmodel->parameters->FindParam(&islakes,HydrologyLakeFlagEnum);
-	if(!ischannels || !islakes) return;
-	else if(islakes){
-		/*Initialize Qr vector*/
+	if(!islakes){
+		return;
+	}
+	if (!ischannels && islakes){
+		/*Initialise empty (because no channels) Qrc vector, 
+		sheet discharge will then be added later
+		*/
 		int nv = femmodel->vertices->NumberOfVertices();
-		Vector<IssmDouble>* Qr = new Vector<IssmDouble>(nv);
+		Vector<IssmDouble>* QrcOld = new Vector<IssmDouble>(nv);
+		/*Set all values to zero*/
+		QrcOld->Set(0.0);
+		
+		/*Assemble vector*/
+		QrcOld->Assemble();
+
+		/*Update inputs*/
+		InputUpdateFromVectorx(femmodel, QrcOld, HydrologyLakeChannelQrOldEnum, VertexSIdEnum);
+		delete QrcOld;
+	}
+	
+	else if(islakes && ischannels){
+		/*Initialize QrcOld vector*/
+		int nv = femmodel->vertices->NumberOfVertices();
+		Vector<IssmDouble>* QrcOld = new Vector<IssmDouble>(nv);
 
 		/*Loop over all channels, and have them add their discharge*/
 		for(int i=0;i<femmodel->loads->Size();i++){
 			if(femmodel->loads->GetEnum(i)==ChannelEnum){
 	   			Channel* channel=(Channel*)femmodel->loads->GetObjectByOffset(i);
-	   		channel->AddDischargeToVector(Qr);
+	   		channel->AddDischargeToVector(QrcOld);
 			}
  		}
 
  		/*Now assemble vector*/
- 		Qr->Assemble();
+ 		QrcOld->Assemble();
 
  		/*Update inputs*/
-  		InputUpdateFromVectorx(femmodel, Qr, HydrologyLakeChannelQrOldEnum, VertexSIdEnum);
-  		delete Qr;
+  		InputUpdateFromVectorx(femmodel, QrcOld, HydrologyLakeChannelQrOldEnum, VertexSIdEnum);
+  		delete QrcOld;
 	}
 }/*}}}*/
 
@@ -866,6 +885,7 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
         Input* la_input     = element->GetInput(HydrologyLakeAreaEnum);          _assert_(la_input);
         Input* lh_old_input = element->GetInput(HydrologyLakeHeightOldEnum);     _assert_(lh_old_input);
         Input* LakeID_input = element->GetInput(HydrologyLakeMaskEnum);          _assert_(LakeID_input);
+        Input* phi_input    = element->GetInput(HydraulicPotentialEnum);         _assert_(phi_input);
         
         Gauss* gauss=element->NewGauss();
         for(int iv=0;iv<numvertices;iv++){
@@ -891,6 +911,43 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
                 local_qr[LakeID] += qrc/connectivity;
                 if (qrc > 0.) local_qr[LakeID] += qs*(le)/connectivity;
                 else if (qrc < 0.) local_qr[LakeID] += -qs*(le)/connectivity;
+                else {
+                    /* When qrc == 0 (no channels), determine flow direction from hydraulic potential difference */
+                    /* Get hydraulic potential at current lake vertex */
+                    IssmDouble phi_lake;
+                    phi_input->GetInputValue(&phi_lake, gauss);
+                    
+                    /* Calculate average hydraulic potential of non-lake vertices in element */
+                    IssmDouble phi_avg = 0.0;
+                    int non_lake_count = 0;
+                    Gauss* temp_gauss = element->NewGauss();
+                    for(int jv = 0; jv < numvertices; jv++){
+                        temp_gauss->GaussVertex(jv);
+                        IssmDouble temp_lake_id;
+                        LakeID_input->GetInputValue(&temp_lake_id, temp_gauss);
+                        if((int)temp_lake_id == 0){ // Non-lake vertex (lake_id == 0)
+                            IssmDouble phi_temp;
+                            phi_input->GetInputValue(&phi_temp, temp_gauss);
+                            phi_avg += phi_temp;
+                            non_lake_count++;
+                        }
+                    }
+                    delete temp_gauss;
+                    
+                    if(non_lake_count > 0){
+                        phi_avg /= non_lake_count;
+                        /* If surrounding potential > lake potential, flow is into lake (negative) */
+                        /* If surrounding potential < lake potential, flow is out of lake (positive) */
+                        if(phi_avg > phi_lake){
+                            local_qr[LakeID] += -qs*(le)/connectivity; // Flow into lake
+                        } else {
+                            local_qr[LakeID] += qs*(le)/connectivity;  // Flow out of lake
+                        }
+                    } else {
+                        /* All vertices are lake vertices, assume outflow */
+                        local_qr[LakeID] += qs*(le)/connectivity;
+                    }
+                }
 
                 /* Assign lake-wide properties. Since they are constant for a given lake,
                 we can just let them be written; the last value will be correct for this processor. */
@@ -1256,10 +1313,25 @@ void HydrologyGlaDSAnalysis::UpdateLakeOutletDischarge(FemModel* femmodel){/*{{{
 	femmodel->parameters->FindParam(&ischannels,HydrologyIschannelsEnum);
 	bool islakes;
 	femmodel->parameters->FindParam(&islakes,HydrologyLakeFlagEnum);
-	if(!ischannels || !islakes){ 
+	if(!islakes){ 
 		return;
 	}
-	else if(islakes){
+	if (!ischannels && islakes){
+		/*Initialise empty (because no channels) Qrc vector
+		sheet discharge will then be added*/
+		int nv = femmodel->vertices->NumberOfVertices();
+		Vector<IssmDouble>* Qrc = new Vector<IssmDouble>(nv);
+		/*Set all values to zero*/
+		Qrc->Set(0.0);
+		
+		/*Assemble vector*/
+		Qrc->Assemble();
+
+		/*Update inputs*/
+		InputUpdateFromVectorx(femmodel, Qrc, HydrologyLakeChannelQrEnum, VertexSIdEnum);
+		delete Qrc;
+	}
+	else if(islakes && ischannels){
 		/*Initialize Qrc vector*/
 		int nv = femmodel->vertices->NumberOfVertices();
 		Vector<IssmDouble>* Qrc = new Vector<IssmDouble>(nv);

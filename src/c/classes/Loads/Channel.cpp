@@ -604,7 +604,7 @@ ElementVector* Channel::CreatePVectorHydrologyGlaDS(void){/*{{{*/
 		Ngrad   = fabs(dphids);
 		if(Ngrad<AEPS) Ngrad = AEPS;
 
-		/*Approx. discharge in the sheet flowing folwing in the direction of the channel ofver a width lc, use transition model if specified*/
+		/*Approx. discharge in the sheet flowing folwing in the direction of the channel over a width lc, use transition model if specified*/
 		IssmDouble Ks;
 		if (istransition==1 && omega>=AEPS){
 		IssmDouble hratio = h/h_r;
@@ -616,7 +616,7 @@ ElementVector* Channel::CreatePVectorHydrologyGlaDS(void){/*{{{*/
 			Ks = ks * pow(h,alpha_s) * pow(Ngrad,beta_s-2.);
 		}
 
-		/*Approx. discharge in the sheet flowing folwing in the direction of the channel ofver a width lc*/
+		/*Approx. discharge in the sheet flowing folwing in the direction of the channel over a width lc*/
 		qc = - Ks * dphids;
 
 		/*d(phi - phi_m)/ds*/
