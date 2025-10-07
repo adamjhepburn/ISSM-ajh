@@ -9,7 +9,7 @@
 #include <cmath>
 
 IssmDouble PddSurfaceMassBalance(IssmDouble* monthlytemperatures, IssmDouble* monthlyprec,
-         IssmDouble* pdds, IssmDouble* pds, IssmDouble* melt, IssmDouble* accu, 
+         IssmDouble* pdds, IssmDouble* pds, IssmDouble* melt, IssmDouble* accu, IssmDouble* snowmelt,
          IssmDouble signorm, IssmDouble yts, IssmDouble h, IssmDouble s, IssmDouble desfac,
          IssmDouble s0t,IssmDouble s0p, IssmDouble rlaps,IssmDouble rlapslgm,
          IssmDouble TdiffTime,IssmDouble sealevTime, IssmDouble pddsnowfac,IssmDouble pddicefac,
@@ -196,6 +196,7 @@ IssmDouble PddSurfaceMassBalance(IssmDouble* monthlytemperatures, IssmDouble* mo
     runoff=snwm - supice;  //meltwater only, does not include rain
   }
   else {  //all snow melted
+    snwm=saccu; // The amount of snow melted is exactly the amount available
     supice= min(hmx2*CovrLm*frzndd, prect );
     runoff= saccu + smf*(pddt-saccu/snwmf) - supice;
     supcap=0;
@@ -239,8 +240,14 @@ IssmDouble PddSurfaceMassBalance(IssmDouble* monthlytemperatures, IssmDouble* mo
   if(Tsurf<0) {
     Tsurf= min(Tsurf+fsupT*diffndd , 0.);}
 
+  //Grab Snowmelt, should be a positive #
+  if (snwm>saccu){
+    snwm=saccu;
+   }
+
   melt[0]=smelt/yts;
   accu[0]=saccu/yts;
+  snowmelt[0]=snwm/yts;
   B = saccu - smelt;
   B = B/yts;
   pddtj=pddt;

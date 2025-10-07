@@ -1115,6 +1115,7 @@ syn keyword cConstant SmbAccumulatedPrecipitationSubstepEnum
 syn keyword cConstant SmbAccumulatedRainSubstepEnum
 syn keyword cConstant SmbAccumulatedRefreezeSubstepEnum
 syn keyword cConstant SmbAccumulatedRunoffSubstepEnum
+syn keyword cConstant SmbAccumulatedSnowMeltEnum
 syn keyword cConstant SmbAlbedoEnum
 syn keyword cConstant SmbAlbedoInitEnum
 syn keyword cConstant SmbAlbedoSnowEnum
@@ -1232,6 +1233,7 @@ syn keyword cConstant SmbSemicQmrInitEnum
 syn keyword cConstant SmbSizeiniEnum
 syn keyword cConstant SmbSmbCorrEnum
 syn keyword cConstant SmbSmbrefEnum
+syn keyword cConstant SmbSnowMeltEnum
 syn keyword cConstant SmbSzaValueEnum
 syn keyword cConstant SmbSummerMeltEnum
 syn keyword cConstant SmbSummerAlbedoEnum

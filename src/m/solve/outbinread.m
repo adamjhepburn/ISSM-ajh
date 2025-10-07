@@ -148,6 +148,8 @@ else
 		field = field*yts;
 	elseif strcmp(fieldname,'SmbMelt'),
 		field = field*yts;
+	elseif strcmp(fieldname,'SmbSnowMelt'),
+		field = field*yts;
 	elseif strcmp(fieldname,'CalvingCalvingrate'),
 		field = field*yts;
 	end

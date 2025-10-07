@@ -379,6 +379,7 @@ SmbAccumulatedPrecipitationSubstep
 SmbAccumulatedRainSubstep
 SmbAccumulatedRefreezeSubstep
 SmbAccumulatedRunoffSubstep
+SmbAccumulatedSnowMelt
 SmbAlbedo
 SmbAlbedoInit
 SmbAlbedoSnow
@@ -496,6 +497,7 @@ SmbSemicQmrInit
 SmbSizeini
 SmbSmbCorr
 SmbSmbref
+SmbSnowMelt
 SmbSzaValue
 SmbSummerMelt
 SmbSummerAlbedo
@@ -623,6 +625,7 @@ OldAccumulatedDeltaIceThickness
 OldAccumulatedDeltaTws
 
 %Scalar outputs
+AverageButtressing
 Divergence
 MaxDivergence
 IceMass
