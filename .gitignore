@@ -2,7 +2,6 @@
 #==================
 *.a
 *.al
-*.js
 *.la
 *.lo
 *.mexa64
@@ -11,7 +10,6 @@
 *.pyo
 *.so
 *.so.[0-9]*
-*.wasm
 __pycache__
 bin/
 lib/
@@ -95,3 +93,4 @@ examples/Data/*.mat
 examples/Data/*.txt
 examples/Data/*.zip
 examples/Data/Jakobshavn_2008_2011_Composite
+externalpackages/
