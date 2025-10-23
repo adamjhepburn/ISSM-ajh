@@ -149,7 +149,8 @@ classdef hydrologyglads
 			if self.islakes==1
 				md = checkfield(md,'fieldname','hydrology.lake_mask','Inf',1,'NaN',1,'timeseries',1);
 				md = checkfield(md,'fieldname','hydrology.lake_area','size',[md.mesh.numberofvertices 1],'>=',0,'NaN',1,'Inf',1);
-				md = checkfield(md,'fieldname','hydrology.lake_Qin','timeseries',1,'>=',0,'NaN',1,'Inf',1);
+				md = checkfield(md,'fieldname','hydrology.lake_Qin','timeseries',1,'NaN',1,'Inf',1);
+				%md = checkfield(md,'fieldname','hydrology.lake_Qin','timeseries',1,'>=',0,'NaN',1,'Inf',1);
             elseif self.islakes==0
                 md = checkfield(md,'fieldname','hydrology.lake_mask','size',[md.mesh.numberofvertices 1]);
             end
