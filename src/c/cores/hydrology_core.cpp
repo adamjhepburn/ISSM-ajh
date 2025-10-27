@@ -238,6 +238,8 @@ void hydrology_core(FemModel* femmodel){ /*{{{*/
 
 		bool islakes;
 		femmodel->parameters->FindParam(&islakes,HydrologyLakeFlagEnum);
+		bool islakescaled;
+		femmodel->parameters->FindParam(&islakescaled,HydrologyIsLakeScaledEnum);
 
 		/*Set fields as old*/
 		InputDuplicatex(femmodel,HydraulicPotentialEnum,HydraulicPotentialOldEnum);
@@ -246,6 +248,8 @@ void hydrology_core(FemModel* femmodel){ /*{{{*/
 		if(islakes){
 			InputDuplicatex(femmodel,HydrologyLakeHeightEnum,HydrologyLakeHeightOldEnum);
 			InputDuplicatex(femmodel,HydrologyLakeChannelQrEnum,HydrologyLakeChannelQrOldEnum);
+			InputDuplicatex(femmodel,HydrologyLakeAreaEnum,HydrologyLakeAreaOldEnum);
+			
 		}
 		analysis->SetChannelCrossSectionOld(femmodel);
 		

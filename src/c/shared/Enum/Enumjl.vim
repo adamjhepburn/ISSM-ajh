@@ -264,10 +264,13 @@ syn keyword juliaConstC HydrologyCavitySpacingEnum
 syn keyword juliaConstC HydrologyChannelSheetWidthEnum
 syn keyword juliaConstC HydrologyIschannelsEnum
 syn keyword juliaConstC HydrologyIsIncludeSheetThicknessEnum
+syn keyword juliaConstC HydrologyIsLakeScaledEnum
 syn keyword juliaConstC HydrologyCreepOpenFlagEnum
 syn keyword juliaConstC HydrologyIsTransitionEnum
 syn keyword juliaConstC HydrologyIsWaterPressureArmaEnum
 syn keyword juliaConstC HydrologyLakeFlagEnum
+syn keyword juliaConstC HydrologyLakeShapeCoefficientEnum
+syn keyword juliaConstC HydrologyLakeShapeExponentEnum
 syn keyword juliaConstC HydrologyMeltFlagEnum
 syn keyword juliaConstC HydrologyModelEnum
 syn keyword juliaConstC HydrologyNumBasinsEnum
@@ -918,7 +921,6 @@ syn keyword juliaConstC HydrologyGapHeightYEnum
 syn keyword juliaConstC HydrologyGapHeightYYEnum
 syn keyword juliaConstC HydrologyHeadEnum
 syn keyword juliaConstC HydrologyHeadOldEnum
-syn keyword juliaConstC HydrologyLakeAreaEnum
 syn keyword juliaConstC HydrologyLakeChannelQrEnum
 syn keyword juliaConstC HydrologyLakeChannelQrOldEnum
 syn keyword juliaConstC HydrologyLakeHeightEnum
@@ -927,6 +929,9 @@ syn keyword juliaConstC HydrologyLakeMaskEnum
 syn keyword juliaConstC HydrologyLakeOutletQrEnum
 syn keyword juliaConstC HydrologyLakeOutletQrOldEnum
 syn keyword juliaConstC HydrologyLakeQinEnum
+syn keyword juliaConstC HydrologyLakeAreaEnum
+syn keyword juliaConstC HydrologyLakeAreaOldEnum
+syn keyword juliaConstC HydrologyMaxLakeAreaEnum
 syn keyword juliaConstC HydrologyMeltRateEnum
 syn keyword juliaConstC HydrologyMoulinInputEnum
 syn keyword juliaConstC HydrologyNeumannfluxEnum

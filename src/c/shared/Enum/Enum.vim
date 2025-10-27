@@ -271,10 +271,13 @@ syn keyword cConstant HydrologyCavitySpacingEnum
 syn keyword cConstant HydrologyChannelSheetWidthEnum
 syn keyword cConstant HydrologyIschannelsEnum
 syn keyword cConstant HydrologyIsIncludeSheetThicknessEnum
+syn keyword cConstant HydrologyIsLakeScaledEnum
 syn keyword cConstant HydrologyCreepOpenFlagEnum
 syn keyword cConstant HydrologyIsTransitionEnum
 syn keyword cConstant HydrologyIsWaterPressureArmaEnum
 syn keyword cConstant HydrologyLakeFlagEnum
+syn keyword cConstant HydrologyLakeShapeCoefficientEnum
+syn keyword cConstant HydrologyLakeShapeExponentEnum
 syn keyword cConstant HydrologyMeltFlagEnum
 syn keyword cConstant HydrologyModelEnum
 syn keyword cConstant HydrologyNumBasinsEnum
@@ -925,7 +928,6 @@ syn keyword cConstant HydrologyGapHeightYEnum
 syn keyword cConstant HydrologyGapHeightYYEnum
 syn keyword cConstant HydrologyHeadEnum
 syn keyword cConstant HydrologyHeadOldEnum
-syn keyword cConstant HydrologyLakeAreaEnum
 syn keyword cConstant HydrologyLakeChannelQrEnum
 syn keyword cConstant HydrologyLakeChannelQrOldEnum
 syn keyword cConstant HydrologyLakeHeightEnum
@@ -934,6 +936,9 @@ syn keyword cConstant HydrologyLakeMaskEnum
 syn keyword cConstant HydrologyLakeOutletQrEnum
 syn keyword cConstant HydrologyLakeOutletQrOldEnum
 syn keyword cConstant HydrologyLakeQinEnum
+syn keyword cConstant HydrologyLakeAreaEnum
+syn keyword cConstant HydrologyLakeAreaOldEnum
+syn keyword cConstant HydrologyMaxLakeAreaEnum
 syn keyword cConstant HydrologyMeltRateEnum
 syn keyword cConstant HydrologyMoulinInputEnum
 syn keyword cConstant HydrologyNeumannfluxEnum

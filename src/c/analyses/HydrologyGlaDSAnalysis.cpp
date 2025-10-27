@@ -163,6 +163,8 @@ void HydrologyGlaDSAnalysis::UpdateElements(Elements* elements,Inputs* inputs,Io
 	iomodel->FindConstant(&meltflag,"md.hydrology.melt_flag");
 	bool    islakes;
 	iomodel->FindConstant(&islakes,"md.hydrology.islakes");
+	bool    islakescaled;
+	iomodel->FindConstant(&islakescaled,"md.hydrology.islakescaled");
 
 	/*Now, do we really want GlaDS?*/
 	if(hydrology_model!=HydrologyGlaDSEnum) return;
@@ -205,13 +207,16 @@ void HydrologyGlaDSAnalysis::UpdateElements(Elements* elements,Inputs* inputs,Io
 	iomodel->FetchDataToInput(inputs,elements,"md.hydrology.rheology_B_base",HydrologyRheologyBBaseEnum);
 	if(islakes){
 		iomodel->FetchDataToInput(inputs,elements,"md.hydrology.lake_mask",HydrologyLakeMaskEnum);
-		iomodel->FetchDataToInput(inputs,elements,"md.hydrology.lake_area",HydrologyLakeAreaEnum);
+		iomodel->FetchDataToInput(inputs,elements,"md.hydrology.max_lake_area",HydrologyMaxLakeAreaEnum);
 		iomodel->FetchDataToInput(inputs,elements,"md.initialization.lake_channelQr",HydrologyLakeChannelQrEnum);
 		iomodel->FetchDataToInput(inputs,elements,"md.initialization.lake_outletQr",HydrologyLakeOutletQrEnum);
 		iomodel->FetchDataToInput(inputs,elements,"md.initialization.lake_depth",HydrologyLakeHeightEnum);
 		iomodel->FetchDataToInput(inputs,elements,"md.hydrology.lake_Qin",HydrologyLakeQinEnum);
 		/*Necessary to initialise lake model...*/
-		iomodel->FetchDataToInput(inputs,elements,"md.initialization.sheet_discharge",HydrologySheetDischargeEnum); 
+		iomodel->FetchDataToInput(inputs,elements,"md.initialization.sheet_discharge",HydrologySheetDischargeEnum);
+		if(islakescaled) {
+			iomodel->FetchDataToInput(inputs,elements,"md.initialization.lake_area",HydrologyLakeAreaEnum);
+		}
 	}
 	if(iomodel->domaintype==Domain2DhorizontalEnum){
 		iomodel->FetchDataToInput(inputs,elements,"md.initialization.vx",VxEnum);
@@ -261,6 +266,9 @@ void HydrologyGlaDSAnalysis::UpdateParameters(Parameters* parameters,IoModel* io
 	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.creep_open_flag",HydrologyCreepOpenFlagEnum));
 	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.islakes",HydrologyLakeFlagEnum));
 	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.num_lakes",HydrologyNumLakesEnum));
+	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.islakescaled",HydrologyIsLakeScaledEnum));
+	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.lake_shape_coeff",HydrologyLakeShapeCoefficientEnum));
+	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.lake_shape_exp",HydrologyLakeShapeExponentEnum));
 	
 
 	/*Friction*/
@@ -853,16 +861,22 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
     bool islakes;
     femodel->parameters->FindParam(&islakes,HydrologyLakeFlagEnum);
     if(!islakes) return;
+
+    bool islakescaled;
+    femodel->parameters->FindParam(&islakescaled,HydrologyIsLakeScaledEnum);
     
     int numlakes;
     femodel->parameters->FindParam(&numlakes,HydrologyNumLakesEnum);
+
+	const IssmDouble min_lake_area = 100.0; // Minimum lake area for scaling (m^2)
 
     // Initialize arrays for all lakes, skip index 0 (no lake)
     IssmDouble* dt             = xNewZeroInit<IssmDouble>(numlakes+1);
     IssmDouble* local_qr       = xNewZeroInit<IssmDouble>(numlakes+1);
     IssmDouble* total_qr       = xNewZeroInit<IssmDouble>(numlakes+1);
     IssmDouble* lake_Qin       = xNewZeroInit<IssmDouble>(numlakes+1);
-    IssmDouble* lake_area      = xNewZeroInit<IssmDouble>(numlakes+1);
+    // IssmDouble* lake_area      = xNewZeroInit<IssmDouble>(numlakes+1); // ***FIX: Removed. We don't need a per-lake array for the new area.
+    IssmDouble* lake_area_old  = xNewZeroInit<IssmDouble>(numlakes+1);
     IssmDouble* lake_depth_old = xNewZeroInit<IssmDouble>(numlakes+1);
     IssmDouble* lake_depth     = xNewZeroInit<IssmDouble>(numlakes+1);
 
@@ -882,18 +896,27 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
         Input* qin_input    = element->GetInput(HydrologyLakeQinEnum);           _assert_(qin_input); 
         Input* qrc_input    = element->GetInput(HydrologyLakeChannelQrEnum);     _assert_(qrc_input);
         Input* qs_input     = element->GetInput(HydrologySheetDischargeEnum);    _assert_(qs_input);
-        Input* la_input     = element->GetInput(HydrologyLakeAreaEnum);          _assert_(la_input);
+        Input* lamax_input  = element->GetInput(HydrologyMaxLakeAreaEnum);       _assert_(lamax_input);
         Input* lh_old_input = element->GetInput(HydrologyLakeHeightOldEnum);     _assert_(lh_old_input);
         Input* LakeID_input = element->GetInput(HydrologyLakeMaskEnum);          _assert_(LakeID_input);
         Input* phi_input    = element->GetInput(HydraulicPotentialEnum);         _assert_(phi_input);
+
+        /*Params for lake area scaling*/
+        // ***FIX: Need to declare la_old_input pointer outside the 'if' block
+        Input* la_old_input = NULL;
+        if (islakescaled) {
+            la_old_input = element->GetInput(HydrologyLakeAreaOldEnum);       _assert_(la_old_input);
+        }
+        
         
         Gauss* gauss=element->NewGauss();
         for(int iv=0;iv<numvertices;iv++){
             gauss->GaussVertex(iv);
             
-            IssmDouble qin, qrc, qs, la, lh_old;
+            IssmDouble qin, qrc, qs, lamax, lh_old;
+
             
-			/* Read LakeID safely by using an intermediate IssmDouble variable.
+            /* Read LakeID safely by using an intermediate IssmDouble variable.
             This prevents memory corruption from casting pointers of different types */
             IssmDouble lake_id_double;
             LakeID_input->GetInputValue(&lake_id_double, gauss);
@@ -902,8 +925,9 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
             qin_input->GetInputValue(&qin,gauss);
             qrc_input->GetInputValue(&qrc,gauss);
             qs_input->GetInputValue(&qs,gauss);
-            la_input->GetInputValue(&la,gauss);
+            lamax_input->GetInputValue(&lamax,gauss);
             lh_old_input->GetInputValue(&lh_old,gauss);
+
 
             if(LakeID > 0){
                 /* Aggregate Qr contribution, dividing by connectivity to avoid double-counting */
@@ -951,7 +975,16 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
 
                 /* Assign lake-wide properties. Since they are constant for a given lake,
                 we can just let them be written; the last value will be correct for this processor. */
-                lake_area[LakeID]      = la;
+                if (!islakescaled){
+                    lake_area_old[LakeID] = lamax;
+                }
+                else if (islakescaled) {
+                    IssmDouble la_old;
+                    la_old_input->GetInputValue(&la_old, gauss); // la_old_input is guaranteed to be non-NULL here
+                    // ***FIX: Use la_old, but cap at lamax as a safety. Also ensure it's at least AEPS if the lake exists.
+                    lake_area_old[LakeID] = min(la_old, lamax);
+                    if (lake_area_old[LakeID] < min_lake_area) lake_area_old[LakeID] = min_lake_area;
+                }
                 lake_Qin[LakeID]       = qin;
                 lake_depth_old[LakeID] = lh_old;
                 dt[LakeID]             = ele_dt;
@@ -964,18 +997,19 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
     ISSM_MPI_Allreduce(local_qr, total_qr, numlakes+1, ISSM_MPI_DOUBLE, ISSM_MPI_SUM, IssmComm::GetComm());
 
     /* MPI_MAX ensures the non-zero value from the processor that owns the lake element propagates to all others. */
-    ISSM_MPI_Allreduce(MPI_IN_PLACE, lake_area,      numlakes+1, ISSM_MPI_DOUBLE, ISSM_MPI_MAX, IssmComm::GetComm());
+    ISSM_MPI_Allreduce(MPI_IN_PLACE, lake_area_old,  numlakes+1, ISSM_MPI_DOUBLE, ISSM_MPI_MAX, IssmComm::GetComm());
     ISSM_MPI_Allreduce(MPI_IN_PLACE, lake_Qin,       numlakes+1, ISSM_MPI_DOUBLE, ISSM_MPI_MAX, IssmComm::GetComm());
     ISSM_MPI_Allreduce(MPI_IN_PLACE, lake_depth_old, numlakes+1, ISSM_MPI_DOUBLE, ISSM_MPI_MAX, IssmComm::GetComm());
     ISSM_MPI_Allreduce(MPI_IN_PLACE, dt,             numlakes+1, ISSM_MPI_DOUBLE, ISSM_MPI_MAX, IssmComm::GetComm());
     
     /* Calculate new lake depth for ALL lakes using the globally aggregated data. */
     for (int lake=1; lake<=numlakes; lake++){
-        if(lake_area[lake] < 1e-9){ // Use a small tolerance to check for zero area
+        // ***FIX: Check lake_area_old, not lake_area. Use AEPS for consistency.
+        if(lake_area_old[lake] < min_lake_area){ 
             continue;
         }
 
-        IssmDouble A = 1.0 / lake_area[lake];
+        IssmDouble A = 1.0 / lake_area_old[lake];
         IssmDouble B = lake_Qin[lake] - total_qr[lake];
         
         IssmDouble alpha = 0.0;
@@ -997,14 +1031,25 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
         int numvertices = element->GetNumberOfVertices();
         IssmDouble* lh_new = xNew<IssmDouble>(numvertices);
         IssmDouble* Qr_out = xNew<IssmDouble>(numvertices);
+        // ***FIX: Create a per-vertex array for the new lake area
+        IssmDouble* la_new = xNew<IssmDouble>(numvertices);
+
+        // ***FIX: Get coeff and exp *once* per element, outside the vertex loop
+        IssmDouble la_coeff = 0.0;
+        IssmDouble la_exp   = 0.0;
+        if(islakescaled) {
+             la_coeff = element->FindParam(HydrologyLakeShapeCoefficientEnum);
+             la_exp = element->FindParam(HydrologyLakeShapeExponentEnum);
+        }
 
         Input* LakeID_input = element->GetInput(HydrologyLakeMaskEnum); _assert_(LakeID_input);
+        Input* lamax_input  = element->GetInput(HydrologyMaxLakeAreaEnum);       _assert_(lamax_input);
 
-		/* Get inputs needed to reclaculate local (per outlet) Qr*/
-		Input* qrc_input = element->GetInput(HydrologyLakeChannelQrEnum);     _assert_(qrc_input);
-		Input* qs_input  = element->GetInput(HydrologySheetDischargeEnum);    _assert_(qs_input);
-		Input* phi_input = element->GetInput(HydraulicPotentialEnum);         _assert_(phi_input);
-		int le           = element->CharacteristicLength();
+        /* Get inputs needed to reclaculate local (per outlet) Qr*/
+        Input* qrc_input = element->GetInput(HydrologyLakeChannelQrEnum);     _assert_(qrc_input);
+        Input* qs_input  = element->GetInput(HydrologySheetDischargeEnum);    _assert_(qs_input);
+        Input* phi_input = element->GetInput(HydraulicPotentialEnum);         _assert_(phi_input);
+        int le           = element->CharacteristicLength();
 
         Gauss* gauss=element->NewGauss();
         for(int iv=0;iv<numvertices;iv++){
@@ -1018,61 +1063,83 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
             if(LakeID > 0){
                 /* Use the pre-calculated values from our arrays */
                 lh_new[iv] = lake_depth[LakeID];
-				/* Recalculate Qr_out at this outlet vertex */
-				IssmDouble qrc, qs;
-				qrc_input->GetInputValue(&qrc,gauss);
-				qs_input->GetInputValue(&qs,gauss);
-				IssmDouble connectivity = (IssmDouble)element->VertexConnectivity(iv);
-				
-				IssmDouble vertex_qr = 0.0;
-				vertex_qr += qrc / connectivity;
+                
+                /* Get maximum lake area */
+                IssmDouble lamax;
+                lamax_input->GetInputValue(&lamax, gauss);
 
-				if (qrc > 0.) vertex_qr+= qs*(le)/connectivity; 
-				else if (qrc < 0.) vertex_qr += -qs*(le)/connectivity;
-				else {
-					/* When qrc == 0 (no channels), determine flow direction from hydraulic potential difference */
-					IssmDouble phi_lake;
-					phi_input->GetInputValue(&phi_lake, gauss);
+                /* Update lake area */
+                // ***FIX: Write to the new per-vertex array la_new[iv]
+                if (islakescaled) {
+                    IssmDouble scaled_area = la_coeff * pow(lake_depth[LakeID], la_exp);
+                    la_new[iv] = min(scaled_area, lamax);
+                    if (la_new[iv] < min_lake_area) la_new[iv] = min_lake_area; // Ensure non-zero and prevent overly stiff solution
+                } else {
+                    la_new[iv] = lamax;
+                }
 
-					IssmDouble phi_avg = 0.0;
-					int non_lake_count = 0;
-					Gauss* temp_gauss = element->NewGauss();
-					for(int jv = 0; jv < numvertices; jv++){
-						temp_gauss->GaussVertex(jv);
-						IssmDouble temp_lake_id;
-						LakeID_input->GetInputValue(&temp_lake_id, temp_gauss);
-						if((int)temp_lake_id == 0){ // Non-lake vertex (lake_id == 0)
-							IssmDouble phi_temp;
-							phi_input->GetInputValue(&phi_temp, temp_gauss);
-							phi_avg +=phi_temp;
-							non_lake_count++;
-						}
-					}
-					delete temp_gauss;
+                /* Recalculate Qr_out at this outlet vertex */
+                IssmDouble qrc, qs;
+                qrc_input->GetInputValue(&qrc,gauss);
+                qs_input->GetInputValue(&qs,gauss);
+                IssmDouble connectivity = (IssmDouble)element->VertexConnectivity(iv);
+                
+                IssmDouble vertex_qr = 0.0;
+                vertex_qr += qrc / connectivity;
 
-					if(non_lake_count > 0){
-						phi_avg /= non_lake_count;
-						if(phi_avg > phi_lake){
-							vertex_qr += -qs*(le)/connectivity; // Flow: glacier -> lake
-						} else {
-							vertex_qr += qs*(le)/connectivity;  // Flow: glacier <- lake
-						}
-					} else{
-						vertex_qr += qs*(le)/connectivity; // Assume outflow
+                if (qrc > 0.) vertex_qr+= qs*(le)/connectivity; 
+                else if (qrc < 0.) vertex_qr += -qs*(le)/connectivity;
+                else {
+                    /* When qrc == 0 (no channels), determine flow direction from hydraulic potential difference */
+                    IssmDouble phi_lake;
+                    phi_input->GetInputValue(&phi_lake, gauss);
 
-					}
-				}
-				Qr_out[iv] = vertex_qr;
+                    IssmDouble phi_avg = 0.0;
+                    int non_lake_count = 0;
+                    Gauss* temp_gauss = element->NewGauss();
+                    for(int jv = 0; jv < numvertices; jv++){
+                        temp_gauss->GaussVertex(jv);
+                        IssmDouble temp_lake_id;
+                        LakeID_input->GetInputValue(&temp_lake_id, temp_gauss);
+                        if((int)temp_lake_id == 0){ // Non-lake vertex (lake_id == 0)
+                            IssmDouble phi_temp;
+                            phi_input->GetInputValue(&phi_temp, temp_gauss);
+                            phi_avg +=phi_temp;
+                            non_lake_count++;
+                        }
+                    }
+                    delete temp_gauss;
+
+                    if(non_lake_count > 0){
+                        phi_avg /= non_lake_count;
+                        if(phi_avg > phi_lake){
+                            vertex_qr += -qs*(le)/connectivity; // Flow: glacier -> lake
+                        } else {
+                            vertex_qr += qs*(le)/connectivity;  // Flow: glacier <- lake
+                        }
+                    } else{
+                        vertex_qr += qs*(le)/connectivity; // Assume outflow
+
+                    }
+                }
+                Qr_out[iv] = vertex_qr;
             } else {
                 lh_new[iv] = 0.0;
                 Qr_out[iv] = 0.0;
+                // ***FIX: Set area to 0 for non-lake vertices
+                la_new[iv] = 0.0;
             }
         }
         delete gauss;
 
+        // ***FIX: Add the new per-vertex la_new array
+        element->AddInput(HydrologyLakeAreaEnum, la_new, P1Enum);
         element->AddInput(HydrologyLakeHeightEnum, lh_new, P1Enum);
         element->AddInput(HydrologyLakeOutletQrEnum, Qr_out, P1Enum);
+        // ***FIX: Removed redundant AddInput
         
+        // ***FIX: Delete la_new, NOT lake_area
+        xDelete<IssmDouble>(la_new);
         xDelete<IssmDouble>(lh_new);
         xDelete<IssmDouble>(Qr_out);
     }
@@ -1082,7 +1149,8 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
     xDelete<IssmDouble>(local_qr);
     xDelete<IssmDouble>(total_qr);
     xDelete<IssmDouble>(lake_Qin);
-    xDelete<IssmDouble>(lake_area);
+    // ***FIX: Removed xDelete for lake_area
+    xDelete<IssmDouble>(lake_area_old);
     xDelete<IssmDouble>(lake_depth_old);
     xDelete<IssmDouble>(lake_depth);
 

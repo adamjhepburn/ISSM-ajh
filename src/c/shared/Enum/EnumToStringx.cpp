@@ -273,10 +273,13 @@ const char* EnumToStringx(int en){
 		case HydrologyChannelSheetWidthEnum : return "HydrologyChannelSheetWidth";
 		case HydrologyIschannelsEnum : return "HydrologyIschannels";
 		case HydrologyIsIncludeSheetThicknessEnum : return "HydrologyIsIncludeSheetThickness";
+		case HydrologyIsLakeScaledEnum : return "HydrologyIsLakeScaled";
 		case HydrologyCreepOpenFlagEnum : return "HydrologyCreepOpenFlag";
 		case HydrologyIsTransitionEnum : return "HydrologyIsTransition";
 		case HydrologyIsWaterPressureArmaEnum : return "HydrologyIsWaterPressureArma";
 		case HydrologyLakeFlagEnum : return "HydrologyLakeFlag";
+		case HydrologyLakeShapeCoefficientEnum : return "HydrologyLakeShapeCoefficient";
+		case HydrologyLakeShapeExponentEnum : return "HydrologyLakeShapeExponent";
 		case HydrologyMeltFlagEnum : return "HydrologyMeltFlag";
 		case HydrologyModelEnum : return "HydrologyModel";
 		case HydrologyNumBasinsEnum : return "HydrologyNumBasins";
@@ -927,7 +930,6 @@ const char* EnumToStringx(int en){
 		case HydrologyGapHeightYYEnum : return "HydrologyGapHeightYY";
 		case HydrologyHeadEnum : return "HydrologyHead";
 		case HydrologyHeadOldEnum : return "HydrologyHeadOld";
-		case HydrologyLakeAreaEnum : return "HydrologyLakeArea";
 		case HydrologyLakeChannelQrEnum : return "HydrologyLakeChannelQr";
 		case HydrologyLakeChannelQrOldEnum : return "HydrologyLakeChannelQrOld";
 		case HydrologyLakeHeightEnum : return "HydrologyLakeHeight";
@@ -936,6 +938,9 @@ const char* EnumToStringx(int en){
 		case HydrologyLakeOutletQrEnum : return "HydrologyLakeOutletQr";
 		case HydrologyLakeOutletQrOldEnum : return "HydrologyLakeOutletQrOld";
 		case HydrologyLakeQinEnum : return "HydrologyLakeQin";
+		case HydrologyLakeAreaEnum : return "HydrologyLakeArea";
+		case HydrologyLakeAreaOldEnum : return "HydrologyLakeAreaOld";
+		case HydrologyMaxLakeAreaEnum : return "HydrologyMaxLakeArea";
 		case HydrologyMeltRateEnum : return "HydrologyMeltRate";
 		case HydrologyMoulinInputEnum : return "HydrologyMoulinInput";
 		case HydrologyNeumannfluxEnum : return "HydrologyNeumannflux";

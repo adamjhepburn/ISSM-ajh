@@ -19,6 +19,7 @@ classdef initialization
 		watercolumn         = NaN;
 		elastic_sheet       = NaN;
 		hydraulic_potential = NaN;
+		lake_area		    = NaN;
 		sheet_discharge     = NaN;
 		channel_discharge   = NaN;
 		channelarea         = NaN;
@@ -117,6 +118,9 @@ classdef initialization
 						md = checkfield(md,'fieldname','initialization.lake_outletQr','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices]);
 					    md = checkfield(md,'fieldname','initialization.lake_channelQr','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices]);
 					    md = checkfield(md,'fieldname','initialization.lake_depth','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
+						if md.hydrology.islakescaled == 1
+							md = checkfield(md,'fieldname','initialization.lake_area','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
+						end
                     end
                 end
 			end
@@ -166,6 +170,7 @@ classdef initialization
 			fielddisplay(self,'watercolumn','subglacial water sheet thickness (for Shreve and GlaDS) [m]');
 			fielddisplay(self,'elastic_sheet','elastic sheet thickness (for GlaDS with elastic sheet = 1) [m]');
 			fielddisplay(self,'hydraulic_potential','Hydraulic potential (for GlaDS) [Pa]');
+			fielddisplay(self,'lake_area','initial ice-marginal lake area (for GlaDS with scaled lakes) [m2]');
 			fielddisplay(self,'channelarea','subglacial water channel area (for GlaDS) [m2]');
 			fielddisplay(self,'sheet_discharge','subglacial water sheet discharge (for GlaDS with lakes) [m2/s]');
 			fielddisplay(self,'channel_discharge','subglacial water channel discharge (for GlaDS with lakes) [m3/s]');
@@ -198,6 +203,7 @@ classdef initialization
 			WriteData(fid,prefix,'object',self,'fieldname','epl_thickness','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'fieldname','watercolumn','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'fieldname','elastic_sheet','format','DoubleMat','mattype',1);
+			WriteData(fid,prefix,'object',self,'fieldname','lake_area','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'fieldname','channelarea','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'fieldname','hydraulic_potential','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'fieldname','sheet_discharge','format','DoubleMat','mattype',1);
@@ -259,6 +265,7 @@ classdef initialization
 			writejs1Darray(fid,[modelname '.initialization.epl_thickness'],self.epl_thickness);
 			writejs1Darray(fid,[modelname '.initialization.watercolumn'],self.watercolumn);
 			writejs1Darray(fid,[modelname '.initialization.elastic_sheet'],self.elastic_sheet);
+			writejs1Darray(fid,[modelname '.initialization.lake_area'],self.lake_area);
 			writejs1Darray(fid,[modelname '.initialization.hydraulic_potential'],self.hydraulic_potential);
 			writejs1Darray(fid,[modelname '.initialization.channel'],self.channelarea);
 			writejs1Darray(fid,[modelname '.initialization.sheet_discharge'],self.sheet_discharge);
