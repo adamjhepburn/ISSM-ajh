@@ -248,7 +248,9 @@ void hydrology_core(FemModel* femmodel){ /*{{{*/
 		if(islakes){
 			InputDuplicatex(femmodel,HydrologyLakeHeightEnum,HydrologyLakeHeightOldEnum);
 			InputDuplicatex(femmodel,HydrologyLakeChannelQrEnum,HydrologyLakeChannelQrOldEnum);
-			InputDuplicatex(femmodel,HydrologyLakeAreaEnum,HydrologyLakeAreaOldEnum);
+			if(islakescaled){
+				InputDuplicatex(femmodel,HydrologyLakeAreaEnum,HydrologyLakeAreaOldEnum);
+			}
 			
 		}
 		analysis->SetChannelCrossSectionOld(femmodel);
