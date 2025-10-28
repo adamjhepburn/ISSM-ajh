@@ -868,7 +868,7 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
     int numlakes;
     femodel->parameters->FindParam(&numlakes,HydrologyNumLakesEnum);
 
-	const IssmDouble min_lake_area = 100.0; // Minimum lake area for scaling (m^2)
+	const IssmDouble min_lake_area = 500000.0; // Minimum lake area for scaling (m^2)
 
     // Initialize arrays for all lakes, skip index 0 (no lake)
     IssmDouble* dt             = xNewZeroInit<IssmDouble>(numlakes+1);
