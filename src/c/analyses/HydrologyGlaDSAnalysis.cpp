@@ -1045,11 +1045,6 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
         Input* LakeID_input = element->GetInput(HydrologyLakeMaskEnum); _assert_(LakeID_input);
         Input* lamax_input  = element->GetInput(HydrologyMaxLakeAreaEnum);       _assert_(lamax_input);
 
-        /* Get inputs needed to reclaculate local (per outlet) Qr*/
-        Input* qrc_input = element->GetInput(HydrologyLakeChannelQrEnum);     _assert_(qrc_input);
-        Input* qs_input  = element->GetInput(HydrologySheetDischargeEnum);    _assert_(qs_input);
-        Input* phi_input = element->GetInput(HydraulicPotentialEnum);         _assert_(phi_input);
-        int le           = element->CharacteristicLength();
 
         Gauss* gauss=element->NewGauss();
         for(int iv=0;iv<numvertices;iv++){
@@ -1063,7 +1058,7 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
             if(LakeID > 0){
                 /* Use the pre-calculated values from our arrays */
                 lh_new[iv] = lake_depth[LakeID];
-                
+                Qr_out[iv] = total_qr[LakeID]; // FIXME: THIS WRITES THE TOTAL QR TO ALL LAKE VERTICES, NOT JUST THE OUTLET. NEED TO FIX THIS LATER.
                 /* Get maximum lake area */
                 IssmDouble lamax;
                 lamax_input->GetInputValue(&lamax, gauss);
@@ -1077,52 +1072,8 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
                 } else {
                     la_new[iv] = lamax;
                 }
-
-                /* Recalculate Qr_out at this outlet vertex */
-                IssmDouble qrc, qs;
-                qrc_input->GetInputValue(&qrc,gauss);
-                qs_input->GetInputValue(&qs,gauss);
-                IssmDouble connectivity = (IssmDouble)element->VertexConnectivity(iv);
+				
                 
-                IssmDouble vertex_qr = 0.0;
-                vertex_qr += qrc / connectivity;
-
-                if (qrc > 0.) vertex_qr+= qs*(le)/connectivity; 
-                else if (qrc < 0.) vertex_qr += -qs*(le)/connectivity;
-                else {
-                    /* When qrc == 0 (no channels), determine flow direction from hydraulic potential difference */
-                    IssmDouble phi_lake;
-                    phi_input->GetInputValue(&phi_lake, gauss);
-
-                    IssmDouble phi_avg = 0.0;
-                    int non_lake_count = 0;
-                    Gauss* temp_gauss = element->NewGauss();
-                    for(int jv = 0; jv < numvertices; jv++){
-                        temp_gauss->GaussVertex(jv);
-                        IssmDouble temp_lake_id;
-                        LakeID_input->GetInputValue(&temp_lake_id, temp_gauss);
-                        if((int)temp_lake_id == 0){ // Non-lake vertex (lake_id == 0)
-                            IssmDouble phi_temp;
-                            phi_input->GetInputValue(&phi_temp, temp_gauss);
-                            phi_avg +=phi_temp;
-                            non_lake_count++;
-                        }
-                    }
-                    delete temp_gauss;
-
-                    if(non_lake_count > 0){
-                        phi_avg /= non_lake_count;
-                        if(phi_avg > phi_lake){
-                            vertex_qr += -qs*(le)/connectivity; // Flow: glacier -> lake
-                        } else {
-                            vertex_qr += qs*(le)/connectivity;  // Flow: glacier <- lake
-                        }
-                    } else{
-                        vertex_qr += qs*(le)/connectivity; // Assume outflow
-
-                    }
-                }
-                Qr_out[iv] = vertex_qr;
             } else {
                 lh_new[iv] = 0.0;
                 Qr_out[iv] = 0.0;
