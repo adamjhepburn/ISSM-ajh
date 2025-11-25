@@ -102,6 +102,7 @@ classdef bert
 			 fprintf(fid,'cd %s/%s\n\n',cluster.executionpath,dirname);
 			 %fprintf(fid,'srun -n %i --export=ALL %s/issm.exe %s %s %s\n',cluster.np(),cluster.codepath,solution,[cluster.executionpath '/' dirname],modelname); 
 			 fprintf(fid,'mpirun -n $SLURM_NTASKS %s/issm.exe %s %s %s\n',cluster.codepath,solution,[cluster.executionpath '/' dirname],modelname);
+			 fprintf(fid,'sefffunction "$SLURM_JOB_ID"\n');
              if ~io_gather, %concatenate the output files:
 				 fprintf(fid,'cat %s.outbin.* > %s.outbin',modelname,modelname);
 			 end

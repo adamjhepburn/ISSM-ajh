@@ -177,8 +177,8 @@ classdef hydrologyglads
  
 		end % }}}
 		function disp(self) % {{{
-			disp(sprintf('   GlaDS (hydrologyglads) solution parameters:'));
-			disp(sprintf('      SHEET'));
+			fprintf('   GlaDS (hydrologyglads) solution parameters:\n');
+			fprintf('      SHEET\n');
 			fielddisplay(self,'pressure_melt_coefficient','Pressure melt coefficient (c_t) [K Pa^-1]');
 			fielddisplay(self,'sheet_conductivity','sheet conductivity (k) [m^(7/4) kg^(-1/2)]');
 			fielddisplay(self,'sheet_alpha','First sheet-flow exponent (alpha_s) []'); 
@@ -194,13 +194,13 @@ classdef hydrologyglads
 			fielddisplay(self,'elastic_sheet_exponent','Elastic sheet exponent (\gamma) []');
 			fielddisplay(self,'uplift_reg_rate','Uplift regularization rate (h_{\varepsilon}) [m Pa^-1]');
 			fielddisplay(self,'reg_pressure','Regularizing pressure for uplift regularisation (N_{\varepsilon}) [Pa]');
-			disp(sprintf('      CHANNELS'));
+			fprintf('      CHANNELS\n');
 			fielddisplay(self,'ischannels','Do we allow for channels? 1: yes, 0: no');
 			fielddisplay(self,'channel_conductivity','channel conductivity (k_c) [m^(3/2) kg^(-1/2)]');
 			fielddisplay(self,'channel_alpha','First channel-flow exponent (alpha_s) []'); 
 			fielddisplay(self,'channel_beta','Second channel-flow exponent (beta_s) []'); 
 			fielddisplay(self,'channel_sheet_width','channel sheet width [m]');
-			disp(sprintf('      OTHER'));
+			fprintf('      OTHER\n');
 			fielddisplay(self,'spcphi','Hydraulic potential Dirichlet constraints [Pa]');
 			fielddisplay(self,'neumannflux','water flux applied along the model boundary (m^2/s)');
 			fielddisplay(self,'moulin_input','moulin input (Q_s) [m^3/s]');
@@ -208,7 +208,7 @@ classdef hydrologyglads
 			fielddisplay(self,'requested_outputs','additional outputs requested');
 			fielddisplay(self,'melt_flag','User specified basal melt? 0: no (default), 1: use md.basalforcings.groundedice_melting_rate');
 			fielddisplay(self,'istransition','do we use standard [0, default] or transition model [1]');
-			disp(sprintf('	   ICE MARGINAL LAKES'));
+			fprintf('	   ICE MARGINAL LAKES\n');
 			fielddisplay(self,'islakes','User specified lake? 0: no (default), 1: use md.hydrology.lake_mask to identify lake outlets');
 			fielddisplay(self,'islakescaled','Do we scale lake area with lake height? 0: no (default), 1: yes');
 			fielddisplay(self,'lake_mask','lake mask (0: for no lake, 1,2,...n for n lakes)');
