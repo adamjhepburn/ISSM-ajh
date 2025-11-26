@@ -128,7 +128,7 @@ classdef bert
 				file,cluster.login,central,path);
 			 system(commandcentral,"-echo");
 			 disp('Step 2: transferring files script to central')
-			 commandbert = sprintf('ssh -A %s@%s "scp %s/%s %s@%s:%s/%s"',...
+			 commandbert = sprintf('ssh -A %s@%s "rsync -rav --progress --remove-source-files %s/%s %s@%s:%s/%s"',...
 				cluster.login, central, path,file, cluster.login,cluster.name, cluster.executionpath, file);
 			system(commandbert,"-echo");
 %

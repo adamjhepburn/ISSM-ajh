@@ -919,6 +919,7 @@
 	HydrologyHeadOldEnum
 	HydrologyLakeChannelQrEnum
 	HydrologyLakeChannelQrOldEnum
+	HydrologyLakeOutletLengthEnum
 	HydrologyLakeHeightEnum
 	HydrologyLakeHeightOldEnum
 	HydrologyLakeMaskEnum
@@ -2768,6 +2769,7 @@ function EnumToString(enum::IssmEnum)
 	if(enum==HydrologyHeadOldEnum) return "HydrologyHeadOld" end
 	if(enum==HydrologyLakeChannelQrEnum) return "HydrologyLakeChannelQr" end
 	if(enum==HydrologyLakeChannelQrOldEnum) return "HydrologyLakeChannelQrOld" end
+	if(enum==HydrologyLakeOutletLengthEnum) return "HydrologyLakeOutletLength" end
 	if(enum==HydrologyLakeHeightEnum) return "HydrologyLakeHeight" end
 	if(enum==HydrologyLakeHeightOldEnum) return "HydrologyLakeHeightOld" end
 	if(enum==HydrologyLakeMaskEnum) return "HydrologyLakeMask" end
@@ -4617,6 +4619,7 @@ function StringToEnum(name::String)
 	if(name=="HydrologyHeadOld") return HydrologyHeadOldEnum  end
 	if(name=="HydrologyLakeChannelQr") return HydrologyLakeChannelQrEnum  end
 	if(name=="HydrologyLakeChannelQrOld") return HydrologyLakeChannelQrOldEnum  end
+	if(name=="HydrologyLakeOutletLength") return HydrologyLakeOutletLengthEnum  end
 	if(name=="HydrologyLakeHeight") return HydrologyLakeHeightEnum  end
 	if(name=="HydrologyLakeHeightOld") return HydrologyLakeHeightOldEnum  end
 	if(name=="HydrologyLakeMask") return HydrologyLakeMaskEnum  end

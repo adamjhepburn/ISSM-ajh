@@ -39,14 +39,16 @@ classdef hydrologyglads
 		istransition         = 0;
 		
 		%Ice marginal lakes -> AJH
-		islakes              = 0;
-		lake_mask		     = 0;
-		num_lakes		     = 0;
-		max_lake_area	     = 0;
-		lake_Qin			 = 0;
-		islakescaled 		 = 0; 
-		lake_shape_coeff     = 0;
-		lake_shape_exp       = 0;
+		islakes              		 = 0;
+		lake_mask		     		 = 0;
+		num_lakes		     		 = 0;
+		characteristic_outlet_length = 0;
+		max_lake_area	             = 0;
+		lake_Qin			         = 0;
+		islakescaled 		         = 0; 
+		lake_shape_coeff             = 0;
+		lake_shape_exp               = 0;
+
 
 	end
 	methods
@@ -103,6 +105,7 @@ classdef hydrologyglads
 			self.islakes=false; % by default no lakes at margin
 			self.lake_mask = 0; %By default no lakes
 			self.num_lakes = 0; %By default no lakes
+			self.characteristic_outlet_length = 0; % m, characteristic outlet length scale for lake outlet boundary
 			self.max_lake_area=0; % m2 the area of any ice-marginal lakes; 
 			self.lake_Qin=0; %m3s-1, recharge rate of ice marginal lakes Kingslake and Ng 2013 use 1e-2;
 			self.elastic_sheet_flag = 0; % by default no elastic sheet
@@ -166,6 +169,7 @@ classdef hydrologyglads
 				md = checkfield(md,'fieldname','hydrology.lake_mask','Inf',1,'NaN',1,'timeseries',1);
 				md = checkfield(md,'fieldname','hydrology.max_lake_area','size',[md.mesh.numberofvertices 1],'>=',0,'NaN',1,'Inf',1);
 				md = checkfield(md,'fieldname','hydrology.lake_Qin','timeseries',1,'NaN',1,'Inf',1);
+				md = checkfield(md,'fieldname','hydrology.characteristic_outlet_length','size',[md.mesh.numberofvertices 1],'>=',0);
 				%md = checkfield(md,'fieldname','hydrology.lake_Qin','timeseries',1,'>=',0,'NaN',1,'Inf',1);
 				if self.islakescaled==1
 					md = checkfield(md,'fieldname','hydrology.lake_shape_coeff','numel',[1],'>',0);
@@ -208,11 +212,12 @@ classdef hydrologyglads
 			fielddisplay(self,'requested_outputs','additional outputs requested');
 			fielddisplay(self,'melt_flag','User specified basal melt? 0: no (default), 1: use md.basalforcings.groundedice_melting_rate');
 			fielddisplay(self,'istransition','do we use standard [0, default] or transition model [1]');
-			fprintf('	   ICE MARGINAL LAKES\n');
+			fprintf('	ICE MARGINAL LAKES\n');
 			fielddisplay(self,'islakes','User specified lake? 0: no (default), 1: use md.hydrology.lake_mask to identify lake outlets');
 			fielddisplay(self,'islakescaled','Do we scale lake area with lake height? 0: no (default), 1: yes');
 			fielddisplay(self,'lake_mask','lake mask (0: for no lake, 1,2,...n for n lakes)');
 			fielddisplay(self,'num_lakes','Number of lakes (0: no lakes, 1: one lake, ... n: n lakes)');
+			fielddisplay(self,'characteristic_outlet_length','Average element edge length at lake outlet [m]');
 			fielddisplay(self,'max_lake_area','Maximum lake area at vertex (Qr) [m^2]');
 			fielddisplay(self,'lake_Qin','Lake refill rate (Qin) [m^3/s]');
 			fielddisplay(self,'lake_shape_coeff','Lake shape coefficient [e.g., maximum lake area / (maximum lake depth)^lake shape exponent]');
@@ -261,6 +266,7 @@ classdef hydrologyglads
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','islakes','format','Boolean');
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','lake_mask','format','DoubleMat','mattype',1,'timeserieslength',md.mesh.numberofvertices+1,'yts',md.constants.yts);
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','num_lakes','format','Integer');
+			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','characteristic_outlet_length','format','Double');
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','max_lake_area','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','lake_Qin','format','DoubleMat','mattype',1,'timeserieslength',md.mesh.numberofvertices+1,'yts',md.constants.yts);
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','islakescaled','format','Boolean');

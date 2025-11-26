@@ -207,6 +207,7 @@ void HydrologyGlaDSAnalysis::UpdateElements(Elements* elements,Inputs* inputs,Io
 	iomodel->FetchDataToInput(inputs,elements,"md.hydrology.rheology_B_base",HydrologyRheologyBBaseEnum);
 	if(islakes){
 		iomodel->FetchDataToInput(inputs,elements,"md.hydrology.lake_mask",HydrologyLakeMaskEnum);
+		iomodel->FetchDataToInput(inputs,elements,"md.hydrology.characteristic_outlet_length",HydrologyLakeOutletLengthEnum);
 		iomodel->FetchDataToInput(inputs,elements,"md.hydrology.max_lake_area",HydrologyMaxLakeAreaEnum);
 		iomodel->FetchDataToInput(inputs,elements,"md.initialization.lake_channelQr",HydrologyLakeChannelQrEnum);
 		iomodel->FetchDataToInput(inputs,elements,"md.initialization.lake_outletQr",HydrologyLakeOutletQrEnum);
@@ -890,9 +891,9 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
         int numvertices = element->GetNumberOfVertices();
         IssmDouble ele_dt = element->FindParam(TimesteppingTimeStepEnum);
 		IssmDouble lc     = element->FindParam(HydrologyChannelSheetWidthEnum);
-        int le            = element->CharacteristicLength();
+        
 		
-
+		Input* le_input = element->GetInput(HydrologyLakeOutletLengthEnum); 	 _assert_(le_input);
         Input* qin_input    = element->GetInput(HydrologyLakeQinEnum);           _assert_(qin_input); 
         Input* qrc_input    = element->GetInput(HydrologyLakeChannelQrEnum);     _assert_(qrc_input);
         Input* qs_input     = element->GetInput(HydrologySheetDischargeEnum);    _assert_(qs_input);
@@ -912,7 +913,7 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
         for(int iv=0;iv<numvertices;iv++){
             gauss->GaussVertex(iv);
             
-            IssmDouble qin, qrc, qs, lamax, lh_old;
+            IssmDouble le, qin, qrc, qs, lamax, lh_old;
 
             
             /* Read LakeID safely by using an intermediate IssmDouble variable.
@@ -921,6 +922,7 @@ void HydrologyGlaDSAnalysis::UpdateLakeDepth(FemModel* femodel){/*{{{*/
             LakeID_input->GetInputValue(&lake_id_double, gauss);
             int LakeID = (int)lake_id_double;
 
+			le_input->GetInputValue(&le,gauss);
             qin_input->GetInputValue(&qin,gauss);
             qrc_input->GetInputValue(&qrc,gauss);
             qs_input->GetInputValue(&qs,gauss);

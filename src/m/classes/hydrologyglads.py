@@ -51,6 +51,7 @@ class hydrologyglads(object):
         self.islakes = 0
         self.lake_mask = 0
         self.num_lakes = 0
+        self.characteristic_outlet_length = 0.
         self.max_lake_area = 0.
         self.lake_Qin = 0.
         self.islakescaled = 0
@@ -105,6 +106,7 @@ class hydrologyglads(object):
         s += '{}\n'.format(fielddisplay(self, 'islakes', 'Do we allow for lakes? 1: yes, 0: no')) #AJH
         s += '{}\n'.format(fielddisplay(self, 'lake_mask', 'lake mask (0: for no lake, 1,2,...n for n lakes)')) #AJH
         s += '{}\n'.format(fielddisplay(self, 'num_lakes', 'Number of lakes (0 if no lakes)')) #AJH
+        s += '{}\n'.format(fielddisplay(self, 'characteristic_outlet_length', 'Characteristic outlet length [m]')) #AJH
         s += '{}\n'.format(fielddisplay(self, 'lake_Qin', 'Inflow to the lake [m$^3$ s$^{-1}$]')) #AJH
         s += '{}\n'.format(fielddisplay(self, 'max_lake_area', 'The maximum area of the lake [m$^2$]')) #AJH
         s += '{}\n'.format(fielddisplay(self, 'islakescaled', 'Do we scale lake area with lake height? 0: no (default), 1: yes')) #AJH
@@ -166,6 +168,7 @@ class hydrologyglads(object):
         self.islakes = False
         self.lake_mask = 0
         self.num_lakes = 0
+        self.characteristic_outlet_length = 0.
         self.max_lake_area = 0.
         self.lake_Qin = 0.
         self.elastic_sheet_flag = 0
@@ -216,6 +219,7 @@ class hydrologyglads(object):
         # Lakes
         if self.islakes == 1:
             md = checkfield(md,'fieldname','hydrology.lake_mask','Inf',1,'NaN',1,'timeseries',1)
+            md = checkfield(md,'fieldname','hydrology.num_lakes','size',[md.mesh.numberofvertices],'>=',0)
             md = checkfield(md,'fieldname','hydrology.max_lake_area','size',[md.mesh.numberofvertices],'>=',0,'NaN',1,'Inf',1)
             md = checkfield(md,'fieldname','hydrology.lake_Qin','timeseries',1,'>=',0,'NaN',1,'Inf',1)
             if self.islakescaled == 1:
@@ -266,6 +270,7 @@ class hydrologyglads(object):
         WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','islakes','format','Boolean')
         WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'lake_mask', 'format', 'DoubleMat', 'mattype', 1, 'timeserieslength', md.mesh.numberofvertices + 1, 'yts', md.constants.yts)
         WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'num_lakes', 'format', 'Integer')
+        WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'characteristic_outlet_length', 'format', 'Double')
         WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','max_lake_area','format','DoubleMat','mattype',1)
         WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','lake_Qin','format','DoubleMat','mattype',1,'timeserieslength',md.mesh.numberofvertices+1,'yts',md.constants.yts)
         WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'islakescaled', 'format', 'Boolean')
