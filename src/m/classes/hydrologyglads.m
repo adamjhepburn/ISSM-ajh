@@ -159,7 +159,7 @@ classdef hydrologyglads
 			md = checkfield(md,'fieldname','hydrology.islakes','numel',[1],'values',[0 1]);
 			md = checkfield(md,'fieldname','hydrology.islakescaled','numel',[1],'values',[0 1]);
 			md = checkfield(md,'fieldname','hydrology.lake_mask','size',[md.mesh.numberofvertices 1],'NaN',1,'Inf',1);
-			md = checkfield(md,'fieldname','hydrology.num_lakes','numel',[1],'values',[0 1]);
+			md = checkfield(md,'fieldname','hydrology.num_lakes','numel',[1],'>=',0,'NaN',1,'Inf',1);
 			md = checkfield(md,'fieldname','hydrology.istransition','numel',[1],'values',[0 1]);
 			md = checkfield(md,'fieldname','hydrology.creep_open_flag','numel',[1],'values',[0 1]);
 			if self.melt_flag==1 || self.melt_flag==2
@@ -266,7 +266,7 @@ classdef hydrologyglads
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','islakes','format','Boolean');
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','lake_mask','format','DoubleMat','mattype',1,'timeserieslength',md.mesh.numberofvertices+1,'yts',md.constants.yts);
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','num_lakes','format','Integer');
-			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','characteristic_outlet_length','format','Double');
+			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','characteristic_outlet_length','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','max_lake_area','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','lake_Qin','format','DoubleMat','mattype',1,'timeserieslength',md.mesh.numberofvertices+1,'yts',md.constants.yts);
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','islakescaled','format','Boolean');

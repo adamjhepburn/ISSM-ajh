@@ -142,10 +142,18 @@ classdef bert
 			 if ~isempty(restart)
 				 launchcommand=['cd ' cluster.executionpath ' && cd ' dirname ' && hostname && sbatch ' modelname '.queue '];
 			 else
-				 launchcommand=['cd ' cluster.executionpath ' && rm -rf ./' dirname ' && mkdir ' dirname ...
-					 ' && cd ' dirname ' && mv ../' dirname '.tar.gz ./ && tar -zxf ' dirname '.tar.gz  && hostname && sbatch ' modelname '.queue '];
-			 end
-			 issmssh(cluster.name,cluster.login,cluster.port,launchcommand);
+				 %launchcommand=['cd ' cluster.executionpath ' && rm -rf ./' dirname %' && mkdir ' dirname ...
+				 %	 ' && cd ' dirname ' && mv ../' dirname '.tar.gz ./ && tar -zxf ' %dirname '.tar.gz  && hostname && sbatch ' modelname '.queue '];
+				 launchcommand = sprintf( ...
+					'ssh -A %s@central.aber.ac.uk "ssh -A %s@%s ''cd %s && rm -rf ./%s && mkdir %s && cd %s && mv ../%s.tar.gz ./ && tar -zxf %s.tar.gz && hostname && sbatch %s.queue''"', ...
+					cluster.login, cluster.login, cluster.name, ...
+					cluster.executionpath, dirname, dirname, dirname, ...
+					dirname, dirname, modelname);
+				
+			end
+			%disp(launchcommand)
+			system(launchcommand,"-echo");
+			 %issmssh(cluster.name,cluster.login,cluster.port,launchcommand);
 		 end %}}}
 		 function Download(cluster,dirname,filelist)% {{{
 
