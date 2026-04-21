@@ -8,8 +8,10 @@
 #include "../shared/shared.h"
 #include "../modules/modules.h"
 #define AEPS        2.2204460492503131E-015
+#define h_reltol      1e-3
+#define h_abstol      1e-1
 /*local routine to check qr/lh convergence:{{{*/
-bool lakelhconvergence(Vector<IssmDouble>* lh_new,Vector<IssmDouble>* lh_old, IssmDouble eps_res);
+bool lakelhconvergence(Vector<IssmDouble>* lh_new,Vector<IssmDouble>* lh_old);
 /*}}}*/
 
 /*main routine:{{{*/
@@ -114,7 +116,7 @@ void solutionsequence_glads_nonlinear(FemModel* femmodel){
 			/*initialise lh*/
 			Vector<IssmDouble>* lh_new = NULL;
 			GetVectorFromInputsx(&lh_new,femmodel,HydrologyLakeHeightEnum,VertexSIdEnum);
-				if(!lakelhconvergence(lh_new, lh_old, eps_res)){
+				if(!lakelhconvergence(lh_new, lh_old)){
 					converged_out = false;
 				}
 			/* Update lh_old to lh_new for next iteration */
@@ -143,27 +145,37 @@ void solutionsequence_glads_nonlinear(FemModel* femmodel){
 }/*}}}*/
 
 
-bool lakelhconvergence(Vector<IssmDouble>* lh_new, Vector<IssmDouble>* lh_old, IssmDouble eps_res){/*}}}*/
-    bool converged = true;
-	// Calculate the norm of the difference between lh and lh_old
-	IssmDouble nlh = lh_new->Norm(NORM_TWO)+AEPS;
-	IssmDouble nlh_old = lh_old->Norm(NORM_TWO)+AEPS;
-	IssmDouble lh_diff_norm = fabs((nlh-nlh_old)/nlh_old);
+/*bool lakelhconvergence(Vector<IssmDouble>* lh_new, Vector<IssmDouble>* lh_old, IssmDouble eps_res, IssmDouble eps_abs){*/
+bool lakelhconvergence(Vector<IssmDouble>* lh_new, Vector<IssmDouble>* lh_old){
+	// compute difference
+	Vector<IssmDouble>* diff = lh_new->Duplicate();
+	lh_new->Copy(diff);
+	diff->AXPY(lh_old, -1.0);
+	// compute norms
+	IssmDouble diff_inf = diff->Norm(NORM_INF);   // max pointwise change
+    IssmDouble nlh      = lh_new->Norm(NORM_TWO); // for optional relative scaling
 
-    if (!xIsNan<IssmDouble>(eps_res)) {
+    bool converged = false;
 
-        if (lh_diff_norm < eps_res) {
-            if (VerboseConvergence()) _printf0_(setw(50) << left << "              convergence criterion met: lh/lh_old " << lh_diff_norm * 100 << " < " << eps_res * 100 << " %\n");
-        } else {
-            if (VerboseConvergence()) _printf0_(setw(50) << left << "              convergence criterion exceeded: lh/lh_old " << lh_diff_norm * 100 << " > " << eps_res * 100 << " %\n");
-             converged = false;
-        }
-	}
-	
-	if(nlh < 1e-10 && nlh_old < 1e-10){
-		converged = true;
-	}
-	
-	/*assign output*/
-	return converged;
-} /*}}}*/
+    if(!xIsNan<IssmDouble>(h_abstol)){
+        // Absolute criterion: max change anywhere is small
+        converged = (diff_inf < h_abstol);
+    }
+
+    if(!converged && !xIsNan<IssmDouble>(h_reltol)){
+        // Relative criterion (scaled by overall magnitude)
+        IssmDouble rel = diff_inf / (nlh + AEPS);
+        converged = (rel < h_reltol);
+    }
+
+    _printf0_(setw(50) << left
+        << "              max abs lh diff: " << diff_inf << " m (tol: " << h_abstol << " m)"
+        << "  rel lh diff: " << diff_inf / (nlh + AEPS) * 100 << " % (tol: " << h_reltol * 100 << " %)\n");
+
+    // Edge case: both essentially zero
+    if(nlh < 1e-10 && lh_old->Norm(NORM_TWO) < 1e-10) converged = true;
+
+    delete diff;
+    return converged;
+
+}
