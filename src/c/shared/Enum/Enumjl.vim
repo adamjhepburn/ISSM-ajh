@@ -988,6 +988,8 @@ syn keyword juliaConstC HydrologyGapHeightYEnum
 syn keyword juliaConstC HydrologyGapHeightYYEnum
 syn keyword juliaConstC HydrologyHeadEnum
 syn keyword juliaConstC HydrologyHeadOldEnum
+syn keyword juliaConstC HydrologyMeanCavityHeightEnum
+syn keyword juliaConstC HydrologyMeanCavityHeightOldEnum
 syn keyword juliaConstC HydrologyMeltRateEnum
 syn keyword juliaConstC HydrologyMoulinInputEnum
 syn keyword juliaConstC HydrologyNeumannfluxEnum
@@ -996,8 +998,12 @@ syn keyword juliaConstC HydrologyReynoldsEnum
 syn keyword juliaConstC HydrologyRheologyBBaseEnum
 syn keyword juliaConstC HydrologySheetConductivityEnum
 syn keyword juliaConstC HydrologySheetDischargeEnum
+syn keyword juliaConstC HydrologySheetHeightEnum
+syn keyword juliaConstC HydrologySheetHeightOldEnum
 syn keyword juliaConstC HydrologySheetThicknessEnum
 syn keyword juliaConstC HydrologySheetThicknessOldEnum
+syn keyword juliaConstC HydrologyFlowingSheetThicknessEnum
+syn keyword juliaConstC HydrologyFlowingSheetThicknessOldEnum
 syn keyword juliaConstC HydrologyStorageEnum
 syn keyword juliaConstC HydrologyTwsEnum
 syn keyword juliaConstC HydrologyTwsSpcEnum
@@ -1005,6 +1011,8 @@ syn keyword juliaConstC HydrologyTwsAnalysisEnum
 syn keyword juliaConstC HydrologyWatercolumnMaxEnum
 syn keyword juliaConstC HydrologyWaterVxEnum
 syn keyword juliaConstC HydrologyWaterVyEnum
+syn keyword juliaConstC HydrologyWaterPressureEnum
+syn keyword juliaConstC HydrologyWaterPressureOldEnum
 syn keyword juliaConstC HydrologyMaskNodeActivationEnum
 syn keyword juliaConstC DebrisMaskNodeActivationEnum
 syn keyword juliaConstC IceEnum
@@ -3587,6 +3595,8 @@ syn keyword juliaConstC HydrologyArmapwAnalysisEnum
 syn keyword juliaConstC HydrologyarmapwEnum
 syn keyword juliaConstC HydrologyDCEfficientAnalysisEnum
 syn keyword juliaConstC HydrologyDCInefficientAnalysisEnum
+syn keyword juliaConstC HydrologyGlaDS2AnalysisEnum
+syn keyword juliaConstC HydrologyGlaDS2Enum
 syn keyword juliaConstC HydrologyGlaDSAnalysisEnum
 syn keyword juliaConstC HydrologyGlaDSEnum
 syn keyword juliaConstC HydrologyPismAnalysisEnum

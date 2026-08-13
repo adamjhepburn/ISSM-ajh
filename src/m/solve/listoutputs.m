@@ -218,6 +218,8 @@
 %HydrologyGapHeightYY
 %HydrologyHead
 %HydrologyHeadOld
+%HydrologyMeanCavityHeight
+%HydrologyMeanCavityHeightOld
 %HydrologyMeltRate
 %HydrologyMoulinInput
 %HydrologyNeumannflux
@@ -226,8 +228,12 @@
 %HydrologyRheologyBBase
 %HydrologySheetConductivity
 %HydrologySheetDischarge
+%HydrologySheetHeight
+%HydrologySheetHeightOld
 %HydrologySheetThickness
 %HydrologySheetThicknessOld
+%HydrologyFlowingSheetThickness
+%HydrologyFlowingSheetThicknessOld
 %HydrologyStorage
 %HydrologyTws
 %HydrologyTwsSpc
@@ -235,6 +241,8 @@
 %HydrologyWatercolumnMax
 %HydrologyWaterVx
 %HydrologyWaterVy
+%HydrologyWaterPressure
+%HydrologyWaterPressureOld
 %HydrologyMaskNodeActivation
 %DebrisMaskNodeActivation
 %Ice

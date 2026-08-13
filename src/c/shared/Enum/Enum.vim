@@ -995,6 +995,8 @@ syn keyword cConstant HydrologyGapHeightYEnum
 syn keyword cConstant HydrologyGapHeightYYEnum
 syn keyword cConstant HydrologyHeadEnum
 syn keyword cConstant HydrologyHeadOldEnum
+syn keyword cConstant HydrologyMeanCavityHeightEnum
+syn keyword cConstant HydrologyMeanCavityHeightOldEnum
 syn keyword cConstant HydrologyMeltRateEnum
 syn keyword cConstant HydrologyMoulinInputEnum
 syn keyword cConstant HydrologyNeumannfluxEnum
@@ -1003,8 +1005,12 @@ syn keyword cConstant HydrologyReynoldsEnum
 syn keyword cConstant HydrologyRheologyBBaseEnum
 syn keyword cConstant HydrologySheetConductivityEnum
 syn keyword cConstant HydrologySheetDischargeEnum
+syn keyword cConstant HydrologySheetHeightEnum
+syn keyword cConstant HydrologySheetHeightOldEnum
 syn keyword cConstant HydrologySheetThicknessEnum
 syn keyword cConstant HydrologySheetThicknessOldEnum
+syn keyword cConstant HydrologyFlowingSheetThicknessEnum
+syn keyword cConstant HydrologyFlowingSheetThicknessOldEnum
 syn keyword cConstant HydrologyStorageEnum
 syn keyword cConstant HydrologyTwsEnum
 syn keyword cConstant HydrologyTwsSpcEnum
@@ -1012,6 +1018,8 @@ syn keyword cConstant HydrologyTwsAnalysisEnum
 syn keyword cConstant HydrologyWatercolumnMaxEnum
 syn keyword cConstant HydrologyWaterVxEnum
 syn keyword cConstant HydrologyWaterVyEnum
+syn keyword cConstant HydrologyWaterPressureEnum
+syn keyword cConstant HydrologyWaterPressureOldEnum
 syn keyword cConstant HydrologyMaskNodeActivationEnum
 syn keyword cConstant DebrisMaskNodeActivationEnum
 syn keyword cConstant IceEnum
@@ -3594,6 +3602,8 @@ syn keyword cConstant HydrologyArmapwAnalysisEnum
 syn keyword cConstant HydrologyarmapwEnum
 syn keyword cConstant HydrologyDCEfficientAnalysisEnum
 syn keyword cConstant HydrologyDCInefficientAnalysisEnum
+syn keyword cConstant HydrologyGlaDS2AnalysisEnum
+syn keyword cConstant HydrologyGlaDS2Enum
 syn keyword cConstant HydrologyGlaDSAnalysisEnum
 syn keyword cConstant HydrologyGlaDSEnum
 syn keyword cConstant HydrologyPismAnalysisEnum
@@ -3969,7 +3979,6 @@ syn keyword cType Observation
 syn keyword cType Observations
 syn keyword cType Option
 syn keyword cType Options
-syn keyword cType OptionUtilities
 syn keyword cType Param
 syn keyword cType Parameters
 syn keyword cType Pengrid
@@ -4034,6 +4043,7 @@ syn keyword cType GLheightadvectionAnalysis
 syn keyword cType HydrologyArmapwAnalysis
 syn keyword cType HydrologyDCEfficientAnalysis
 syn keyword cType HydrologyDCInefficientAnalysis
+syn keyword cType HydrologyGlaDS2Analysis
 syn keyword cType HydrologyGlaDSAnalysis
 syn keyword cType HydrologyPismAnalysis
 syn keyword cType HydrologyPrescribeAnalysis

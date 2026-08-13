@@ -984,6 +984,8 @@
 	HydrologyGapHeightYYEnum
 	HydrologyHeadEnum
 	HydrologyHeadOldEnum
+	HydrologyMeanCavityHeightEnum
+	HydrologyMeanCavityHeightOldEnum
 	HydrologyMeltRateEnum
 	HydrologyMoulinInputEnum
 	HydrologyNeumannfluxEnum
@@ -992,8 +994,12 @@
 	HydrologyRheologyBBaseEnum
 	HydrologySheetConductivityEnum
 	HydrologySheetDischargeEnum
+	HydrologySheetHeightEnum
+	HydrologySheetHeightOldEnum
 	HydrologySheetThicknessEnum
 	HydrologySheetThicknessOldEnum
+	HydrologyFlowingSheetThicknessEnum
+	HydrologyFlowingSheetThicknessOldEnum
 	HydrologyStorageEnum
 	HydrologyTwsEnum
 	HydrologyTwsSpcEnum
@@ -1001,6 +1007,8 @@
 	HydrologyWatercolumnMaxEnum
 	HydrologyWaterVxEnum
 	HydrologyWaterVyEnum
+	HydrologyWaterPressureEnum
+	HydrologyWaterPressureOldEnum
 	HydrologyMaskNodeActivationEnum
 	DebrisMaskNodeActivationEnum
 	IceEnum
@@ -3583,6 +3591,8 @@
 	HydrologyarmapwEnum
 	HydrologyDCEfficientAnalysisEnum
 	HydrologyDCInefficientAnalysisEnum
+	HydrologyGlaDS2AnalysisEnum
+	HydrologyGlaDS2Enum
 	HydrologyGlaDSAnalysisEnum
 	HydrologyGlaDSEnum
 	HydrologyPismAnalysisEnum
@@ -4846,6 +4856,8 @@ function EnumToString(enum::IssmEnum)
 	if(enum==HydrologyGapHeightYYEnum) return "HydrologyGapHeightYY" end
 	if(enum==HydrologyHeadEnum) return "HydrologyHead" end
 	if(enum==HydrologyHeadOldEnum) return "HydrologyHeadOld" end
+	if(enum==HydrologyMeanCavityHeightEnum) return "HydrologyMeanCavityHeight" end
+	if(enum==HydrologyMeanCavityHeightOldEnum) return "HydrologyMeanCavityHeightOld" end
 	if(enum==HydrologyMeltRateEnum) return "HydrologyMeltRate" end
 	if(enum==HydrologyMoulinInputEnum) return "HydrologyMoulinInput" end
 	if(enum==HydrologyNeumannfluxEnum) return "HydrologyNeumannflux" end
@@ -4854,8 +4866,12 @@ function EnumToString(enum::IssmEnum)
 	if(enum==HydrologyRheologyBBaseEnum) return "HydrologyRheologyBBase" end
 	if(enum==HydrologySheetConductivityEnum) return "HydrologySheetConductivity" end
 	if(enum==HydrologySheetDischargeEnum) return "HydrologySheetDischarge" end
+	if(enum==HydrologySheetHeightEnum) return "HydrologySheetHeight" end
+	if(enum==HydrologySheetHeightOldEnum) return "HydrologySheetHeightOld" end
 	if(enum==HydrologySheetThicknessEnum) return "HydrologySheetThickness" end
 	if(enum==HydrologySheetThicknessOldEnum) return "HydrologySheetThicknessOld" end
+	if(enum==HydrologyFlowingSheetThicknessEnum) return "HydrologyFlowingSheetThickness" end
+	if(enum==HydrologyFlowingSheetThicknessOldEnum) return "HydrologyFlowingSheetThicknessOld" end
 	if(enum==HydrologyStorageEnum) return "HydrologyStorage" end
 	if(enum==HydrologyTwsEnum) return "HydrologyTws" end
 	if(enum==HydrologyTwsSpcEnum) return "HydrologyTwsSpc" end
@@ -4863,6 +4879,8 @@ function EnumToString(enum::IssmEnum)
 	if(enum==HydrologyWatercolumnMaxEnum) return "HydrologyWatercolumnMax" end
 	if(enum==HydrologyWaterVxEnum) return "HydrologyWaterVx" end
 	if(enum==HydrologyWaterVyEnum) return "HydrologyWaterVy" end
+	if(enum==HydrologyWaterPressureEnum) return "HydrologyWaterPressure" end
+	if(enum==HydrologyWaterPressureOldEnum) return "HydrologyWaterPressureOld" end
 	if(enum==HydrologyMaskNodeActivationEnum) return "HydrologyMaskNodeActivation" end
 	if(enum==DebrisMaskNodeActivationEnum) return "DebrisMaskNodeActivation" end
 	if(enum==IceEnum) return "Ice" end
@@ -7445,6 +7463,8 @@ function EnumToString(enum::IssmEnum)
 	if(enum==HydrologyarmapwEnum) return "Hydrologyarmapw" end
 	if(enum==HydrologyDCEfficientAnalysisEnum) return "HydrologyDCEfficientAnalysis" end
 	if(enum==HydrologyDCInefficientAnalysisEnum) return "HydrologyDCInefficientAnalysis" end
+	if(enum==HydrologyGlaDS2AnalysisEnum) return "HydrologyGlaDS2Analysis" end
+	if(enum==HydrologyGlaDS2Enum) return "HydrologyGlaDS2" end
 	if(enum==HydrologyGlaDSAnalysisEnum) return "HydrologyGlaDSAnalysis" end
 	if(enum==HydrologyGlaDSEnum) return "HydrologyGlaDS" end
 	if(enum==HydrologyPismAnalysisEnum) return "HydrologyPismAnalysis" end
@@ -7723,7 +7743,7 @@ function EnumToString(enum::IssmEnum)
 	if(enum==SubelementMigration4Enum) return "SubelementMigration4" end
 	if(enum==TimesteppingTimeAdaptEnum) return "TimesteppingTimeAdapt" end
 	if(enum==TriangleInterpEnum) return "TriangleInterp" end
-	if(enum==MaximumNumberOfDefinitionsEnum) return "MaximumNumberOfDefinitionsE" end
+	if(enum==MaximumNumberOfDefinitionsEnum) return "MaximumNumberOfDefinitions" end
 end
 
 function StringToEnum(name::String)
@@ -8708,6 +8728,8 @@ function StringToEnum(name::String)
 	if(name=="HydrologyGapHeightYY") return HydrologyGapHeightYYEnum  end
 	if(name=="HydrologyHead") return HydrologyHeadEnum  end
 	if(name=="HydrologyHeadOld") return HydrologyHeadOldEnum  end
+	if(name=="HydrologyMeanCavityHeight") return HydrologyMeanCavityHeightEnum  end
+	if(name=="HydrologyMeanCavityHeightOld") return HydrologyMeanCavityHeightOldEnum  end
 	if(name=="HydrologyMeltRate") return HydrologyMeltRateEnum  end
 	if(name=="HydrologyMoulinInput") return HydrologyMoulinInputEnum  end
 	if(name=="HydrologyNeumannflux") return HydrologyNeumannfluxEnum  end
@@ -8716,8 +8738,12 @@ function StringToEnum(name::String)
 	if(name=="HydrologyRheologyBBase") return HydrologyRheologyBBaseEnum  end
 	if(name=="HydrologySheetConductivity") return HydrologySheetConductivityEnum  end
 	if(name=="HydrologySheetDischarge") return HydrologySheetDischargeEnum  end
+	if(name=="HydrologySheetHeight") return HydrologySheetHeightEnum  end
+	if(name=="HydrologySheetHeightOld") return HydrologySheetHeightOldEnum  end
 	if(name=="HydrologySheetThickness") return HydrologySheetThicknessEnum  end
 	if(name=="HydrologySheetThicknessOld") return HydrologySheetThicknessOldEnum  end
+	if(name=="HydrologyFlowingSheetThickness") return HydrologyFlowingSheetThicknessEnum  end
+	if(name=="HydrologyFlowingSheetThicknessOld") return HydrologyFlowingSheetThicknessOldEnum  end
 	if(name=="HydrologyStorage") return HydrologyStorageEnum  end
 	if(name=="HydrologyTws") return HydrologyTwsEnum  end
 	if(name=="HydrologyTwsSpc") return HydrologyTwsSpcEnum  end
@@ -8725,6 +8751,8 @@ function StringToEnum(name::String)
 	if(name=="HydrologyWatercolumnMax") return HydrologyWatercolumnMaxEnum  end
 	if(name=="HydrologyWaterVx") return HydrologyWaterVxEnum  end
 	if(name=="HydrologyWaterVy") return HydrologyWaterVyEnum  end
+	if(name=="HydrologyWaterPressure") return HydrologyWaterPressureEnum  end
+	if(name=="HydrologyWaterPressureOld") return HydrologyWaterPressureOldEnum  end
 	if(name=="HydrologyMaskNodeActivation") return HydrologyMaskNodeActivationEnum  end
 	if(name=="DebrisMaskNodeActivation") return DebrisMaskNodeActivationEnum  end
 	if(name=="Ice") return IceEnum  end
@@ -11307,6 +11335,8 @@ function StringToEnum(name::String)
 	if(name=="Hydrologyarmapw") return HydrologyarmapwEnum  end
 	if(name=="HydrologyDCEfficientAnalysis") return HydrologyDCEfficientAnalysisEnum  end
 	if(name=="HydrologyDCInefficientAnalysis") return HydrologyDCInefficientAnalysisEnum  end
+	if(name=="HydrologyGlaDS2Analysis") return HydrologyGlaDS2AnalysisEnum  end
+	if(name=="HydrologyGlaDS2") return HydrologyGlaDS2Enum  end
 	if(name=="HydrologyGlaDSAnalysis") return HydrologyGlaDSAnalysisEnum  end
 	if(name=="HydrologyGlaDS") return HydrologyGlaDSEnum  end
 	if(name=="HydrologyPismAnalysis") return HydrologyPismAnalysisEnum  end
@@ -11585,6 +11615,6 @@ function StringToEnum(name::String)
 	if(name=="SubelementMigration4") return SubelementMigration4Enum  end
 	if(name=="TimesteppingTimeAdapt") return TimesteppingTimeAdaptEnum  end
 	if(name=="TriangleInterp") return TriangleInterpEnum  end
-	if(name=="MaximumNumberOfDefinitionsE") return MaximumNumberOfDefinitionsEnum  end
+	if(name=="MaximumNumberOfDefinitions") return MaximumNumberOfDefinitionsEnum  end
 	error("Enum ", name, " not found");
 end
