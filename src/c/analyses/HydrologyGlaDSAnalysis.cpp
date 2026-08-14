@@ -781,7 +781,7 @@ void HydrologyGlaDSAnalysis::UpdateEffectivePressure(Element* element){/*{{{*/
 	bool isincludesheetthickness;
 	element->FindParam(&isincludesheetthickness,HydrologyIsIncludeSheetThicknessEnum);
 	Input *h_input       = element->GetInput(HydrologySheetThicknessEnum);    _assert_(h_input);
-   IssmDouble* N = xNew<IssmDouble>(numnodes);
+   	IssmDouble* N = xNew<IssmDouble>(numnodes);
 	IssmDouble  rho_ice   = element->FindParam(MaterialsRhoIceEnum);
 	IssmDouble  rho_water = element->FindParam(MaterialsRhoFreshwaterEnum);
 	IssmDouble  g         = element->FindParam(ConstantsGEnum);

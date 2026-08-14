@@ -249,6 +249,26 @@ void hydrology_core(FemModel* femmodel){ /*{{{*/
 		delete analysis;
 	}
 
+	/*Using the GlaDS-2 model*/
+	else if (hydrology_model==HydrologyGlaDS2Enum){
+		HydrologyGlaDS2Analysis* analysis = new HydrologyGlaDS2Analysis();
+		femmodel->SetCurrentConfiguration(HydrologyGlaDS2AnalysisEnum);
+
+		/*Set fields as old*/
+		InputDuplicatex(femmodel,HydrologySheetWaterHeightEnum,HydrologySheetWaterHeightOldEnum);
+		InputDuplicatex(femmodel,HydrologyMeanCavityHeightEnum,HydrologyMeanCavityHeightOldEnum);
+		
+		if(VerboseSolution()) _printf0_("   updating sheet thickness\n");
+
+		/*Solve for new sheet thickness*/
+		solutionsequence_glads2_nonlinear(femmodel);
+
+		if(VerboseSolution()) _printf0_("   updating mean cavity height\n");
+		analysis->UpdateMeanCavityHeight(femmodel);
+		/*Note, in UpdateMeanCavityHeight use the new sheet thickness but the old mean cavity height*/
+		delete analysis;
+	}
+
 	/*Using the PISM hydrology model*/
 	else if (hydrology_model==HydrologypismEnum){
 		femmodel->SetCurrentConfiguration(HydrologyPismAnalysisEnum);
