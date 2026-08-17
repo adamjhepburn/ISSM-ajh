@@ -1002,8 +1002,8 @@ syn keyword juliaConstC HydrologySheetHeightEnum
 syn keyword juliaConstC HydrologySheetHeightOldEnum
 syn keyword juliaConstC HydrologySheetThicknessEnum
 syn keyword juliaConstC HydrologySheetThicknessOldEnum
-syn keyword juliaConstC HydrologyFlowingSheetThicknessEnum
-syn keyword juliaConstC HydrologyFlowingSheetThicknessOldEnum
+syn keyword juliaConstC HydrologyFlowingSheetHeightEnum
+syn keyword juliaConstC HydrologyFlowingSheetHeightOldEnum
 syn keyword juliaConstC HydrologyStorageEnum
 syn keyword juliaConstC HydrologyTwsEnum
 syn keyword juliaConstC HydrologyTwsSpcEnum
@@ -3595,10 +3595,10 @@ syn keyword juliaConstC HydrologyArmapwAnalysisEnum
 syn keyword juliaConstC HydrologyarmapwEnum
 syn keyword juliaConstC HydrologyDCEfficientAnalysisEnum
 syn keyword juliaConstC HydrologyDCInefficientAnalysisEnum
-syn keyword juliaConstC HydrologyGlaDS2AnalysisEnum
-syn keyword juliaConstC HydrologyGlaDS2Enum
 syn keyword juliaConstC HydrologyGlaDSAnalysisEnum
 syn keyword juliaConstC HydrologyGlaDSEnum
+syn keyword juliaConstC HydrologyGlaDS2AnalysisEnum
+syn keyword juliaConstC HydrologyGlaDS2Enum
 syn keyword juliaConstC HydrologyPismAnalysisEnum
 syn keyword juliaConstC HydrologyShaktiAnalysisEnum
 syn keyword juliaConstC HydrologyShreveAnalysisEnum

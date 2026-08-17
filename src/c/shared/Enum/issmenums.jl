@@ -998,8 +998,8 @@
 	HydrologySheetHeightOldEnum
 	HydrologySheetThicknessEnum
 	HydrologySheetThicknessOldEnum
-	HydrologyFlowingSheetThicknessEnum
-	HydrologyFlowingSheetThicknessOldEnum
+	HydrologyFlowingSheetHeightEnum
+	HydrologyFlowingSheetHeightOldEnum
 	HydrologyStorageEnum
 	HydrologyTwsEnum
 	HydrologyTwsSpcEnum
@@ -3591,10 +3591,10 @@
 	HydrologyarmapwEnum
 	HydrologyDCEfficientAnalysisEnum
 	HydrologyDCInefficientAnalysisEnum
-	HydrologyGlaDS2AnalysisEnum
-	HydrologyGlaDS2Enum
 	HydrologyGlaDSAnalysisEnum
 	HydrologyGlaDSEnum
+	HydrologyGlaDS2AnalysisEnum
+	HydrologyGlaDS2Enum
 	HydrologyPismAnalysisEnum
 	HydrologyShaktiAnalysisEnum
 	HydrologyShreveAnalysisEnum
@@ -4870,8 +4870,8 @@ function EnumToString(enum::IssmEnum)
 	if(enum==HydrologySheetHeightOldEnum) return "HydrologySheetHeightOld" end
 	if(enum==HydrologySheetThicknessEnum) return "HydrologySheetThickness" end
 	if(enum==HydrologySheetThicknessOldEnum) return "HydrologySheetThicknessOld" end
-	if(enum==HydrologyFlowingSheetThicknessEnum) return "HydrologyFlowingSheetThickness" end
-	if(enum==HydrologyFlowingSheetThicknessOldEnum) return "HydrologyFlowingSheetThicknessOld" end
+	if(enum==HydrologyFlowingSheetHeightEnum) return "HydrologyFlowingSheetHeight" end
+	if(enum==HydrologyFlowingSheetHeightOldEnum) return "HydrologyFlowingSheetHeightOld" end
 	if(enum==HydrologyStorageEnum) return "HydrologyStorage" end
 	if(enum==HydrologyTwsEnum) return "HydrologyTws" end
 	if(enum==HydrologyTwsSpcEnum) return "HydrologyTwsSpc" end
@@ -7463,10 +7463,10 @@ function EnumToString(enum::IssmEnum)
 	if(enum==HydrologyarmapwEnum) return "Hydrologyarmapw" end
 	if(enum==HydrologyDCEfficientAnalysisEnum) return "HydrologyDCEfficientAnalysis" end
 	if(enum==HydrologyDCInefficientAnalysisEnum) return "HydrologyDCInefficientAnalysis" end
-	if(enum==HydrologyGlaDS2AnalysisEnum) return "HydrologyGlaDS2Analysis" end
-	if(enum==HydrologyGlaDS2Enum) return "HydrologyGlaDS2" end
 	if(enum==HydrologyGlaDSAnalysisEnum) return "HydrologyGlaDSAnalysis" end
 	if(enum==HydrologyGlaDSEnum) return "HydrologyGlaDS" end
+	if(enum==HydrologyGlaDS2AnalysisEnum) return "HydrologyGlaDS2Analysis" end
+	if(enum==HydrologyGlaDS2Enum) return "HydrologyGlaDS2" end
 	if(enum==HydrologyPismAnalysisEnum) return "HydrologyPismAnalysis" end
 	if(enum==HydrologyShaktiAnalysisEnum) return "HydrologyShaktiAnalysis" end
 	if(enum==HydrologyShreveAnalysisEnum) return "HydrologyShreveAnalysis" end
@@ -8742,8 +8742,8 @@ function StringToEnum(name::String)
 	if(name=="HydrologySheetHeightOld") return HydrologySheetHeightOldEnum  end
 	if(name=="HydrologySheetThickness") return HydrologySheetThicknessEnum  end
 	if(name=="HydrologySheetThicknessOld") return HydrologySheetThicknessOldEnum  end
-	if(name=="HydrologyFlowingSheetThickness") return HydrologyFlowingSheetThicknessEnum  end
-	if(name=="HydrologyFlowingSheetThicknessOld") return HydrologyFlowingSheetThicknessOldEnum  end
+	if(name=="HydrologyFlowingSheetHeight") return HydrologyFlowingSheetHeightEnum  end
+	if(name=="HydrologyFlowingSheetHeightOld") return HydrologyFlowingSheetHeightOldEnum  end
 	if(name=="HydrologyStorage") return HydrologyStorageEnum  end
 	if(name=="HydrologyTws") return HydrologyTwsEnum  end
 	if(name=="HydrologyTwsSpc") return HydrologyTwsSpcEnum  end
@@ -11335,10 +11335,10 @@ function StringToEnum(name::String)
 	if(name=="Hydrologyarmapw") return HydrologyarmapwEnum  end
 	if(name=="HydrologyDCEfficientAnalysis") return HydrologyDCEfficientAnalysisEnum  end
 	if(name=="HydrologyDCInefficientAnalysis") return HydrologyDCInefficientAnalysisEnum  end
-	if(name=="HydrologyGlaDS2Analysis") return HydrologyGlaDS2AnalysisEnum  end
-	if(name=="HydrologyGlaDS2") return HydrologyGlaDS2Enum  end
 	if(name=="HydrologyGlaDSAnalysis") return HydrologyGlaDSAnalysisEnum  end
 	if(name=="HydrologyGlaDS") return HydrologyGlaDSEnum  end
+	if(name=="HydrologyGlaDS2Analysis") return HydrologyGlaDS2AnalysisEnum  end
+	if(name=="HydrologyGlaDS2") return HydrologyGlaDS2Enum  end
 	if(name=="HydrologyPismAnalysis") return HydrologyPismAnalysisEnum  end
 	if(name=="HydrologyShaktiAnalysis") return HydrologyShaktiAnalysisEnum  end
 	if(name=="HydrologyShreveAnalysis") return HydrologyShreveAnalysisEnum  end

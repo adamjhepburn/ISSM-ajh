@@ -486,6 +486,9 @@ endif
 if HYDROLOGYGLADS
 issm_sources += ./analyses/HydrologyGlaDSAnalysis.cpp
 endif
+if HYDROLOGYGLADS2
+issm_sources += ./analyses/HydrologyGlaDS2Analysis.cpp
+endif
 if HYDROLOGYDCINEFFICIENT
 issm_sources += ./analyses/HydrologyDCInefficientAnalysis.cpp
 endif

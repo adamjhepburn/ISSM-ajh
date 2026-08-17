@@ -351,7 +351,7 @@ ElementVector* HydrologyGlaDS2Analysis::CreatePVector(Element* element){/*{{{*/
 }/*}}}*/
 void           HydrologyGlaDS2Analysis::GetSolutionFromInputs(Vector<IssmDouble>* solution,Element* element){/*{{{*/
 
-	element->GetSolutionFromInputsOneDof(solution,HydrologySheetWaterHeightEnum);
+	element->GetSolutionFromInputsOneDof(solution,HydrologySheetHeightEnum);
 
     /*Compute hydrology vx and vy for timestepping purposes, store sheet discharge for mean cavity height eq.*/
 
@@ -408,7 +408,7 @@ void           HydrologyGlaDS2Analysis::GetSolutionFromInputs(Vector<IssmDouble>
 		/*Get input values at gauss points*/
       phi_input->GetInputDerivativeValue(&dphi[0],xyz_list,gauss);
       phi_input->GetInputValue(&phi,gauss);
-      h_input->GetInputValue(&h,gauss);
+      hw_input->GetInputValue(&hw,gauss);
       hr_input->GetInputValue(&h_r,gauss); 
       k_input->GetInputValue(&k,gauss);
 		oceanLS_input->GetInputValue(&oceanLS,gauss);
@@ -423,10 +423,10 @@ void           HydrologyGlaDS2Analysis::GetSolutionFromInputs(Vector<IssmDouble>
 		else{
 
          /*Get norm of gradient of hydraulic potential and make sure it is >0*/
-         IssmDouble normgradphi = sqrt(dphi[0]*dphi[0] + dphi[1]*dphi[1]);
-         if(normgradphi < DBL_EPSILON) normgradphi = DBL_EPSILON;
+            IssmDouble normgradphi = sqrt(dphi[0]*dphi[0] + dphi[1]*dphi[1]);
+            if(normgradphi < DBL_EPSILON) normgradphi = DBL_EPSILON;
 
-         IssmDouble coeff;
+            IssmDouble coeff;
          /*If omega is zero, use standard model, otherwise transition model*/
          /*IssmDouble nu = mu_water/rho_water;
 			IssmDouble coeff;
@@ -438,13 +438,15 @@ void           HydrologyGlaDS2Analysis::GetSolutionFromInputs(Vector<IssmDouble>
 			else {*/
 			
             coeff = k*pow(hw,alpha)*pow(normgradphi,beta-2.);  // coeff gives discharge; divide by h to get speed instead of discharge
-			}
+		
 
-			vx[iv] = -coeff/max(DBL_EPSILON,hw)*dphi[0];
-			vy[iv] = -coeff/max(DBL_EPSILON,hw)*dphi[1];
+		    vx[iv] = -coeff/max(DBL_EPSILON,hw)*dphi[0];
+		    vy[iv] = -coeff/max(DBL_EPSILON,hw)*dphi[1];
 
-			d[iv] = coeff*normgradphi;
-	}
+		    d[iv] = coeff*normgradphi;
+	
+        }
+    }
 
 	element->AddInput(HydrologyWaterVxEnum,vx,P1DGEnum);
 	element->AddInput(HydrologyWaterVyEnum,vy,P1DGEnum);
@@ -462,7 +464,7 @@ void           HydrologyGlaDS2Analysis::GradientJ(Vector<IssmDouble>* gradient,E
 	_error_("Not implemented yet");
 }/*}}}*/
 void           HydrologyGlaDS2Analysis::InputUpdateFromSolution(IssmDouble* solution,Element* element){/*{{{*/
-	element->InputUpdateFromSolutionOneDof(solution,HydrologySheetWaterHeightEnum);
+	element->InputUpdateFromSolutionOneDof(solution,HydrologySheetHeightEnum);
 }/*}}}*/
 
 void HydrologyGlaDS2Analysis::UpdateConstraints(FemModel* femmodel){/*{{{*/
@@ -538,7 +540,7 @@ void HydrologyGlaDS2Analysis::UpdateWaterPressure(Element* element){/*{{{*/
 	IssmDouble g         = element->FindParam(ConstantsGEnum);
     IssmDouble evr       = element->FindParam(HydrologyEnglacialVoidRatioEnum);
     Input* H_input   = element->GetInput(ThicknessEnum); _assert_(H_input);
-    Input* h_input   = element->GetInput(HydrologySheetWaterHeightEnum); _assert_(h_input);
+    Input* h_input   = element->GetInput(HydrologySheetHeightEnum); _assert_(h_input);
     Input* hg_input  = element->GetInput(HydrologyMeanCavityHeightEnum); _assert_(hg_input);
     Input* oceanLS_input = element->GetInput(MaskOceanLevelsetEnum); _assert_(oceanLS_input);
     Input* iceLS_input = element->GetInput(MaskIceLevelsetEnum); _assert_(iceLS_input);

@@ -85,6 +85,9 @@ Analysis* EnumToAnalysis(int analysis_enum){
 		#ifdef _HAVE_HYDROLOGYGLADS_
 		case HydrologyGlaDSAnalysisEnum : return new HydrologyGlaDSAnalysis();
 		#endif
+		#ifdef _HAVE_HYDROLOGYGLADS2_
+		case HydrologyGlaDS2AnalysisEnum : return new HydrologyGlaDS2Analysis();
+		#endif
 		#ifdef _HAVE_HYDROLOGYPISM_
 		case HydrologyPismAnalysisEnum : return new HydrologyPismAnalysis();
 		#endif

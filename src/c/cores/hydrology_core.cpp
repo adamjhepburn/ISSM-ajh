@@ -255,7 +255,7 @@ void hydrology_core(FemModel* femmodel){ /*{{{*/
 		femmodel->SetCurrentConfiguration(HydrologyGlaDS2AnalysisEnum);
 
 		/*Set fields as old*/
-		InputDuplicatex(femmodel,HydrologySheetWaterHeightEnum,HydrologySheetWaterHeightOldEnum);
+		InputDuplicatex(femmodel,HydrologySheetHeightEnum,HydrologySheetHeightOldEnum);
 		InputDuplicatex(femmodel,HydrologyMeanCavityHeightEnum,HydrologyMeanCavityHeightOldEnum);
 		
 		if(VerboseSolution()) _printf0_("   updating sheet thickness\n");

@@ -1035,8 +1035,8 @@ int  StringToEnumx(const char* name,bool notfounderror){
 	      else if (strcmp(name,"HydrologySheetHeightOld")==0) return HydrologySheetHeightOldEnum;
 	      else if (strcmp(name,"HydrologySheetThickness")==0) return HydrologySheetThicknessEnum;
 	      else if (strcmp(name,"HydrologySheetThicknessOld")==0) return HydrologySheetThicknessOldEnum;
-	      else if (strcmp(name,"HydrologyFlowingSheetThickness")==0) return HydrologyFlowingSheetThicknessEnum;
-	      else if (strcmp(name,"HydrologyFlowingSheetThicknessOld")==0) return HydrologyFlowingSheetThicknessOldEnum;
+	      else if (strcmp(name,"HydrologyFlowingSheetHeight")==0) return HydrologyFlowingSheetHeightEnum;
+	      else if (strcmp(name,"HydrologyFlowingSheetHeightOld")==0) return HydrologyFlowingSheetHeightOldEnum;
 	      else if (strcmp(name,"HydrologyStorage")==0) return HydrologyStorageEnum;
 	      else if (strcmp(name,"HydrologyTws")==0) return HydrologyTwsEnum;
 	      else if (strcmp(name,"HydrologyTwsSpc")==0) return HydrologyTwsSpcEnum;
@@ -3691,10 +3691,10 @@ int  StringToEnumx(const char* name,bool notfounderror){
 	      else if (strcmp(name,"Hydrologyarmapw")==0) return HydrologyarmapwEnum;
 	      else if (strcmp(name,"HydrologyDCEfficientAnalysis")==0) return HydrologyDCEfficientAnalysisEnum;
 	      else if (strcmp(name,"HydrologyDCInefficientAnalysis")==0) return HydrologyDCInefficientAnalysisEnum;
-	      else if (strcmp(name,"HydrologyGlaDS2Analysis")==0) return HydrologyGlaDS2AnalysisEnum;
-	      else if (strcmp(name,"HydrologyGlaDS2")==0) return HydrologyGlaDS2Enum;
 	      else if (strcmp(name,"HydrologyGlaDSAnalysis")==0) return HydrologyGlaDSAnalysisEnum;
 	      else if (strcmp(name,"HydrologyGlaDS")==0) return HydrologyGlaDSEnum;
+	      else if (strcmp(name,"HydrologyGlaDS2Analysis")==0) return HydrologyGlaDS2AnalysisEnum;
+	      else if (strcmp(name,"HydrologyGlaDS2")==0) return HydrologyGlaDS2Enum;
 	      else if (strcmp(name,"HydrologyPismAnalysis")==0) return HydrologyPismAnalysisEnum;
 	      else if (strcmp(name,"HydrologyShaktiAnalysis")==0) return HydrologyShaktiAnalysisEnum;
 	      else if (strcmp(name,"HydrologyShreveAnalysis")==0) return HydrologyShreveAnalysisEnum;

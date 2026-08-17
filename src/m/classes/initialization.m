@@ -106,6 +106,13 @@ classdef initialization
 					md = checkfield(md,'fieldname','initialization.channelarea','NaN',1,'Inf',1,'>=',0,'size',[md.mesh.numberofedges 1]);
 				end
 			end
+			if ismember('HydrologyGlaDS2Analysis',analyses)
+				if isa(md.hydrology,'hydrologyglads2')
+					md = checkfield(md,'fieldname','initialization.watercolumn','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
+					md = checkfield(md,'fieldname','initialization.hydraulic_potential','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
+					%md = checkfield(md,'fieldname','initialization.channelarea','NaN',1,'Inf',1,'>=',0,'size',[md.mesh.numberofedges 1]);
+				end
+			end
 			if ismember('HydrologyDCInefficientAnalysis',analyses)
 				if isa(md.hydrology,'hydrologydc')
 					md = checkfield(md,'fieldname','initialization.sediment_head','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);

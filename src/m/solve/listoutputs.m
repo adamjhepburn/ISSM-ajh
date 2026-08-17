@@ -232,8 +232,8 @@
 %HydrologySheetHeightOld
 %HydrologySheetThickness
 %HydrologySheetThicknessOld
-%HydrologyFlowingSheetThickness
-%HydrologyFlowingSheetThicknessOld
+%HydrologyFlowingSheetHeight
+%HydrologyFlowingSheetHeightOld
 %HydrologyStorage
 %HydrologyTws
 %HydrologyTwsSpc

@@ -1009,8 +1009,8 @@ syn keyword cConstant HydrologySheetHeightEnum
 syn keyword cConstant HydrologySheetHeightOldEnum
 syn keyword cConstant HydrologySheetThicknessEnum
 syn keyword cConstant HydrologySheetThicknessOldEnum
-syn keyword cConstant HydrologyFlowingSheetThicknessEnum
-syn keyword cConstant HydrologyFlowingSheetThicknessOldEnum
+syn keyword cConstant HydrologyFlowingSheetHeightEnum
+syn keyword cConstant HydrologyFlowingSheetHeightOldEnum
 syn keyword cConstant HydrologyStorageEnum
 syn keyword cConstant HydrologyTwsEnum
 syn keyword cConstant HydrologyTwsSpcEnum
@@ -3602,10 +3602,10 @@ syn keyword cConstant HydrologyArmapwAnalysisEnum
 syn keyword cConstant HydrologyarmapwEnum
 syn keyword cConstant HydrologyDCEfficientAnalysisEnum
 syn keyword cConstant HydrologyDCInefficientAnalysisEnum
-syn keyword cConstant HydrologyGlaDS2AnalysisEnum
-syn keyword cConstant HydrologyGlaDS2Enum
 syn keyword cConstant HydrologyGlaDSAnalysisEnum
 syn keyword cConstant HydrologyGlaDSEnum
+syn keyword cConstant HydrologyGlaDS2AnalysisEnum
+syn keyword cConstant HydrologyGlaDS2Enum
 syn keyword cConstant HydrologyPismAnalysisEnum
 syn keyword cConstant HydrologyShaktiAnalysisEnum
 syn keyword cConstant HydrologyShreveAnalysisEnum

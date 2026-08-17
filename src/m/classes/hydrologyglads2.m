@@ -15,29 +15,22 @@ classdef hydrologyglads2
         sheet_beta                = NaN; 
         rheology_B_base           = NaN;
         
-        %Channels
-        ischannels           = 0;
-        channel_conductivity = NaN;
-        channel_sheet_width  = 0.;
-        channel_alpha        = NaN; 
-        channel_beta         = NaN; 
-
         %Other
         spch               = NaN;
         neumannflux          = NaN;
 
 
         %Channels
-		%ischannels           = 0;
+		ischannels           = 0;
 		%channel_conductivity = NaN;
-		%channel_sheet_width  = 0.;
-		%channel_alpha        = NaN; 
-		%channel_beta         = NaN; 
+		channel_sheet_width  = 0.;
+		channel_alpha        = NaN; 
+		channel_beta         = NaN; 
 
 		%Other
-		spcphi               = NaN;
-		moulin_input         = NaN;
-		neumannflux          = NaN;
+		%spcphi               = NaN;
+		%moulin_input         = NaN;
+		%neumannflux          = NaN;
 		englacial_void_ratio = 0.;
 		requested_outputs    = {};
 		melt_flag            = 0;
@@ -76,7 +69,7 @@ classdef hydrologyglads2
         end % }}}
         function md = checkconsistency(self,md,solution,analyses) % {{{
             %Early return
-			if ~ismember('HydrologyGlads2Analysis',analyses)
+			if ~ismember('HydrologyGlaDS2Analysis',analyses)
 				return;
 			end
 
@@ -96,8 +89,6 @@ classdef hydrologyglads2
 			md = checkfield(md,'fieldname','hydrology.neumannflux','timeseries',1,'NaN',1,'Inf',1);
 			md = checkfield(md,'fieldname','hydrology.requested_outputs','stringrow',1);
 			md = checkfield(md,'fieldname','hydrology.melt_flag','numel',[1],'values',[0 1 2]);
-			md = checkfield(md,'fieldname','hydrology.istransition','numel',[1],'values',[0 1]);
-			md = checkfield(md,'fieldname','hydrology.creep_open_flag','numel',[1],'values',[0 1]);
 			if self.melt_flag==1 || self.melt_flag==2
 				md = checkfield(md,'fieldname','basalforcings.groundedice_melting_rate','NaN',1,'Inf',1,'timeseries',1);
 			end
@@ -108,7 +99,7 @@ classdef hydrologyglads2
 			yts=md.constants.yts;
 
 			%Marshall model code first
-			WriteData(fid,prefix,'name','md.hydrology.model','data',5,'format','Integer');
+			WriteData(fid,prefix,'name','md.hydrology.model','data',8,'format','Integer');
 
 						%Sheet
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','pressure_melt_coefficient','format','Double');
@@ -118,6 +109,11 @@ classdef hydrologyglads2
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','sheet_alpha','format','Double'); 
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','sheet_beta','format','Double'); 
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','rheology_B_base','format','DoubleMat','mattype',1);
+			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','ischannels','format','Boolean');
+			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','channel_sheet_width','format','Double');
+			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','channel_sheet_width','format','Double');
+			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','channel_alpha','format','Double'); 
+			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','channel_beta','format','Double'); 
 
 
 			%Others

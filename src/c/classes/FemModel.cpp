@@ -781,6 +781,9 @@ void FemModel::SolutionAnalysesList(int** panalyses,int* pnumanalyses,IoModel* i
 			else if(hydrology_model==HydrologyGlaDSEnum){
 				analyses_temp[numanalyses++]=HydrologyGlaDSAnalysisEnum;
 			}
+			else if(hydrology_model==HydrologyGlaDS2Enum){
+				analyses_temp[numanalyses++]=HydrologyGlaDS2AnalysisEnum;
+			}
 			if(hydrology_model==HydrologyshaktiEnum){
 				analyses_temp[numanalyses++]=HydrologyShaktiAnalysisEnum;
 			}
