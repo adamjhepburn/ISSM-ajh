@@ -331,6 +331,20 @@ fi
 AM_CONDITIONAL([HYDROLOGYGLADS], [test x$HAVE_HYDROLOGYGLADS = xyes])
 AC_MSG_RESULT($HAVE_HYDROLOGYGLADS)
 dnl }}}
+dnl with-HydrologyGlaDS2{{{
+AC_ARG_WITH([HydrologyGlaDS2],
+	AS_HELP_STRING([--with-HydrologyGlaDS2 = YES], [compile with HydrologyGlaDS2 capabilities (default is yes)]),
+	[HYDROLOGYGLADS2=$withval],[HYDROLOGYGLADS2=yes])
+AC_MSG_CHECKING(for HydrologyGlaDS2 capability compilation)
+
+HAVE_HYDROLOGYGLADS2=no 
+if test "x$HYDROLOGYGLADS2" = "xyes"; then
+	HAVE_HYDROLOGYGLADS2=yes
+	AC_DEFINE([_HAVE_HYDROLOGYGLADS2_],[1],[with HydrologyGlaDS2 capability])
+fi
+AM_CONDITIONAL([HYDROLOGYGLADS2], [test x$HAVE_HYDROLOGYGLADS2 = xyes])
+AC_MSG_RESULT($HAVE_HYDROLOGYGLADS2)
+dnl }}}
 dnl with-HydrologyPism{{{
 AC_ARG_WITH([HydrologyPism],
 	AS_HELP_STRING([--with-HydrologyPism = YES], [compile with HydrologyPism capabilities (default is yes)]),

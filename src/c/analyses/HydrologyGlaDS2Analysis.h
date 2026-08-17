@@ -37,5 +37,8 @@ class HydrologyGlaDS2Analysis: public Analysis{
         void UpdateFlowingSheetHeight(FemModel* femmodel);
         void UpdateFlowingSheetHeight(Element* element);
         void UpdateHydraulicPotential(FemModel* femmodel);
-        void UpdateHydraulicPotential(Element* element);        
+        void UpdateHydraulicPotential(Element* element);
+        void UpdateMeanCavityHeight(FemModel* femmodel);
+        void UpdateMeanCavityHeight(Element* element);        
 };
+#endif

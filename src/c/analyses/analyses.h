@@ -33,6 +33,7 @@
 #include "./HydrologyShreveAnalysis.h"
 #include "./HydrologyTwsAnalysis.h"
 #include "./HydrologyGlaDSAnalysis.h"
+#include "./HydrologyGlaDS2Analysis.h"
 #include "./HydrologyShaktiAnalysis.h"
 #include "./HydrologyPismAnalysis.h"
 #include "./HydrologyPrescribeAnalysis.h"
