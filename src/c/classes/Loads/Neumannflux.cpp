@@ -190,6 +190,9 @@ void  Neumannflux::CreateKMatrix(Matrix<IssmDouble>* Kff, Matrix<IssmDouble>* Kf
 		case HydrologyGlaDSAnalysisEnum:
 			/*Nothing!*/
 			break;
+		case HydrologyGlaDS2AnalysisEnum:
+			/*Nothing!*/
+			break;
 		default:
 			_error_("analysis " << analysis_type << " (" << EnumToStringx(analysis_type) << ") not supported yet");
 	}
@@ -215,6 +218,9 @@ void  Neumannflux::CreatePVector(Vector<IssmDouble>* pf){/*{{{*/
 			break;
 		case HydrologyGlaDSAnalysisEnum:
 			pe=CreatePVectorHydrologyGlaDS();
+			break;
+		case HydrologyGlaDS2AnalysisEnum:
+			pe=CreatePVectorHydrologyGlaDS2();
 			break;
 		default:
 			_error_("analysis " << analysis_type << " (" << EnumToStringx(analysis_type) << ") not supported yet");
@@ -390,6 +396,48 @@ ElementVector* Neumannflux::CreatePVectorHydrologyShakti(void){/*{{{*/
 }
 /*}}}*/
 ElementVector* Neumannflux::CreatePVectorHydrologyGlaDS(void){/*{{{*/
+
+	/* constants*/
+	const int numdof=2;
+
+	/* Intermediaries*/
+	IssmDouble Jdet,flux;
+	IssmDouble xyz_list[NUMVERTICES][3];
+	IssmDouble basis[numdof];
+
+	/*Initialize Load Vector and return if necessary*/
+	Tria*  tria=(Tria*)element;
+	_assert_(tria->FiniteElement()==P1Enum); 
+	if(!tria->IsIceInElement() || tria->IsAllFloating()) return NULL;
+
+	/*Initialize Element vector and other vectors*/
+	ElementVector* pe=new ElementVector(nodes,NUMNODES_BOUNDARY,this->parameters);
+
+	/*Retrieve all inputs and parameters*/
+	GetVerticesCoordinates(&xyz_list[0][0],vertices,NUMVERTICES);
+	Input* flux_input = tria->GetInput(HydrologyNeumannfluxEnum);  _assert_(flux_input); 
+
+	/*Check wether it is an inflow or outflow BC (0 is the middle of the segment)*/
+	int index1=tria->GetVertexIndex(vertices[0]);
+	int index2=tria->GetVertexIndex(vertices[1]);
+
+	/* Start  looping on the number of gaussian points: */
+	GaussTria* gauss=new GaussTria(index1,index2,2);
+	while(gauss->next()){
+
+		tria->GetSegmentJacobianDeterminant(&Jdet,&xyz_list[0][0],gauss);
+		tria->GetSegmentNodalFunctions(&basis[0],gauss,index1,index2,tria->FiniteElement());
+		flux_input->GetInputValue(&flux,gauss);
+
+		for(int i=0;i<numdof;i++) pe->values[i] += gauss->weight*Jdet*flux*basis[i];
+	}
+
+	/*Clean up and return*/
+	delete gauss;
+	return pe;
+}
+/*}}}*/
+ElementVector* Neumannflux::CreatePVectorHydrologyGlaDS2(void){/*{{{*/
 
 	/* constants*/
 	const int numdof=2;

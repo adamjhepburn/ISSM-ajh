@@ -71,6 +71,7 @@ class Neumannflux: public Load {
 		/*Neumannflux management:{{{*/
 		ElementVector* CreatePVectorHydrologyShakti(void);
 		ElementVector* CreatePVectorHydrologyGlaDS(void);
+		ElementVector* CreatePVectorHydrologyGlaDS2(void);
 		/*}}}*/
 
 };

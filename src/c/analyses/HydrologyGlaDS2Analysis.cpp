@@ -101,6 +101,8 @@ void HydrologyGlaDS2Analysis::UpdateElements(Elements* elements,Inputs* inputs,I
 	iomodel->FetchDataToInput(inputs,elements,"md.hydrology.sheet_conductivity",HydrologySheetConductivityEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.hydrology.neumannflux",HydrologyNeumannfluxEnum);
     iomodel->FetchDataToInput(inputs,elements,"md.initialization.watercolumn",HydrologySheetHeightEnum);
+    iomodel->FetchDataToInput(inputs, elements,"md.initialization.mean_cavity_height",HydrologyMeanCavityHeightEnum);
+    iomodel->FetchDataToInput(inputs, elements,"md.initialization.flowing_water_height",HydrologyFlowingSheetHeightEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.initialization.hydraulic_potential",HydraulicPotentialEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.hydrology.rheology_B_base",HydrologyRheologyBBaseEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.initialization.vx",VxEnum);
@@ -384,11 +386,8 @@ void           HydrologyGlaDS2Analysis::GetSolutionFromInputs(Vector<IssmDouble>
 	}
 
     /*Retrieve all inputs and parameters*/
-	bool istransition;
-	element->FindParam(&istransition,HydrologyIsTransitionEnum);
 	IssmDouble alpha     = element->FindParam(HydrologySheetAlphaEnum);
 	IssmDouble beta      = element->FindParam(HydrologySheetBetaEnum);
-	/*IssmDouble omega     = element->FindParam(HydrologyOmegaEnum);*/
 	element->GetVerticesCoordinates(&xyz_list);
 	IssmDouble rho_water = element->FindParam(MaterialsRhoFreshwaterEnum);
 	IssmDouble mu_water  = element->FindParam(MaterialsMuWaterEnum);

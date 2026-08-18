@@ -17,6 +17,8 @@ classdef initialization
 		epl_head            = NaN;
 		epl_thickness       = NaN;
 		watercolumn         = NaN;
+		mean_cavity_height  = NaN;
+		flowing_water_height= NaN;
 		hydraulic_potential = NaN;
 		channelarea         = NaN;
 		sealevel            = NaN;
@@ -109,6 +111,8 @@ classdef initialization
 			if ismember('HydrologyGlaDS2Analysis',analyses)
 				if isa(md.hydrology,'hydrologyglads2')
 					md = checkfield(md,'fieldname','initialization.watercolumn','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
+					md = checkfield(md,'fieldname','initialization.mean_cavity_height','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
+					md = checkfield(md,'fieldname','initialization.flowing_water_height','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
 					md = checkfield(md,'fieldname','initialization.hydraulic_potential','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
 					%md = checkfield(md,'fieldname','initialization.channelarea','NaN',1,'Inf',1,'>=',0,'size',[md.mesh.numberofedges 1]);
 				end
@@ -157,6 +161,8 @@ classdef initialization
 			fielddisplay(self,'epl_head','epl water head of subglacial system [m]');
 			fielddisplay(self,'epl_thickness','epl layer thickness [m]');
 			fielddisplay(self,'watercolumn','subglacial water sheet thickness (for Shreve and GlaDS) [m]');
+			fielddisplay(self,'mean_cavity_height','mean cavity height (for GlaDS2) [m]');
+			fielddisplay(self,'flowing_water_height','flowing water height (for GlaDS2) [m]');
 			fielddisplay(self,'hydraulic_potential','Hydraulic potential (for GlaDS) [Pa]');
 			fielddisplay(self,'channelarea','subglacial water channel area (for GlaDS) [m2]');
 			fielddisplay(self,'sample','Realization of a Gaussian random field');
@@ -184,6 +190,8 @@ classdef initialization
 			WriteData(fid,prefix,'object',self,'fieldname','epl_head','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'fieldname','epl_thickness','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'fieldname','watercolumn','format','DoubleMat','mattype',1);
+			WriteData(fid,prefix,'object',self,'fieldname','mean_cavity_height','format','DoubleMat','mattype',1);
+			WriteData(fid,prefix,'object',self,'fieldname','flowing_water_height','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'fieldname','channelarea','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'fieldname','hydraulic_potential','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'fieldname','sample','format','DoubleMat','mattype',1);
@@ -212,6 +220,8 @@ classdef initialization
 			self.enthalpy=project3d(md,'vector',self.enthalpy,'type','node');
 			self.waterfraction=project3d(md,'vector',self.waterfraction,'type','node');
 			self.watercolumn=project3d(md,'vector',self.watercolumn,'type','node','layer',1);
+			self.mean_cavity_height=project3d(md,'vector',self.mean_cavity_height,'type','node','layer',1);
+			self.flowing_water_height=project3d(md,'vector',self.flowing_water_height,'type','node','layer',1);
 			self.sediment_head=project3d(md,'vector',self.sediment_head,'type','node','layer',1);
 			self.epl_head=project3d(md,'vector',self.epl_head,'type','node','layer',1);
 			self.epl_thickness=project3d(md,'vector',self.epl_thickness,'type','node','layer',1);
@@ -240,6 +250,7 @@ classdef initialization
 			writejs1Darray(fid,[modelname '.initialization.epl_thickness'],self.epl_thickness);
 			writejs1Darray(fid,[modelname '.initialization.watercolumn'],self.watercolumn);
 			writejs1Darray(fid,[modelname '.initialization.hydraulic_potential'],self.hydraulic_potential);
+			writejs1Darray(fid,[modelname '.initialization.mean_cavity_height'],self.mean_cavity_height);
 			writejs1Darray(fid,[modelname '.initialization.channel'],self.channelarea);
 			writejs1Darray(fid,[modelname '.initialization.sample'],self.sample);
 			writejs1Darray(fid,[modelname '.initialization.debris'],self.debris);
