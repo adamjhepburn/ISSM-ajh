@@ -746,8 +746,8 @@ void HydrologyGlaDS2Analysis::UpdateMeanCavityHeight(FemModel* femmodel){/*{{{*/
 void HydrologyGlaDS2Analysis::UpdateMeanCavityHeight(Element* element){/*{{{*/
 
     /*Intermediaries */
-	IssmDouble  vx,vy,ub,hg_old,N,h_r,H,b;
-	IssmDouble  A,B,n,phi,phi_0;
+    IssmDouble  vx,vy,ub,hg_old,N,h_r,H;
+    IssmDouble  A,B,n,pw;
 	IssmDouble  alpha,beta;
 	IssmDouble  oceanLS,iceLS;
     
@@ -770,17 +770,15 @@ void HydrologyGlaDS2Analysis::UpdateMeanCavityHeight(Element* element){/*{{{*/
 	IssmDouble  dt       = element->FindParam(TimesteppingTimeStepEnum);
 	IssmDouble  l_r      = element->FindParam(HydrologyCavitySpacingEnum);
 	IssmDouble rho_ice   = element->FindParam(MaterialsRhoIceEnum);
-	IssmDouble rho_water = element->FindParam(MaterialsRhoFreshwaterEnum);
 	IssmDouble g         = element->FindParam(ConstantsGEnum);
 	Input* hr_input = element->GetInput(HydrologyBumpHeightEnum);         _assert_(hr_input);
 	Input* vx_input = element->GetInput(VxBaseEnum);                      _assert_(vx_input);
 	Input* vy_input = element->GetInput(VyBaseEnum);                      _assert_(vy_input);
 	Input* H_input = element->GetInput(ThicknessEnum);                    _assert_(H_input);
-	Input* b_input = element->GetInput(BedEnum);                          _assert_(b_input);
 	Input* hgold_input = element->GetInput(HydrologyMeanCavityHeightOldEnum);_assert_(hgold_input);
 	Input* B_input = element->GetInput(HydrologyRheologyBBaseEnum);       _assert_(B_input);
 	Input* n_input = element->GetInput(MaterialsRheologyNEnum);           _assert_(n_input);
-	Input* phi_input = element->GetInput(HydraulicPotentialEnum);         _assert_(phi_input);
+    Input* pw_input = element->GetInput(HydrologyWaterPressureEnum);      _assert_(pw_input);
 	Input* oceanLS_input = element->GetInput(MaskOceanLevelsetEnum);      _assert_(oceanLS_input);
 	Input* iceLS_input = element->GetInput(MaskIceLevelsetEnum);          _assert_(iceLS_input);
 
@@ -790,14 +788,13 @@ void HydrologyGlaDS2Analysis::UpdateMeanCavityHeight(Element* element){/*{{{*/
 		gauss->GaussVertex(iv);
 
 		/*Get input values at gauss points*/
-		phi_input->GetInputValue(&phi,gauss);
+        pw_input->GetInputValue(&pw,gauss);
 		vx_input->GetInputValue(&vx,gauss);
 		vy_input->GetInputValue(&vy,gauss);
 		hgold_input->GetInputValue(&hg_old,gauss);
 		B_input->GetInputValue(&B,gauss);
 		n_input->GetInputValue(&n,gauss);
 		hr_input->GetInputValue(&h_r,gauss);
-		b_input->GetInputValue(&b,gauss);
 		H_input->GetInputValue(&H,gauss);
 		oceanLS_input->GetInputValue(&oceanLS,gauss);
 		iceLS_input->GetInputValue(&iceLS,gauss);
@@ -808,9 +805,7 @@ void HydrologyGlaDS2Analysis::UpdateMeanCavityHeight(Element* element){/*{{{*/
 		}
 		else{
 
-		/*Get values for a few potentials*/
-		phi_0   = rho_water*g*b + rho_ice*g*H;
-		N = phi_0 - phi;
+        N = rho_ice*g*H - pw;
 
 		/*Get basal velocity*/
 		ub = sqrt(vx*vx + vy*vy);

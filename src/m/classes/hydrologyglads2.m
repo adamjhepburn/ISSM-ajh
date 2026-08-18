@@ -48,7 +48,7 @@ classdef hydrologyglads2
             end
         end % }}}
         function list = defaultoutputs(self,md) % {{{
-            list = {'HydrologyWaterVx','HydrologyWaterVy','HydrologySheetDischarge','HydrologyWaterPressure','HydraulicPotential','HydrologyFlowingSheetHeight','HydrologyMeanCavityHeight'};
+            list = {'HydrologyWaterVx','HydrologyWaterVy','HydrologySheetHeight','HydrologySheetDischarge','HydrologyWaterPressure','HydraulicPotential','HydrologyFlowingSheetHeight','HydrologyMeanCavityHeight'};
         end % }}}    
 
         function self = setdefaultparameters(self) % {{{
