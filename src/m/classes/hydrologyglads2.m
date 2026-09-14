@@ -28,9 +28,6 @@ classdef hydrologyglads2
 		channel_beta         = NaN; 
 
 		%Other
-		spch               = NaN;
-		%moulin_input         = NaN;
-		neumannflux          = NaN;
 		englacial_void_ratio = 0.;
 		requested_outputs    = {};
 		melt_flag            = 0;
