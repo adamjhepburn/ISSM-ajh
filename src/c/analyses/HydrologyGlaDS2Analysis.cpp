@@ -27,6 +27,35 @@ void HydrologyGlaDS2Analysis::CreateLoads(Loads* loads, IoModel* iomodel){/*{{{*
     if(hydrology_model!=HydrologyGlaDS2Enum) return;
 
     /*Add channels? UNDER CONSTRUCTION*/
+    /*int K,L;
+    /*bool ischannels;
+    /*IssmDouble* channelarea;
+    /*iomodel->FindConstant(&ischannels,"md.hydrology.ischannels");
+    /*iomodel->FetchData(&channelarea,&K,&L,"md.initialization.channelarea");
+    /*if(ischannels){
+    /*    /*Get faces (edges in 2D)*/
+    /*    CreateFaces(iomodel);
+    /*    for(int i=0;i<iomodel->numberoffaces;i++){
+    /*        
+    /*        /*Get the left and right elements*/
+    /*        int element=iomodel->faces[4*i+2]-1; // because the faces are [node1 node2 elem1 elem2]
+    /*        
+    /*        /*Now, if this element is not in this particular partition*/
+    /*        if(!iomodel->my_elements[element]) continue;
+/*
+    /*        /*Add the channelarea from the initialization if it exists*/
+    /*        if(K!=0 && K!=iomodel->numberoffaces){
+    /*            _error_("Unknown dimension for the initialisation of channel area.");
+    /*        }
+    /*        if(K==0){
+    /*            loads->AddObject(new Channel(i+1,0.,i,iomodel));
+    /*        }
+    /*        else{
+    /*            loads->AddObject(new Channel(i+1,channelarea[i],i,iomodel));
+    /*        }
+    /*        iomodel->DeleteData(1,"md.initialization.channelarea");
+    /*    }
+    /*}
 
     /*Create discrete loads for Moulins UNDER CONSTRUCTION*/
 
@@ -99,6 +128,7 @@ void HydrologyGlaDS2Analysis::UpdateElements(Elements* elements,Inputs* inputs,I
 	iomodel->FetchDataToInput(inputs,elements,"md.mask.ocean_levelset",MaskOceanLevelsetEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.hydrology.bump_height",HydrologyBumpHeightEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.hydrology.sheet_conductivity",HydrologySheetConductivityEnum);
+    iomodel->FetchDataToInput(inputs,elements,"md.hydrology.channel_conductivity",HydrologyChannelConductivityEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.hydrology.neumannflux",HydrologyNeumannfluxEnum);
     iomodel->FetchDataToInput(inputs,elements,"md.initialization.watercolumn",HydrologySheetHeightEnum);
     iomodel->FetchDataToInput(inputs, elements,"md.initialization.mean_cavity_height",HydrologyMeanCavityHeightEnum);
@@ -128,6 +158,10 @@ void HydrologyGlaDS2Analysis::UpdateParameters(Parameters* parameters,IoModel* i
     parameters->AddObject(new IntParam(HydrologyModelEnum,hydrology_model));
 	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.pressure_melt_coefficient",HydrologyPressureMeltCoefficientEnum));
 	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.cavity_spacing",HydrologyCavitySpacingEnum));
+    parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.ischannels",HydrologyIschannelsEnum));
+    parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.channel_sheet_width",HydrologyChannelSheetWidthEnum));
+    parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.channel_alpha",HydrologyChannelAlphaEnum));
+    parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.channel_beta",HydrologyChannelBetaEnum));
 	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.melt_flag",HydrologyMeltFlagEnum));
 	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.sheet_alpha",HydrologySheetAlphaEnum));
 	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.sheet_beta",HydrologySheetBetaEnum));
@@ -354,6 +388,12 @@ ElementVector* HydrologyGlaDS2Analysis::CreatePVector(Element* element){/*{{{*/
 void           HydrologyGlaDS2Analysis::GetSolutionFromInputs(Vector<IssmDouble>* solution,Element* element){/*{{{*/
 
 	element->GetSolutionFromInputsOneDof(solution,HydrologySheetHeightEnum);
+}/*}}}*/
+void           HydrologyGlaDS2Analysis::GradientJ(Vector<IssmDouble>* gradient,Element*  element,int control_type,int control_interp,int control_index){/*{{{*/
+	_error_("Not implemented yet");
+}/*}}}*/
+void           HydrologyGlaDS2Analysis::InputUpdateFromSolution(IssmDouble* solution,Element* element){/*{{{*/
+	element->InputUpdateFromSolutionOneDof(solution,HydrologySheetHeightEnum);
 
     /*Compute hydrology vx and vy for timestepping purposes, store sheet discharge for mean cavity height eq.*/
 
@@ -457,13 +497,6 @@ void           HydrologyGlaDS2Analysis::GetSolutionFromInputs(Vector<IssmDouble>
 	xDelete<IssmDouble>(vy);
 	xDelete<IssmDouble>(d);
 	delete gauss;
-
-}/*}}}*/
-void           HydrologyGlaDS2Analysis::GradientJ(Vector<IssmDouble>* gradient,Element*  element,int control_type,int control_interp,int control_index){/*{{{*/
-	_error_("Not implemented yet");
-}/*}}}*/
-void           HydrologyGlaDS2Analysis::InputUpdateFromSolution(IssmDouble* solution,Element* element){/*{{{*/
-	element->InputUpdateFromSolutionOneDof(solution,HydrologySheetHeightEnum);
 }/*}}}*/
 
 void HydrologyGlaDS2Analysis::UpdateConstraints(FemModel* femmodel){/*{{{*/
@@ -499,6 +532,20 @@ void HydrologyGlaDS2Analysis::UpdateConstraints(FemModel* femmodel){/*{{{*/
 
 	return;
 }/*}}}*/
+
+/*void HydrologyGlaDS2Analysis::SetChannelCrossSectionOld(FemModel* femmodel){/*{{{*/
+
+/*    bool ischannels;
+/*    femmodel->parameters->FindParam(&ischannels,HydrologyIschannelsEnum);
+/*    if(!ischannels) return;
+/*
+/*    for(inti-i;i<femmodel->loads->Size();i++){
+/*        if(femmodel->loads->GetEnum(i)==ChannelEnum){
+/*            Channel* channel=(Channel*)femmodel->loads->GetObjectByOffset(i);
+/*            channel->SetChannelCrossSectionOld();
+/*        }
+/*    }
+/*}/*}}*/
 
 /*GlaDS specifics*/
 void HydrologyGlaDS2Analysis::UpdateWaterPressure(FemModel* femmodel){/*{{{*/
@@ -830,6 +877,21 @@ void HydrologyGlaDS2Analysis::UpdateMeanCavityHeight(Element* element){/*{{{*/
 	/*Clean up and return*/
 	xDelete<IssmDouble>(hg_new);
 	delete gauss;
+}/*}}}*/
+
+/*void HydrologyGlaDS2Analysis::UpdateChannelCrossSection(FemModel* femmodel){/*{{{*/
+
+    /*bool ischannels;
+    femmodel->parameters->FindParam((&ischannels),HydrologyIschannelsEnum);
+    if(!ischannels) return;
+
+    for(int i=0;i<femmodel->loads->Size();i++){
+        if(femmodel->loads->GetEnum(i)==ChannelEnum){
+            Channel* channel=(Channel*)femmodel->loads->GetObjectByOffset(i);
+            channel->UpdateChannelCrossSection();
+        }
+    }
+
 }/*}}}*/
 
 
