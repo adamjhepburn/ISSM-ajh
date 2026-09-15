@@ -3507,6 +3507,7 @@ syn keyword cConstant ChannelEnum
 syn keyword cConstant ChannelAreaEnum
 syn keyword cConstant ChannelAreaOldEnum
 syn keyword cConstant ChannelDischargeEnum
+syn keyword cConstant ChannelWaterFilledAreaEnum
 syn keyword cConstant ClosedEnum
 syn keyword cConstant ColinearEnum
 syn keyword cConstant ConstraintsEnum

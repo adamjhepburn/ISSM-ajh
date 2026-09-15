@@ -3509,6 +3509,7 @@ const char* EnumToStringx(int en){
 		case ChannelAreaEnum : return "ChannelArea";
 		case ChannelAreaOldEnum : return "ChannelAreaOld";
 		case ChannelDischargeEnum : return "ChannelDischarge";
+		case ChannelWaterFilledAreaEnum : return "ChannelWaterFilledArea";
 		case ClosedEnum : return "Closed";
 		case ColinearEnum : return "Colinear";
 		case ConstraintsEnum : return "Constraints";

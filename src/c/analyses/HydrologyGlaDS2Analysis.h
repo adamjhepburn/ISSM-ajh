@@ -39,6 +39,8 @@ class HydrologyGlaDS2Analysis: public Analysis{
         void UpdateHydraulicPotential(FemModel* femmodel);
         void UpdateHydraulicPotential(Element* element);
         void UpdateMeanCavityHeight(FemModel* femmodel);
-        void UpdateMeanCavityHeight(Element* element);        
+        void UpdateMeanCavityHeight(Element* element);  
+        void SetChannelCrossSectionOld(FemModel* femmodel);
+        void UpdateChannelCrossSectionG2(FemModel* femmodel);
 };
 #endif

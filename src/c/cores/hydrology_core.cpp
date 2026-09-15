@@ -257,6 +257,7 @@ void hydrology_core(FemModel* femmodel){ /*{{{*/
 		/*Set fields as old*/
 		InputDuplicatex(femmodel,HydrologySheetHeightEnum,HydrologySheetHeightOldEnum);
 		InputDuplicatex(femmodel,HydrologyMeanCavityHeightEnum,HydrologyMeanCavityHeightOldEnum);
+		analysis->SetChannelCrossSectionOld(femmodel);
 		
 		if(VerboseSolution()) _printf0_("   updating sheet thickness\n");
 

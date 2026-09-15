@@ -27,35 +27,35 @@ void HydrologyGlaDS2Analysis::CreateLoads(Loads* loads, IoModel* iomodel){/*{{{*
     if(hydrology_model!=HydrologyGlaDS2Enum) return;
 
     /*Add channels? UNDER CONSTRUCTION*/
-    /*int K,L;
-    /*bool ischannels;
-    /*IssmDouble* channelarea;
-    /*iomodel->FindConstant(&ischannels,"md.hydrology.ischannels");
-    /*iomodel->FetchData(&channelarea,&K,&L,"md.initialization.channelarea");
-    /*if(ischannels){
-    /*    /*Get faces (edges in 2D)*/
-    /*    CreateFaces(iomodel);
-    /*    for(int i=0;i<iomodel->numberoffaces;i++){
-    /*        
-    /*        /*Get the left and right elements*/
-    /*        int element=iomodel->faces[4*i+2]-1; // because the faces are [node1 node2 elem1 elem2]
-    /*        
-    /*        /*Now, if this element is not in this particular partition*/
-    /*        if(!iomodel->my_elements[element]) continue;
-/*
-    /*        /*Add the channelarea from the initialization if it exists*/
-    /*        if(K!=0 && K!=iomodel->numberoffaces){
-    /*            _error_("Unknown dimension for the initialisation of channel area.");
-    /*        }
-    /*        if(K==0){
-    /*            loads->AddObject(new Channel(i+1,0.,i,iomodel));
-    /*        }
-    /*        else{
-    /*            loads->AddObject(new Channel(i+1,channelarea[i],i,iomodel));
-    /*        }
-    /*        iomodel->DeleteData(1,"md.initialization.channelarea");
-    /*    }
-    /*}
+    int K,L;
+    bool ischannels;
+    IssmDouble* channelarea;
+    iomodel->FindConstant(&ischannels,"md.hydrology.ischannels");
+    iomodel->FetchData(&channelarea,&K,&L,"md.initialization.channelarea");
+    if(ischannels){
+        /*Get faces (edges in 2D)*/
+        CreateFaces(iomodel);
+        for(int i=0;i<iomodel->numberoffaces;i++){
+            
+            /*Get the left and right elements*/
+            int element=iomodel->faces[4*i+2]-1; // because the faces are [node1 node2 elem1 elem2]
+            
+            /*Now, if this element is not in this particular partition*/
+            if(!iomodel->my_elements[element]) continue;
+
+            /*Add the channelarea from the initialization if it exists*/
+            if(K!=0 && K!=iomodel->numberoffaces){
+                _error_("Unknown dimension for the initialisation of channel area.");
+            }
+            if(K==0){
+                loads->AddObject(new Channel(i+1,0.,i,iomodel));
+            }
+            else{
+                loads->AddObject(new Channel(i+1,channelarea[i],i,iomodel));
+            }
+            iomodel->DeleteData(1,"md.initialization.channelarea");
+        }
+    }
 
     /*Create discrete loads for Moulins UNDER CONSTRUCTION*/
 
@@ -445,18 +445,18 @@ void           HydrologyGlaDS2Analysis::InputUpdateFromSolution(IssmDouble* solu
 		gauss->GaussVertex(iv);
 
 		/*Get input values at gauss points*/
-      phi_input->GetInputDerivativeValue(&dphi[0],xyz_list,gauss);
-      phi_input->GetInputValue(&phi,gauss);
-      hw_input->GetInputValue(&hw,gauss);
-      hr_input->GetInputValue(&h_r,gauss); 
-      k_input->GetInputValue(&k,gauss);
+        phi_input->GetInputDerivativeValue(&dphi[0],xyz_list,gauss);
+        phi_input->GetInputValue(&phi,gauss);
+        hw_input->GetInputValue(&hw,gauss);
+        hr_input->GetInputValue(&h_r,gauss); 
+        k_input->GetInputValue(&k,gauss);
 		oceanLS_input->GetInputValue(&oceanLS,gauss);
 		iceLS_input->GetInputValue(&iceLS,gauss);
 
 		/*Set to zero if floating or no ice*/
 		if(oceanLS<0. || iceLS>0.){
 			vx[iv] = 0.;
-         vy[iv] = 0.;
+            vy[iv] = 0.;
 			d[iv] = 0.;
 		}
 		else{
@@ -466,16 +466,6 @@ void           HydrologyGlaDS2Analysis::InputUpdateFromSolution(IssmDouble* solu
             if(normgradphi < DBL_EPSILON) normgradphi = DBL_EPSILON;
 
             IssmDouble coeff;
-         /*If omega is zero, use standard model, otherwise transition model*/
-         /*IssmDouble nu = mu_water/rho_water;
-			IssmDouble coeff;
-			if(istransition==1 && omega>=DBL_EPSILON){
-				IssmDouble hratio = fabs(h/h_r);
-				IssmDouble coarg = 1. + 4.*pow(hratio,3-2*alpha)*omega*k*pow(h,3)*normgradphi/nu;
-				coeff = nu/2./omega*pow(hratio,2*alpha-3) * (-1 + pow(coarg, 0.5))/normgradphi;  // coeff gives discharge; divide by h to get speed instead of discharge
-			}
-			else {*/
-			
             coeff = k*pow(hw,alpha)*pow(normgradphi,beta-2.);  // coeff gives discharge; divide by h to get speed instead of discharge
 		
 
@@ -533,19 +523,18 @@ void HydrologyGlaDS2Analysis::UpdateConstraints(FemModel* femmodel){/*{{{*/
 	return;
 }/*}}}*/
 
-/*void HydrologyGlaDS2Analysis::SetChannelCrossSectionOld(FemModel* femmodel){/*{{{*/
+void HydrologyGlaDS2Analysis::SetChannelCrossSectionOld(FemModel* femmodel){/*{{{*/
+    bool ischannels;
+    femmodel->parameters->FindParam(&ischannels,HydrologyIschannelsEnum);
+    if(!ischannels) return;
 
-/*    bool ischannels;
-/*    femmodel->parameters->FindParam(&ischannels,HydrologyIschannelsEnum);
-/*    if(!ischannels) return;
-/*
-/*    for(inti-i;i<femmodel->loads->Size();i++){
-/*        if(femmodel->loads->GetEnum(i)==ChannelEnum){
-/*            Channel* channel=(Channel*)femmodel->loads->GetObjectByOffset(i);
-/*            channel->SetChannelCrossSectionOld();
-/*        }
-/*    }
-/*}/*}}*/
+    for(int i=0;i<femmodel->loads->Size();i++){
+        if(femmodel->loads->GetEnum(i)==ChannelEnum){
+            Channel* channel=(Channel*)femmodel->loads->GetObjectByOffset(i);
+            channel->SetChannelCrossSectionOld();
+        }
+    }
+}/*}}}*/
 
 /*GlaDS specifics*/
 void HydrologyGlaDS2Analysis::UpdateWaterPressure(FemModel* femmodel){/*{{{*/
@@ -879,16 +868,16 @@ void HydrologyGlaDS2Analysis::UpdateMeanCavityHeight(Element* element){/*{{{*/
 	delete gauss;
 }/*}}}*/
 
-/*void HydrologyGlaDS2Analysis::UpdateChannelCrossSection(FemModel* femmodel){/*{{{*/
+void HydrologyGlaDS2Analysis::UpdateChannelCrossSectionG2(FemModel* femmodel){/*{{{*/
 
-    /*bool ischannels;
+    bool ischannels;
     femmodel->parameters->FindParam((&ischannels),HydrologyIschannelsEnum);
     if(!ischannels) return;
 
     for(int i=0;i<femmodel->loads->Size();i++){
         if(femmodel->loads->GetEnum(i)==ChannelEnum){
             Channel* channel=(Channel*)femmodel->loads->GetObjectByOffset(i);
-            channel->UpdateChannelCrossSection();
+            channel->UpdateChannelCrossSectionG2();
         }
     }
 

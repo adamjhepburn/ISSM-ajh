@@ -2476,7 +2476,8 @@ void FemModel::RequestedOutputsx(Results **presults,char** requested_outputs, in
 
 					/*Vector special case (maybe should go to specific analysis?)*/
 					case ChannelAreaEnum:
-					case ChannelDischargeEnum:{
+					case ChannelDischargeEnum:
+					case ChannelWaterFilledAreaEnum:{
 
 							/*Get Number of Channels*/
 							int numchannels_local=0,numchannels;
@@ -2498,6 +2499,9 @@ void FemModel::RequestedOutputsx(Results **presults,char** requested_outputs, in
 									}
 									else if(output_enum==ChannelDischargeEnum){
 										channel->WriteChannelDischarge(values);
+									}
+									else if(output_enum==ChannelWaterFilledAreaEnum){
+										channel->WriteChannelWaterFilledCrossSection(values);
 									}
 									else{
 										_error_("not supported");

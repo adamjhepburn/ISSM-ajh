@@ -24,6 +24,7 @@ class Channel: public Load {
 
 		/*output only*/
 		IssmDouble discharge;
+		IssmDouble Sw;
 
 	public: 
 		int sid;
@@ -83,8 +84,12 @@ class Channel: public Load {
 		void           UpdateChannelCrossSection(void);
 		ElementVector* CreatePVectorHydrologyGlaDS(void);
 		ElementMatrix* CreateKMatrixHydrologyGlaDS(void);
+		ElementVector* CreatePVectorHydrologyGlaDS2(void);
+		ElementMatrix* CreateKMatrixHydrologyGlaDS2(void);
+		void           UpdateChannelCrossSectionG2(void);
 		void           WriteChannelCrossSection(IssmPDouble* values);
 		void           WriteChannelDischarge(IssmPDouble* values);
+		void		   WriteChannelWaterFilledCrossSection(IssmPDouble* values);
 		/*}}}*/
 
 };

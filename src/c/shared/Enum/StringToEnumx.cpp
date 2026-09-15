@@ -3596,6 +3596,7 @@ int  StringToEnumx(const char* name,bool notfounderror){
 	      else if (strcmp(name,"ChannelArea")==0) return ChannelAreaEnum;
 	      else if (strcmp(name,"ChannelAreaOld")==0) return ChannelAreaOldEnum;
 	      else if (strcmp(name,"ChannelDischarge")==0) return ChannelDischargeEnum;
+	      else if (strcmp(name,"ChannelWaterFilledArea")==0) return ChannelWaterFilledAreaEnum;
 	      else if (strcmp(name,"Closed")==0) return ClosedEnum;
 	      else if (strcmp(name,"Colinear")==0) return ColinearEnum;
 	      else if (strcmp(name,"Constraints")==0) return ConstraintsEnum;
@@ -3702,11 +3703,11 @@ int  StringToEnumx(const char* name,bool notfounderror){
 	      else if (strcmp(name,"HydrologySolution")==0) return HydrologySolutionEnum;
 	      else if (strcmp(name,"HydrologySubsteps")==0) return HydrologySubstepsEnum;
 	      else if (strcmp(name,"HydrologySubTime")==0) return HydrologySubTimeEnum;
-	      else if (strcmp(name,"Hydrologydc")==0) return HydrologydcEnum;
          else stage=31;
    }
    if(stage==31){
-	      if (strcmp(name,"Hydrologypism")==0) return HydrologypismEnum;
+	      if (strcmp(name,"Hydrologydc")==0) return HydrologydcEnum;
+	      else if (strcmp(name,"Hydrologypism")==0) return HydrologypismEnum;
 	      else if (strcmp(name,"Hydrologyshakti")==0) return HydrologyshaktiEnum;
 	      else if (strcmp(name,"Hydrologyshreve")==0) return HydrologyshreveEnum;
 	      else if (strcmp(name,"Hydrologyprescribe")==0) return HydrologyprescribeEnum;
@@ -3825,11 +3826,11 @@ int  StringToEnumx(const char* name,bool notfounderror){
 	      else if (strcmp(name,"Option")==0) return OptionEnum;
 	      else if (strcmp(name,"Param")==0) return ParamEnum;
 	      else if (strcmp(name,"Parameters")==0) return ParametersEnum;
-	      else if (strcmp(name,"P0Array")==0) return P0ArrayEnum;
          else stage=32;
    }
    if(stage==32){
-	      if (strcmp(name,"P0DG")==0) return P0DGEnum;
+	      if (strcmp(name,"P0Array")==0) return P0ArrayEnum;
+	      else if (strcmp(name,"P0DG")==0) return P0DGEnum;
 	      else if (strcmp(name,"P1DG")==0) return P1DGEnum;
 	      else if (strcmp(name,"P1P1")==0) return P1P1Enum;
 	      else if (strcmp(name,"P1P1GLS")==0) return P1P1GLSEnum;
@@ -3948,11 +3949,11 @@ int  StringToEnumx(const char* name,bool notfounderror){
 	      else if (strcmp(name,"TransientSolution")==0) return TransientSolutionEnum;
 	      else if (strcmp(name,"Tria")==0) return TriaEnum;
 	      else if (strcmp(name,"TriaInput")==0) return TriaInputEnum;
-	      else if (strcmp(name,"UzawaPressureAnalysis")==0) return UzawaPressureAnalysisEnum;
          else stage=33;
    }
    if(stage==33){
-	      if (strcmp(name,"VectorParam")==0) return VectorParamEnum;
+	      if (strcmp(name,"UzawaPressureAnalysis")==0) return UzawaPressureAnalysisEnum;
+	      else if (strcmp(name,"VectorParam")==0) return VectorParamEnum;
 	      else if (strcmp(name,"Vertex")==0) return VertexEnum;
 	      else if (strcmp(name,"VertexLId")==0) return VertexLIdEnum;
 	      else if (strcmp(name,"VertexPId")==0) return VertexPIdEnum;

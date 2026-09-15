@@ -3500,6 +3500,7 @@ syn keyword juliaConstC ChannelEnum
 syn keyword juliaConstC ChannelAreaEnum
 syn keyword juliaConstC ChannelAreaOldEnum
 syn keyword juliaConstC ChannelDischargeEnum
+syn keyword juliaConstC ChannelWaterFilledAreaEnum
 syn keyword juliaConstC ClosedEnum
 syn keyword juliaConstC ColinearEnum
 syn keyword juliaConstC ConstraintsEnum

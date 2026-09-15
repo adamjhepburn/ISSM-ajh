@@ -50,6 +50,7 @@ void solutionsequence_glads2_nonlinear(FemModel* femmodel){
 		analysis->UpdateWaterPressure(femmodel);
 		analysis->UpdateFlowingSheetHeight(femmodel);
 		analysis->UpdateHydraulicPotential(femmodel);
+		analysis->UpdateChannelCrossSectionG2(femmodel);
 
 		SystemMatricesx(&Kff,&Kfs,&pf,&df,NULL,femmodel);
 		CreateNodalConstraintsx(&ys,femmodel->nodes);
@@ -71,10 +72,11 @@ void solutionsequence_glads2_nonlinear(FemModel* femmodel){
 	}
 	if(VerboseConvergence()) _printf0_(setw(50) << left << "   converged in "<<count<<" iterations\n");
 
-	/*Bring pw/hw/phi in sync with the converged sheet thickness before returning*/
+	/*Bring pw/hw/phi/S/Sw/Q in sync with the converged sheet thickness before returning*/
 	analysis->UpdateWaterPressure(femmodel);
 	analysis->UpdateFlowingSheetHeight(femmodel);
 	analysis->UpdateHydraulicPotential(femmodel);
+	analysis->UpdateChannelCrossSectionG2(femmodel);
 
 	/*clean-up*/
 	delete uf;

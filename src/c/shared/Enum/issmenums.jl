@@ -3496,6 +3496,7 @@
 	ChannelAreaEnum
 	ChannelAreaOldEnum
 	ChannelDischargeEnum
+	ChannelWaterFilledAreaEnum
 	ClosedEnum
 	ColinearEnum
 	ConstraintsEnum
@@ -7368,6 +7369,7 @@ function EnumToString(enum::IssmEnum)
 	if(enum==ChannelAreaEnum) return "ChannelArea" end
 	if(enum==ChannelAreaOldEnum) return "ChannelAreaOld" end
 	if(enum==ChannelDischargeEnum) return "ChannelDischarge" end
+	if(enum==ChannelWaterFilledAreaEnum) return "ChannelWaterFilledArea" end
 	if(enum==ClosedEnum) return "Closed" end
 	if(enum==ColinearEnum) return "Colinear" end
 	if(enum==ConstraintsEnum) return "Constraints" end
@@ -11240,6 +11242,7 @@ function StringToEnum(name::String)
 	if(name=="ChannelArea") return ChannelAreaEnum  end
 	if(name=="ChannelAreaOld") return ChannelAreaOldEnum  end
 	if(name=="ChannelDischarge") return ChannelDischargeEnum  end
+	if(name=="ChannelWaterFilledArea") return ChannelWaterFilledAreaEnum  end
 	if(name=="Closed") return ClosedEnum  end
 	if(name=="Colinear") return ColinearEnum  end
 	if(name=="Constraints") return ConstraintsEnum  end

@@ -3506,6 +3506,7 @@ enum definitions{
 	ChannelAreaEnum,
 	ChannelAreaOldEnum,
 	ChannelDischargeEnum,
+	ChannelWaterFilledAreaEnum,
 	ClosedEnum,
 	ColinearEnum,
 	ConstraintsEnum,
