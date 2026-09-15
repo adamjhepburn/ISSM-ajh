@@ -61,13 +61,12 @@ class hydrologyglads2(object):
         s += '{}\n'.format(fielddisplay(self, 'bump_height', 'typical bump height (h_r) [m]'))
         #s += '{}\n'.format(fielddisplay(self, 'omega', 'transition parameter (omega) []')) #TH
         s += '{}\n'.format(fielddisplay(self, 'rheology_B_base', 'ice rheology factor B at base of ice (B) [Pa s^(-1/3)]')) #SE
-        #s += '{}\n'.format(fielddisplay(self, 'isincludesheetthickness', 'Do we add rho_w*g*h in effective pressure calculation? 1: yes, 0: no'))
         s += '\t--CHANNELS\n'
-        #s += '{}\n'.format(fielddisplay(self, 'ischannels', 'Do we allow for channels? 1: yes, 0: no'))
-        #s += '{}\n'.format(fielddisplay(self, 'channel_conductivity', 'channel conductivity (k_c) [m^(3 / 2) kg^(- 1 / 2)]'))
-        #s += '{}\n'.format(fielddisplay(self, 'channel_sheet_width', 'channel sheet width [m]'))
-        #s += '{}\n'.format(fielddisplay(self, 'channel_alpha', 'First channel-flow exponent (alpha_s) []')) #TH
-        #s += '{}\n'.format(fielddisplay(self, 'channel_beta', 'Second channel-flow exponent (beta_s) []')) #TH
+        s += '{}\n'.format(fielddisplay(self, 'ischannels', 'Do we allow for channels? 1: yes, 0: no'))
+        s += '{}\n'.format(fielddisplay(self, 'channel_conductivity', 'channel conductivity (k_c) [m^(3 / 2) kg^(- 1 / 2)]'))
+        s += '{}\n'.format(fielddisplay(self, 'channel_sheet_width', 'channel sheet width [m]'))
+        s += '{}\n'.format(fielddisplay(self, 'channel_alpha', 'First channel-flow exponent (alpha_s) []')) #TH
+        s += '{}\n'.format(fielddisplay(self, 'channel_beta', 'Second channel-flow exponent (beta_s) []')) #TH
         s += '\t--OTHER\n'
         s += '{}\n'.format(fielddisplay(self, 'spch`', 'Hydraulic potential Dirichlet constraints [Pa]'))
         s += '{}\n'.format(fielddisplay(self, 'neumannflux', 'water flux applied along the model boundary (m^2 / s)'))
@@ -107,10 +106,10 @@ class hydrologyglads2(object):
 
         # Channel parameters
         self.ischannels = False
-        #self.channel_conductivity = 5.e-2  #Dow's default, Table uses 0.1
-        #self.channel_sheet_width = 2.  #m
-        #self.channel_alpha = 5.0/4.0
-        #self.channel_beta = 3.0/2.0
+        self.channel_conductivity = 5.e-2  #Dow's default, Table uses 0.1
+        self.channel_sheet_width = 2.  #m
+        self.channel_alpha = 5.0/4.0
+        self.channel_beta = 3.0/2.0
 
         # Other
         self.englacial_void_ratio = 1.e-4  #Dow's default, Table from Werder et al. uses 1e-3
@@ -138,11 +137,11 @@ class hydrologyglads2(object):
         md = checkfield(md,'fieldname','hydrology.rheology_B_base', 'size', [md.mesh.numberofvertices], '>=', 0, 'np.nan', 1, 'Inf', 1)
 
         # Channels
-        #md = checkfield(md, 'fieldname', 'hydrology.ischannels', 'numel', [1], 'values', [0, 1])
-        #md = checkfield(md, 'fieldname', 'hydrology.channel_conductivity', 'size', [md.mesh.numberofvertices], '>', 0)
-        #md = checkfield(md, 'fieldname', 'hydrology.channel_sheet_width', 'numel', [1], '>=', 0)
-        #md = checkfield(md,'fieldname','hydrology.channel_alpha', 'numel', [1], '>', 0) 
-        #md = checkfield(md,'fieldname','hydrology.channel_beta', 'numel', [1], '>', 0) 
+        md = checkfield(md, 'fieldname', 'hydrology.ischannels', 'numel', [1], 'values', [0, 1])
+        md = checkfield(md, 'fieldname', 'hydrology.channel_conductivity', 'size', [md.mesh.numberofvertices], '>', 0)
+        md = checkfield(md, 'fieldname', 'hydrology.channel_sheet_width', 'numel', [1], '>=', 0)
+        md = checkfield(md,'fieldname','hydrology.channel_alpha', 'numel', [1], '>', 0) 
+        md = checkfield(md,'fieldname','hydrology.channel_beta', 'numel', [1], '>', 0) 
 
         # Other
         md = checkfield(md, 'fieldname', 'hydrology.spch', 'Inf', 1, 'timeseries', 1)
@@ -171,11 +170,11 @@ class hydrologyglads2(object):
         WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','rheology_B_base','format','DoubleMat', 'mattype', 1);
 
         # Channels
-        #WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'ischannels', 'format', 'Boolean')
-        #WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'channel_conductivity', 'format', 'DoubleMat', 'mattype', 1)
-        #WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'channel_sheet_width', 'format', 'Double')
-        #WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','channel_alpha','format','Double') 
-        #WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','channel_beta','format','Double') 
+        WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'ischannels', 'format', 'Boolean')
+        WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'channel_conductivity', 'format', 'DoubleMat', 'mattype', 1)
+        WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'channel_sheet_width', 'format', 'Double')
+        WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','channel_alpha','format','Double') 
+        WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','channel_beta','format','Double') 
 
         # Others
         WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'spcphi', 'format', 'DoubleMat', 'mattype', 1, 'timeserieslength', md.mesh.numberofvertices + 1, 'yts', yts)

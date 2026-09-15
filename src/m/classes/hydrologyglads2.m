@@ -22,7 +22,7 @@ classdef hydrologyglads2
 
         %Channels
 		ischannels           = 0;
-		%channel_conductivity = NaN;
+		channel_conductivity = NaN;
 		channel_sheet_width  = 0.;
 		channel_alpha        = NaN; 
 		channel_beta         = NaN; 
@@ -45,7 +45,7 @@ classdef hydrologyglads2
             end
         end % }}}
         function list = defaultoutputs(self,md) % {{{
-            list = {'HydrologyWaterVx','HydrologyWaterVy','HydrologySheetHeight','HydrologySheetDischarge','HydrologyWaterPressure','HydraulicPotential','HydrologyFlowingSheetHeight','HydrologyMeanCavityHeight'};
+            list = {'HydrologyWaterVx','HydrologyWaterVy','HydrologySheetHeight','HydrologySheetDischarge','HydrologyWaterPressure','HydraulicPotential','HydrologyFlowingSheetHeight','HydrologyMeanCavityHeight','ChannelArea','ChannelDischarge','ChannelWaterFilledArea'};
         end % }}}    
 
         function self = setdefaultparameters(self) % {{{
@@ -57,6 +57,13 @@ classdef hydrologyglads2
             self.sheet_beta = 3.0/2.0;
             self.bump_height = 0.1; %m
             self.sheet_conductivity = 1e-2;
+
+			%channel parameters
+			self.ischannels = 1;
+			self.channel_conductivity = 1e-2;
+			self.channel_sheet_width = 2.; %m
+			self.channel_alpha = 5.0/4.0;
+			self.channel_beta = 3.0/2.0;
 
             %other parameters
             self.englacial_void_ratio = 1e-4;
@@ -79,6 +86,15 @@ classdef hydrologyglads2
 			md = checkfield(md,'fieldname','hydrology.sheet_alpha', 'numel', [1], '>', 0); 
 			md = checkfield(md,'fieldname','hydrology.sheet_beta', 'numel', [1], '>', 0); 
 			md = checkfield(md,'fieldname','hydrology.rheology_B_base','size',[md.mesh.numberofvertices 1],'>=',0,'NaN',1,'Inf',1);
+
+			%channel
+			md = checkfield(md,'fieldname','hydrology.ischannels','numel',[1],'values',[0 1]);
+			if self.ischannels==1
+				md = checkfield(md,'fieldname','hydrology.channel_conductivity','size',[md.mesh.numberofvertices 1],'>',0,'NaN',1,'Inf',1);
+				md = checkfield(md,'fieldname','hydrology.channel_sheet_width','numel',[1],'>',0);
+				md = checkfield(md,'fieldname','hydrology.channel_alpha', 'numel', [1], '>', 0); 
+				md = checkfield(md,'fieldname','hydrology.channel_beta', 'numel', [1], '>', 0); 
+			end
 
             %other
             md = checkfield(md,'fieldname','hydrology.spch','Inf',1,'timeseries',1);
@@ -111,6 +127,13 @@ classdef hydrologyglads2
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','channel_sheet_width','format','Double');
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','channel_alpha','format','Double'); 
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','channel_beta','format','Double'); 
+
+			%channel 
+			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','ischannels','format','Boolean');
+			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','channel_conductivity','format','DoubleMat','mattype',1);
+			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','channel_sheet_width','format','Double');
+			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','channel_alpha','format','Double');
+			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','channel_beta','format','Double');
 
 
 			%Others
