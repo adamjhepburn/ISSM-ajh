@@ -1011,7 +1011,6 @@ ElementVector* Channel::CreatePVectorHydrologyGlaDS2(void){/*{{{*/
 	IssmDouble c_t       = element->FindParam(HydrologyPressureMeltCoefficientEnum);
 	IssmDouble alpha_s   = element->FindParam(HydrologySheetAlphaEnum);
 	IssmDouble beta_s    = element->FindParam(HydrologySheetBetaEnum);
-	IssmDouble omega     = element->FindParam(HydrologyOmegaEnum);
 
 	Input* hw_input      = element->GetInput(HydrologyFlowingSheetHeightEnum);      _assert_(hw_input);
 	Input* H_input      = element->GetInput(ThicknessEnum);                    _assert_(H_input);
@@ -1156,7 +1155,6 @@ void           Channel::UpdateChannelCrossSectionG2(void){/*{{{*/
 	IssmDouble beta_c    = element->FindParam(HydrologyChannelBetaEnum);
 	IssmDouble alpha_s   = element->FindParam(HydrologySheetAlphaEnum);
 	IssmDouble beta_s    = element->FindParam(HydrologySheetBetaEnum);
-	IssmDouble omega     = element->FindParam(HydrologyOmegaEnum);
 
 	Input* hw_input      = element->GetInput(HydrologyFlowingSheetHeightEnum); _assert_(hw_input);
 	Input* H_input      = element->GetInput(ThicknessEnum);                    _assert_(H_input);
