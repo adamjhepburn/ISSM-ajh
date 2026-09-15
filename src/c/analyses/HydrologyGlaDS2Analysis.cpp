@@ -610,7 +610,7 @@ void HydrologyGlaDS2Analysis::UpdateWaterPressure(Element* element){/*{{{*/
                 /*Compute water pressure*/
                 /*note this is a C^1 continuous regularised version of piecewise relation (eq.4) in Wells et al., 2026 */
                 x = (h-hg)/dh;
-                delta = 0.01;
+                delta = 0.1;
                 
                 if (x <= -delta) {
                     rx1 = 0.0;
