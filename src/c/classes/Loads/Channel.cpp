@@ -860,7 +860,6 @@ ElementMatrix* Channel::CreateKMatrixHydrologyGlaDS2(void){/*{{{*/
 	IssmDouble beta_c    = element->FindParam(HydrologyChannelBetaEnum);
 	IssmDouble alpha_s   = element->FindParam(HydrologySheetAlphaEnum);
 	IssmDouble beta_s    = element->FindParam(HydrologySheetBetaEnum);
-	IssmDouble omega     = element->FindParam(HydrologyOmegaEnum);
 
 	Input* hw_input      = element->GetInput(HydrologyFlowingSheetHeightEnum);      _assert_(hw_input);
 	Input* H_input      = element->GetInput(ThicknessEnum);                    _assert_(H_input);
