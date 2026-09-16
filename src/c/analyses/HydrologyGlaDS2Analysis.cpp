@@ -5,6 +5,8 @@
 #include "../shared/shared.h"
 #include "../modules/modules.h"
 
+IssmDouble RegDelta = 0.1; /*Regularization parameter for the pressure closure in UpdateWaterPressure*/
+
 /*Model processing*/
 void HydrologyGlaDS2Analysis::CreateConstraints(Constraints* constraints,IoModel* iomodel){/*{{{*/
 
@@ -245,7 +247,7 @@ ElementMatrix* HydrologyGlaDS2Analysis::CreateKMatrix(Element* element){/*{{{*/
         IssmDouble storage_capacity=evr*(rho_ice/rho_water)*H;
         if(storage_capacity>DBL_EPSILON){
             IssmDouble x=(h-hg)/storage_capacity;
-            IssmDouble delta=0.01;
+            IssmDouble delta=RegDelta;
             IssmDouble drx1=0.;
             IssmDouble drx2=0.;
             if(x>-delta && x<delta) drx1=(x+delta)/(2.*delta);
@@ -357,7 +359,7 @@ ElementVector* HydrologyGlaDS2Analysis::CreatePVector(Element* element){/*{{{*/
         IssmDouble storage_capacity=evr*(rho_ice/rho_water)*H;
         if(storage_capacity>DBL_EPSILON){
             IssmDouble x=(h-hg)/storage_capacity;
-            IssmDouble delta=0.01;
+            IssmDouble delta=RegDelta;
             IssmDouble drx1=0.;
             IssmDouble drx2=0.;
             if(x>-delta && x<delta) drx1=(x+delta)/(2.*delta);
@@ -610,7 +612,7 @@ void HydrologyGlaDS2Analysis::UpdateWaterPressure(Element* element){/*{{{*/
                 /*Compute water pressure*/
                 /*note this is a C^1 continuous regularised version of piecewise relation (eq.4) in Wells et al., 2026 */
                 x = (h-hg)/dh;
-                delta = 0.1;
+                delta = RegDelta;
                 
                 if (x <= -delta) {
                     rx1 = 0.0;
