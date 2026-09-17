@@ -51,7 +51,7 @@ classdef hydrologyglads2
         function self = setdefaultparameters(self) % {{{
 
             %sheet parameters
-            self.pressure_melt_coefficient = 7.5e-8; %K/Pa Clapeyron Slope (See table 2 in Wells et al)
+            self.pressure_melt_coefficient = -7.5e-8; %K/Pa Clapeyron Slope (See table 2 in Wells et al)
             self.cavity_spacing = 2.; %m
             self.sheet_alpha = 5.0/4.0;
             self.sheet_beta = 3.0/2.0;
@@ -78,7 +78,7 @@ classdef hydrologyglads2
 			end
 
             %sheet
-            md = checkfield(md,'fieldname','hydrology.pressure_melt_coefficient','numel',[1],'>=',0);
+            md = checkfield(md,'fieldname','hydrology.pressure_melt_coefficient','numel',[1],'NaN',1,'Inf',1);
 			md = checkfield(md,'fieldname','hydrology.sheet_conductivity','size',[md.mesh.numberofvertices 1],'>',0,'NaN',1,'Inf',1);
 			md = checkfield(md,'fieldname','hydrology.cavity_spacing','numel',[1],'>',0);
 			md = checkfield(md,'fieldname','hydrology.bump_height','size',[md.mesh.numberofvertices 1],'>=',0,'NaN',1,'Inf',1);

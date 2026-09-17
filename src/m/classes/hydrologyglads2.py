@@ -98,7 +98,7 @@ class hydrologyglads2(object):
 
     def setdefaultparameters(self):  # {{{
         # Sheet parameters
-        self.pressure_melt_coefficient = 7.5e-8  #K / Pa (See table 1 in Werder et al. 2013)
+        self.pressure_melt_coefficient = -7.5e-8  #K / Pa, negative sign convention for GlaDS2's Pi term
         self.cavity_spacing = 2.  #m
         self.sheet_alpha = 5.0/4.0
         self.sheet_beta = 3.0/2.0
@@ -126,7 +126,7 @@ class hydrologyglads2(object):
             return md
 
         # Sheet
-        md = checkfield(md, 'fieldname', 'hydrology.pressure_melt_coefficient', 'numel', [1], '>=', 0)
+        md = checkfield(md, 'fieldname', 'hydrology.pressure_melt_coefficient', 'numel', [1], 'np.nan', 1, 'Inf', 1)
         md = checkfield(md, 'fieldname', 'hydrology.sheet_conductivity', 'size', [md.mesh.numberofvertices], '>', 0, 'np.nan', 1, 'Inf', 1)
         md = checkfield(md, 'fieldname', 'hydrology.cavity_spacing', 'numel', [1], '>', 0)
         md = checkfield(md, 'fieldname', 'hydrology.bump_height', 'size', [md.mesh.numberofvertices], '>=', 0, 'np.nan', 1, 'Inf', 1)

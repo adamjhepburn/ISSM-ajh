@@ -929,7 +929,8 @@ ElementMatrix* Channel::CreateKMatrixHydrologyGlaDS2(void){/*{{{*/
 		}
 
 		/*Compute Afactor and Bfactor*/
-		Afactor = C_W*c_t*rho_water;
+		/*Pi = -ct*cw*rho_w*(Q+f*lc*qc)*dpw/ds, ct<0, hence the leading minus sign here*/
+		Afactor = -C_W*c_t*rho_water;
 		Bfactor = 1./L * (1./rho_ice - 1./rho_water);
 		if(dphids>0){
 			Xifactor = + Bfactor * (fabs(-Kc*dphids) + fabs(lc*qc));
@@ -1072,7 +1073,8 @@ ElementVector* Channel::CreatePVectorHydrologyGlaDS2(void){/*{{{*/
 		}
 
 		/*Compute Afactor and Bfactor*/
-		Afactor = C_W*c_t*rho_water;
+		/*Pi = -ct*cw*rho_w*(Q+f*lc*qc)*dpw/ds, ct<0, hence the leading minus sign here*/
+		Afactor = -C_W*c_t*rho_water;
 		Bfactor = 1./L * (1./rho_ice - 1./rho_water);
 
 		/*Compute closing rate*/
@@ -1206,7 +1208,8 @@ void           Channel::UpdateChannelCrossSectionG2(void){/*{{{*/
 	/*Ice rate factor*/
 	A = pow(B,-n);
 
-	IssmDouble C = C_W*c_t*rho_water;
+	/*Pi = -ct*cw*rho_w*(Q+f*lc*qc)*dpw/ds, ct<0, hence the leading minus sign here*/
+	IssmDouble C = -C_W*c_t*rho_water;
 	IssmDouble Qprime = -kc * pow(Ngrad,beta_c-2.)*dphids;
 	IssmDouble N = phi_0 - phi;
 
@@ -1252,8 +1255,18 @@ void           Channel::UpdateChannelCrossSectionG2(void){/*{{{*/
 	/*Compute the water filled channel cross section* for output only*/
 	/*S = piRpow2/2*/
 	R = sqrt(2.*this->S/PI);
-	Rw = min(R, pw/(rho_water*g));
-	this->Sw = min(this->S-(pow(R,2)*acos(Rw/R)-Rw*sqrt(pow(R,2)-pow(Rw,2))), this->S);
+	if(R<=0.){
+		/*Empty channel: no water-filled area, avoids 0/0 in acos(Rw/R) below*/
+		this->Sw = 0.;
+	}
+	else{
+		/*Rw is the signed distance from the channel center to the water surface and must stay
+		 * in [-R,R] for acos(Rw/R) to be defined. pw/(rho_water*g) (pressure head) can exceed
+		 * this range (e.g. very negative pressures near the terminus), so clamp it.*/
+		Rw = pw/(rho_water*g);
+		Rw = max(-R, min(R, Rw));
+		this->Sw = min(this->S-(pow(R,2)*acos(Rw/R)-Rw*sqrt(pow(R,2)-pow(Rw,2))), this->S);
+	}
 
 	/*Compute new channel discharge for output only*/
 	IssmDouble Kc = kc * pow(this->Sw,alpha_c) * pow(Ngrad,beta_c-2.);
