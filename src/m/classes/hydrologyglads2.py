@@ -38,6 +38,7 @@ class hydrologyglads2(object):
         self.englacial_void_ratio = 0.
         self.requested_outputs = []
         self.melt_flag = 0
+        stabilization = 0.
         #self.istransition = 0
 
         nargs = len(args)
@@ -71,6 +72,7 @@ class hydrologyglads2(object):
         s += '{}\n'.format(fielddisplay(self, 'spch`', 'Hydraulic potential Dirichlet constraints [Pa]'))
         s += '{}\n'.format(fielddisplay(self, 'neumannflux', 'water flux applied along the model boundary (m^2 / s)'))
         s += '{}\n'.format(fielddisplay(self, 'relaxation_omega', 'relaxation parameter for the water pressure solution update'))
+        s += '{}\n'.format(fielddisplay(self, 'stabilization', 'stabilization tau for the water pressure solution update'))
         #s += '{}\n'.format(fielddisplay(self, 'moulin_input', 'moulin input (Q_s) [m^3 / s]'))
         s += '{}\n'.format(fielddisplay(self, 'englacial_void_ratio', 'englacial void ratio (e_v)'))
         s += '{}\n'.format(fielddisplay(self, 'requested_outputs', 'additional outputs requested'))
@@ -116,8 +118,7 @@ class hydrologyglads2(object):
         self.englacial_void_ratio = 1.e-4  #Dow's default, Table from Werder et al. uses 1e-3
         self.relaxation_omega = 0.5
         self.requested_outputs = ['default']
-        self.melt_flag = 0
-        self.istransition = 0  #by default use turbulent physics
+        self.stabilization = 1.
 
         return self
     # }}}
@@ -152,6 +153,7 @@ class hydrologyglads2(object):
         md = checkfield(md, 'fieldname', 'hydrology.neumannflux', 'timeseries', 1, 'NaN', 1, 'Inf', 1)
         md = checkfield(md, 'fieldname', 'hydrology.requested_outputs', 'stringrow', 1)
         md = checkfield(md, 'fieldname', 'hydrology.melt_flag', 'numel', [1], 'values', [0, 1])
+        md = checkfield(md, 'fieldname', 'hydrology.stabilization', 'numel', [1], '>=', 0, '<=', 3)
         if self.melt_flag == 1 or self.melt_flag == 2:
             md = checkfield(md, 'fieldname', 'basalforcings.groundedice_melting_rate', 'NaN', 1, 'Inf', 1, 'timeseries', 1)
     # }}}
@@ -183,6 +185,7 @@ class hydrologyglads2(object):
         WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'spch', 'format', 'DoubleMat', 'mattype', 1, 'timeserieslength', md.mesh.numberofvertices + 1, 'yts', yts)
         WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'neumannflux', 'format', 'DoubleMat', 'mattype', 2, 'timeserieslength', md.mesh.numberofelements + 1, 'yts', yts)
         WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'relaxation_omega', 'format', 'Double')
+        WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'stabilization', 'format', 'Double')
         #WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'moulin_input', 'format', 'DoubleMat', 'mattype', 1, 'timeserieslength', md.mesh.numberofvertices + 1, 'yts', md.constants.yts)
         WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'englacial_void_ratio', 'format', 'Double')
         WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'melt_flag', 'format', 'Integer')

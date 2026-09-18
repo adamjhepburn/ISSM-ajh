@@ -38,6 +38,8 @@ class initialization(object):
         self.sample              = np.nan
         self.debris              = np.nan
         self.age                 = np.nan
+        self.hydrovx             = np.nan
+        self.hydrovy             = np.nan
 
         self.setdefaultparameters()
     # }}}
@@ -64,6 +66,8 @@ class initialization(object):
         s += '{}\n'.format(fielddisplay(self, 'sample', 'Realization of a Gaussian random field'))
         s += '{}\n'.format(fielddisplay(self, 'debris', 'Surface debris layer [m]'))
         s += '{}\n'.format(fielddisplay(self, 'age', 'Initial age [yr]'))
+        s += '{}\n'.format(fielddisplay(self, 'hydrovx', 'Initial vx water velocity []'))
+        s += '{}\n'.format(fielddisplay(self, 'hydrovy', 'Initial vy water velocity []'))
         return s
     # }}}
 
@@ -125,7 +129,9 @@ class initialization(object):
                 md = checkfield(md, 'fieldname', 'initialization.hydraulic_potential', 'NaN', 1, 'Inf', 1, 'size', [md.mesh.numberofvertices])
                 md = checkfield(md, 'fieldname', 'initialization.mean_cavity_height', 'NaN', 1, 'Inf', 1, '>=', 0, 'size', [md.mesh.numberofvertices])
                 md = checkfield(md, 'fieldname', 'initialization.flowing_water_height', 'NaN', 1, 'Inf', 1, '>=', 0, 'size', [md.mesh.numberofvertices])
-                md = checkfield(md, 'fieldname', 'initialization.water_pressure', 'NaN', 1, 'Inf', 1, '>=', 0, 'size', [md.mesh.numberofelements])
+                md = checkfield(md, 'fieldname', 'initialization.water_pressure', 'NaN', 1, 'Inf', 1, '>=', 0, 'size', [md.mesh.numberofvertices])
+                md = checkfield(md, 'fieldname', 'initialization.hydrovx', 'NaN', 1, 'Inf', 1, 'size', [md.mesh.numberofvertices])
+                md = checkfield(md, 'fieldname', 'initialization.hydrovy', 'NaN', 1, 'Inf', 1, 'size', [md.mesh.numberofvertices])
                 #md = checkfield(md, 'fieldname', 'initialization.channelarea', 'NaN', 1, 'Inf', 1, '>=', 0, 'size', [md.mesh.numberofelements])
         if 'HydrologyDCInefficientAnalysis' in analyses:
             if type(md.hydrology).__name__ == 'hydrologydc':
@@ -174,6 +180,8 @@ class initialization(object):
         WriteData(fid, prefix, 'object', self, 'fieldname', 'sample', 'format', 'DoubleMat', 'mattype', 1)
         WriteData(fid, prefix, 'object', self, 'fieldname', 'debris', 'format', 'DoubleMat', 'mattype', 1)
         WriteData(fid, prefix, 'object', self, 'fieldname', 'age', 'format', 'DoubleMat', 'mattype', 1, 'scale', yts)
+        WriteData(fid, prefix, 'object', self, 'fieldname', 'hydrovx', 'format', 'DoubleMat', 'mattype', 1)
+        WriteData(fid, prefix, 'object', self, 'fieldname', 'hydrovy', 'format', 'DoubleMat', 'mattype', 1)
 
         if md.thermal.isenthalpy:
             if (np.size(self.enthalpy) <= 1):
