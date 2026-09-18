@@ -16,9 +16,12 @@ classdef hydrologyglads2
         rheology_B_base           = NaN;
         
         %Other
-        spch               = NaN;
+        spch               	 = NaN;
         neumannflux          = NaN;
-
+		relaxation_omega     = 0;
+		englacial_void_ratio = 0.;
+		requested_outputs    = {};
+		melt_flag            = 0;
 
         %Channels
 		ischannels           = 0;
@@ -28,9 +31,7 @@ classdef hydrologyglads2
 		channel_beta         = NaN; 
 
 		%Other
-		englacial_void_ratio = 0.;
-		requested_outputs    = {};
-		melt_flag            = 0;
+
 		%istransition         = 0;
 	end
     methods
@@ -68,6 +69,7 @@ classdef hydrologyglads2
             %other parameters
             self.englacial_void_ratio = 1e-4;
             self.melt_flag = 0;
+			self.relaxation_omega = 0.5;
             self.requested_outputs={'default'};
 
         end % }}}
@@ -99,6 +101,7 @@ classdef hydrologyglads2
             %other
             md = checkfield(md,'fieldname','hydrology.spch','Inf',1,'timeseries',1);
 			md = checkfield(md,'fieldname','hydrology.englacial_void_ratio','numel',[1],'>=',0);
+			md = checkfield(md,'fieldname','hydrology.relaxation_omega','numel',[1],'>=',0,'<=',1);
 			md = checkfield(md,'fieldname','hydrology.neumannflux','timeseries',1,'NaN',1,'Inf',1);
 			md = checkfield(md,'fieldname','hydrology.requested_outputs','stringrow',1);
 			md = checkfield(md,'fieldname','hydrology.melt_flag','numel',[1],'values',[0 1 2]);
@@ -106,6 +109,32 @@ classdef hydrologyglads2
 				md = checkfield(md,'fieldname','basalforcings.groundedice_melting_rate','NaN',1,'Inf',1,'timeseries',1);
 			end
         end % }}}
+
+		function disp(self) % {{{
+			disp(sprintf('   GlaDS2 (hydrologyglads2) solution parameters:'));
+			disp(sprintf('      SHEET'));
+			fielddisplay(self,'pressure_melt_coefficient','Pressure melt coefficient (c_t) [K Pa^-1]');
+			fielddisplay(self,'sheet_conductivity','sheet conductivity (k) [m^(7/4) kg^(-1/2)]');
+			fielddisplay(self,'sheet_alpha','First sheet-flow exponent (alpha_s) []'); 
+			fielddisplay(self,'sheet_beta','Second sheet-flow exponent (beta_s) []'); 
+			fielddisplay(self,'cavity_spacing','cavity spacing (l_r) [m]');
+			fielddisplay(self,'bump_height','typical bump height (h_r) [m]');
+			fielddisplay(self,'rheology_B_base','Ice rheology factor B at base of ice (B) [Pa s^(-1/3)]');
+
+			disp(sprintf('      CHANNELS'));
+			fielddisplay(self,'ischannels','Do we allow for channels? 1: yes, 0: no');
+			fielddisplay(self,'channel_conductivity','channel conductivity (k_c) [m^(3/2) kg^(-1/2)]');
+			fielddisplay(self,'channel_alpha','First channel-flow exponent (alpha_s) []'); 
+			fielddisplay(self,'channel_beta','Second channel-flow exponent (beta_s) []'); 
+			fielddisplay(self,'channel_sheet_width','channel sheet width [m]');
+			disp(sprintf('      OTHER'));
+			fielddisplay(self,'spch','Sheet thickness Dirichlet constraints [m]');
+			fielddisplay(self,'neumannflux','water flux applied along the model boundary (m^2/s)');
+			fielddisplay(self,'englacial_void_ratio','englacial void ratio (e_v)');
+			fielddisplay(self,'requested_outputs','additional outputs requested');
+			fielddisplay(self,'melt_flag','User specified basal melt? 0: no (default), 1: use md.basalforcings.groundedice_melting_rate');
+		end % }}}
+
 
         function marshall(self,prefix,md,fid) % {{{
 
@@ -139,6 +168,7 @@ classdef hydrologyglads2
 			%Others
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','spch','format','DoubleMat','mattype',1,'timeserieslength',md.mesh.numberofvertices+1,'yts',md.constants.yts);
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','neumannflux','format','DoubleMat','mattype',2,'timeserieslength',md.mesh.numberofelements+1,'yts',md.constants.yts);
+			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','relaxation_omega','format','Double');
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','englacial_void_ratio','format','Double');
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','melt_flag','format','Integer');
 			outputs = self.requested_outputs;

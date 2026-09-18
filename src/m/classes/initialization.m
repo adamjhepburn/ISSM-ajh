@@ -20,6 +20,7 @@ classdef initialization
 		mean_cavity_height  = NaN;
 		flowing_water_height= NaN;
 		hydraulic_potential = NaN;
+		water_pressure      = NaN;
 		channelarea         = NaN;
 		sealevel            = NaN;
 		bottompressure      = NaN;
@@ -114,6 +115,7 @@ classdef initialization
 					md = checkfield(md,'fieldname','initialization.mean_cavity_height','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
 					md = checkfield(md,'fieldname','initialization.flowing_water_height','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
 					md = checkfield(md,'fieldname','initialization.hydraulic_potential','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
+					md = checkfield(md,'fieldname','initialization.water_pressure','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
 					%md = checkfield(md,'fieldname','initialization.channelarea','NaN',1,'Inf',1,'>=',0,'size',[md.mesh.numberofedges 1]);
 				end
 			end
@@ -163,7 +165,8 @@ classdef initialization
 			fielddisplay(self,'watercolumn','subglacial water sheet thickness (for Shreve and GlaDS) [m]');
 			fielddisplay(self,'mean_cavity_height','mean cavity height (for GlaDS2) [m]');
 			fielddisplay(self,'flowing_water_height','flowing water height (for GlaDS2) [m]');
-			fielddisplay(self,'hydraulic_potential','Hydraulic potential (for GlaDS) [Pa]');
+			fielddisplay(self,'water_pressure','water pressure (for GlaDS2) [Pa]');
+			fielddisplay(self,'hydraulic_potential','Hydraulic potential (for GlaDS[2]) [Pa]');
 			fielddisplay(self,'channelarea','subglacial water channel area (for GlaDS) [m2]');
 			fielddisplay(self,'sample','Realization of a Gaussian random field');
 			fielddisplay(self,'bottompressure','Bottom pressures');
@@ -193,6 +196,7 @@ classdef initialization
 			WriteData(fid,prefix,'object',self,'fieldname','mean_cavity_height','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'fieldname','flowing_water_height','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'fieldname','channelarea','format','DoubleMat','mattype',1);
+			WriteData(fid,prefix,'object',self,'fieldname','water_pressure','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'fieldname','hydraulic_potential','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'fieldname','sample','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'fieldname','debris','format','DoubleMat','mattype',1);

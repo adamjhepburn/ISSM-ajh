@@ -136,6 +136,7 @@ void HydrologyGlaDS2Analysis::UpdateElements(Elements* elements,Inputs* inputs,I
     iomodel->FetchDataToInput(inputs, elements,"md.initialization.mean_cavity_height",HydrologyMeanCavityHeightEnum);
     iomodel->FetchDataToInput(inputs, elements,"md.initialization.flowing_water_height",HydrologyFlowingSheetHeightEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.initialization.hydraulic_potential",HydraulicPotentialEnum);
+    iomodel->FetchDataToInput(inputs,elements,"md.initialization.water_pressure",HydrologyWaterPressureEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.hydrology.rheology_B_base",HydrologyRheologyBBaseEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.initialization.vx",VxEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.initialization.vy",VyEnum);
@@ -168,6 +169,8 @@ void HydrologyGlaDS2Analysis::UpdateParameters(Parameters* parameters,IoModel* i
 	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.sheet_alpha",HydrologySheetAlphaEnum));
 	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.sheet_beta",HydrologySheetBetaEnum));
     parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.englacial_void_ratio",HydrologyEnglacialVoidRatioEnum));
+    parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.relaxation_omega",HydrologyRelaxationEnum));
+
 
     /*Friction*/
 	FrictionUpdateParameters(parameters, iomodel);
@@ -551,7 +554,8 @@ void HydrologyGlaDS2Analysis::UpdateWaterPressure(Element* element){/*{{{*/
 
     /*Intermediary*/
     IssmDouble h, hg, dh;
-    IssmDouble H; 
+    IssmDouble H;
+    IssmDouble pw_old;
     IssmDouble pi, x, delta, rx1, rx2;
     IssmDouble oceanLS,iceLS;
 
@@ -576,12 +580,14 @@ void HydrologyGlaDS2Analysis::UpdateWaterPressure(Element* element){/*{{{*/
 	IssmDouble rho_water = element->FindParam(MaterialsRhoFreshwaterEnum);
 	IssmDouble g         = element->FindParam(ConstantsGEnum);
     IssmDouble evr       = element->FindParam(HydrologyEnglacialVoidRatioEnum);
+    IssmDouble rOmega = element->FindParam(HydrologyRelaxationEnum);
     Input* H_input   = element->GetInput(ThicknessEnum); _assert_(H_input);
     Input* h_input   = element->GetInput(HydrologySheetHeightEnum); _assert_(h_input);
     Input* hg_input  = element->GetInput(HydrologyMeanCavityHeightEnum); _assert_(hg_input);
     Input* oceanLS_input = element->GetInput(MaskOceanLevelsetEnum); _assert_(oceanLS_input);
     Input* iceLS_input = element->GetInput(MaskIceLevelsetEnum); _assert_(iceLS_input);
-    
+    Input* pwOld_input = element->GetInput(HydrologyWaterPressureEnum); _assert_(pwOld_input);
+
     /* Start  looping on the number of gaussian points: */
 	Gauss* gauss=element->NewGauss();
 	for(int iv=0;iv<numvertices;iv++){
@@ -593,6 +599,7 @@ void HydrologyGlaDS2Analysis::UpdateWaterPressure(Element* element){/*{{{*/
         H_input->GetInputValue(&H,gauss);
 		oceanLS_input->GetInputValue(&oceanLS,gauss);
 		iceLS_input->GetInputValue(&iceLS,gauss);
+        pwOld_input->GetInputValue(&pw_old,gauss);
 
         /*Set water pressure to 0 if floating or no ice*/
         if(oceanLS<0. || iceLS>0.){
@@ -634,6 +641,8 @@ void HydrologyGlaDS2Analysis::UpdateWaterPressure(Element* element){/*{{{*/
                     rx2 = x - 1.0;
                 }
                 pw_new[iv] = pi * (rx1 - rx2);
+                /*relax solution*/
+                pw_new[iv] = pw_old + rOmega * (pw_new[iv] - pw_old);
 
             }
             }
