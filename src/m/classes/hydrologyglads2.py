@@ -34,7 +34,7 @@ class hydrologyglads2(object):
         # Other
         self.spch = np.nan
         self.neumannflux = np.nan
-        relaxation_omega = 0.
+        self.relaxation_omega = 0.
         self.englacial_void_ratio = 0.
         self.requested_outputs = []
         self.melt_flag = 0
@@ -91,7 +91,7 @@ class hydrologyglads2(object):
         self.bump_height = project3d(md, 'vector', self.bump_height, 'type', 'node', 'layer', 1)
 
         # Other
-        self.spch = project3d(md, 'vector', self.spcphi, 'type', 'node', 'layer', 1)
+        self.spch = project3d(md, 'vector', self.spch, 'type', 'node', 'layer', 1)
         #self.moulin_input = project3d(md, 'vector', self.moulin_input, 'type', 'node', 'layer', 1)
         self.neumannflux = project3d(md, 'vector', self.neumannflux, 'type', 'node', 'layer', 1)
         return self
@@ -124,7 +124,7 @@ class hydrologyglads2(object):
 
     def checkconsistency(self, md, solution, analyses):  # {{{
         # Early return
-        if 'HydrologyGladsAnalysis' not in analyses:
+        if 'HydrologyGlads2Analysis' not in analyses:
             return md
 
         # Sheet
@@ -159,7 +159,7 @@ class hydrologyglads2(object):
     def marshall(self, prefix, md, fid):  # {{{
         yts = md.constants.yts
         # Marshall model code first
-        WriteData(fid, prefix, 'name', 'md.hydrology.model', 'data', 5, 'format', 'Integer')
+        WriteData(fid, prefix, 'name', 'md.hydrology.model', 'data', 8, 'format', 'Integer')
 
        # Sheet
         WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'pressure_melt_coefficient', 'format', 'Double')
@@ -180,7 +180,7 @@ class hydrologyglads2(object):
         WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','channel_beta','format','Double') 
 
         # Others
-        WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'spcphi', 'format', 'DoubleMat', 'mattype', 1, 'timeserieslength', md.mesh.numberofvertices + 1, 'yts', yts)
+        WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'spch', 'format', 'DoubleMat', 'mattype', 1, 'timeserieslength', md.mesh.numberofvertices + 1, 'yts', yts)
         WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'neumannflux', 'format', 'DoubleMat', 'mattype', 2, 'timeserieslength', md.mesh.numberofelements + 1, 'yts', yts)
         WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'relaxation_omega', 'format', 'Double')
         #WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'moulin_input', 'format', 'DoubleMat', 'mattype', 1, 'timeserieslength', md.mesh.numberofvertices + 1, 'yts', md.constants.yts)
