@@ -301,6 +301,7 @@ syn keyword cConstant HydrologySedimentKmaxEnum
 syn keyword cConstant HydrologySheetAlphaEnum
 syn keyword cConstant HydrologySheetBetaEnum
 syn keyword cConstant HydrologyStepsPerStepEnum
+syn keyword cConstant HydrologyStabilizationEnum
 syn keyword cConstant HydrologydcEplColapseThicknessEnum
 syn keyword cConstant HydrologydcEplConductivityEnum
 syn keyword cConstant HydrologydcEplInitialThicknessEnum

@@ -294,6 +294,7 @@ syn keyword juliaConstC HydrologySedimentKmaxEnum
 syn keyword juliaConstC HydrologySheetAlphaEnum
 syn keyword juliaConstC HydrologySheetBetaEnum
 syn keyword juliaConstC HydrologyStepsPerStepEnum
+syn keyword juliaConstC HydrologyStabilizationEnum
 syn keyword juliaConstC HydrologydcEplColapseThicknessEnum
 syn keyword juliaConstC HydrologydcEplConductivityEnum
 syn keyword juliaConstC HydrologydcEplInitialThicknessEnum

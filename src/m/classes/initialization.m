@@ -29,6 +29,8 @@ classdef initialization
 		sample              = NaN;
 		debris              = NaN;
 		age                 = NaN;
+		hydrovx				= NaN;
+		hydrovy				= NaN;
 	end
 	methods
 		function self = initialization(varargin) % {{{
@@ -116,6 +118,10 @@ classdef initialization
 					md = checkfield(md,'fieldname','initialization.flowing_water_height','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
 					md = checkfield(md,'fieldname','initialization.hydraulic_potential','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
 					md = checkfield(md,'fieldname','initialization.water_pressure','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
+					md = checkfield(md,'fieldname','initialization.hydrovx','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
+					md = checkfield(md,'fieldname','initialization.hydrovy','NaN',1,'Inf',1,'size',[md.mesh.numberofvertices 1]);
+
+
 					%md = checkfield(md,'fieldname','initialization.channelarea','NaN',1,'Inf',1,'>=',0,'size',[md.mesh.numberofedges 1]);
 				end
 			end
@@ -168,6 +174,8 @@ classdef initialization
 			fielddisplay(self,'water_pressure','water pressure (for GlaDS2) [Pa]');
 			fielddisplay(self,'hydraulic_potential','Hydraulic potential (for GlaDS[2]) [Pa]');
 			fielddisplay(self,'channelarea','subglacial water channel area (for GlaDS) [m2]');
+			fielddisplay(self,'hydrovx','x component of water velocity (for GlaDS2) []');
+			fielddisplay(self,'hydrovy','y component of water velocity (for GlaDS2) []');
 			fielddisplay(self,'sample','Realization of a Gaussian random field');
 			fielddisplay(self,'bottompressure','Bottom pressures');
 			fielddisplay(self,'dsl','Dynamic sea level.');
@@ -198,6 +206,8 @@ classdef initialization
 			WriteData(fid,prefix,'object',self,'fieldname','channelarea','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'fieldname','water_pressure','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'fieldname','hydraulic_potential','format','DoubleMat','mattype',1);
+			WriteData(fid,prefix,'object',self,'fieldname','hydrovx','format','DoubleMat','mattype',1);
+			WriteData(fid,prefix,'object',self,'fieldname','hydrovy','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'fieldname','sample','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'fieldname','debris','format','DoubleMat','mattype',1);
 			WriteData(fid,prefix,'object',self,'fieldname','age','format','DoubleMat','mattype',1,'scale',yts);

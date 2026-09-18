@@ -22,6 +22,7 @@ classdef hydrologyglads2
 		englacial_void_ratio = 0.;
 		requested_outputs    = {};
 		melt_flag            = 0;
+		stabilization         = 0; %0: no stabilization, 1: exact upwind
 
         %Channels
 		ischannels           = 0;
@@ -70,6 +71,7 @@ classdef hydrologyglads2
             self.englacial_void_ratio = 1e-4;
             self.melt_flag = 0;
 			self.relaxation_omega = 0.5;
+			self.stabilization = 1; %0: no stabilization, 1: exact upwind
             self.requested_outputs={'default'};
 
         end % }}}
@@ -104,6 +106,7 @@ classdef hydrologyglads2
 			md = checkfield(md,'fieldname','hydrology.relaxation_omega','numel',[1],'>=',0,'<=',1);
 			md = checkfield(md,'fieldname','hydrology.neumannflux','timeseries',1,'NaN',1,'Inf',1);
 			md = checkfield(md,'fieldname','hydrology.requested_outputs','stringrow',1);
+			md = checkfield(md,'fieldname','hydrology.stabilization','numel',[1],'>=',0,'<=',3);
 			md = checkfield(md,'fieldname','hydrology.melt_flag','numel',[1],'values',[0 1 2]);
 			if self.melt_flag==1 || self.melt_flag==2
 				md = checkfield(md,'fieldname','basalforcings.groundedice_melting_rate','NaN',1,'Inf',1,'timeseries',1);
@@ -133,6 +136,7 @@ classdef hydrologyglads2
 			fielddisplay(self,'englacial_void_ratio','englacial void ratio (e_v)');
 			fielddisplay(self,'requested_outputs','additional outputs requested');
 			fielddisplay(self,'melt_flag','User specified basal melt? 0: no (default), 1: use md.basalforcings.groundedice_melting_rate');
+			fielddisplay(self,'stabilization','Stabilization parameter for advection: 0: no stabilization, 1: exact upwind');
 		end % }}}
 
 
@@ -171,6 +175,7 @@ classdef hydrologyglads2
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','relaxation_omega','format','Double');
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','englacial_void_ratio','format','Double');
 			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','melt_flag','format','Integer');
+			WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','stabilization','format','Double');
 			outputs = self.requested_outputs;
 			pos  = find(ismember(outputs,'default'));
 			if ~isempty(pos)

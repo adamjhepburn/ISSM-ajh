@@ -295,6 +295,7 @@ enum definitions{
 	HydrologySheetAlphaEnum,
 	HydrologySheetBetaEnum,
 	HydrologyStepsPerStepEnum,
+	HydrologyStabilizationEnum,
 	HydrologydcEplColapseThicknessEnum,
 	HydrologydcEplConductivityEnum,
 	HydrologydcEplInitialThicknessEnum,

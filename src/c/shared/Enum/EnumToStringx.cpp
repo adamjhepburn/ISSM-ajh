@@ -303,6 +303,7 @@ const char* EnumToStringx(int en){
 		case HydrologySheetAlphaEnum : return "HydrologySheetAlpha";
 		case HydrologySheetBetaEnum : return "HydrologySheetBeta";
 		case HydrologyStepsPerStepEnum : return "HydrologyStepsPerStep";
+		case HydrologyStabilizationEnum : return "HydrologyStabilization";
 		case HydrologydcEplColapseThicknessEnum : return "HydrologydcEplColapseThickness";
 		case HydrologydcEplConductivityEnum : return "HydrologydcEplConductivity";
 		case HydrologydcEplInitialThicknessEnum : return "HydrologydcEplInitialThickness";

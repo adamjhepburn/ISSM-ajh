@@ -140,6 +140,10 @@ void HydrologyGlaDS2Analysis::UpdateElements(Elements* elements,Inputs* inputs,I
 	iomodel->FetchDataToInput(inputs,elements,"md.hydrology.rheology_B_base",HydrologyRheologyBBaseEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.initialization.vx",VxEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.initialization.vy",VyEnum);
+    iomodel->FetchDataToInput(inputs,elements,"md.initialization.hydrovx",HydrologyWaterVxEnum);    
+    iomodel->FetchDataToInput(inputs,elements,"md.initialization.hydrovy",HydrologyWaterVyEnum);
+    
+
 	if(iomodel->domaintype==Domain2DhorizontalEnum){
 		iomodel->FetchDataToInput(inputs,elements,"md.initialization.vx",VxBaseEnum);
 		iomodel->FetchDataToInput(inputs,elements,"md.initialization.vy",VyBaseEnum);
@@ -170,6 +174,7 @@ void HydrologyGlaDS2Analysis::UpdateParameters(Parameters* parameters,IoModel* i
 	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.sheet_beta",HydrologySheetBetaEnum));
     parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.englacial_void_ratio",HydrologyEnglacialVoidRatioEnum));
     parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.relaxation_omega",HydrologyRelaxationEnum));
+    parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.stabilization",HydrologyStabilizationEnum));
 
 
     /*Friction*/
@@ -202,6 +207,9 @@ ElementMatrix* HydrologyGlaDS2Analysis::CreateKMatrix(Element* element){/*{{{*/
 	/*Intermediaries */
     IssmDouble  Jdet,dphi[3];
 	IssmDouble* xyz_list = NULL;
+    IssmDouble  a;
+    IssmDouble h,hg,hw,H,k,vx,vy,vel;
+    IssmDouble dvx[2],dvy[2];
 
 	/*Fetch number of nodes*/
 	int numnodes = element->GetNumberOfNodes();
@@ -210,6 +218,7 @@ ElementMatrix* HydrologyGlaDS2Analysis::CreateKMatrix(Element* element){/*{{{*/
 	ElementMatrix* Ke     = element->NewElementMatrix();
 	IssmDouble*    dbasis = xNew<IssmDouble>(2*numnodes);
 	IssmDouble*    basis  = xNew<IssmDouble>(numnodes);
+    IssmDouble     D[2][2]={0.};
     element->GetVerticesCoordinates(&xyz_list);
 
     /*Retrieve inputs and parameters from the current Picard iterate*/
@@ -220,17 +229,21 @@ ElementMatrix* HydrologyGlaDS2Analysis::CreateKMatrix(Element* element){/*{{{*/
     IssmDouble rho_ice   = element->FindParam(MaterialsRhoIceEnum);
     IssmDouble rho_water = element->FindParam(MaterialsRhoFreshwaterEnum);
     IssmDouble g         = element->FindParam(ConstantsGEnum);
+    IssmDouble stabilization = element->FindParam(HydrologyStabilizationEnum);
     Input* h_input   = element->GetInput(HydrologySheetHeightEnum); _assert_(h_input);
     Input* hg_input  = element->GetInput(HydrologyMeanCavityHeightEnum); _assert_(hg_input);
     Input* hw_input  = element->GetInput(HydrologyFlowingSheetHeightEnum); _assert_(hw_input);
     Input* phi_input = element->GetInput(HydraulicPotentialEnum); _assert_(phi_input);
     Input* H_input   = element->GetInput(ThicknessEnum); _assert_(H_input);
     Input* k_input   = element->GetInput(HydrologySheetConductivityEnum); _assert_(k_input);
+    Input* vx_input  = element->GetInput(HydrologyWaterVxEnum); _assert_(vx_input);
+    Input* vy_input  = element->GetInput(HydrologyWaterVyEnum); _assert_(vy_input);
 
+
+    a = element->CharacteristicLength();
     /*Backward-Euler mass term and implicit Picard flux term*/
     Gauss* gauss=element->NewGauss(2);
     while(gauss->next()){
-        IssmDouble h,hg,hw,H,k;
         element->JacobianDeterminant(&Jdet,xyz_list,gauss);
         element->NodalFunctionsDerivatives(dbasis,xyz_list,gauss);
         element->NodalFunctions(basis,gauss);
@@ -239,6 +252,8 @@ ElementMatrix* HydrologyGlaDS2Analysis::CreateKMatrix(Element* element){/*{{{*/
         hw_input->GetInputValue(&hw,gauss);
         H_input->GetInputValue(&H,gauss);
         k_input->GetInputValue(&k,gauss);
+        vx_input->GetInputValue(&vx,gauss);
+        vy_input->GetInputValue(&vy,gauss);
         phi_input->GetInputDerivativeValue(&dphi[0],xyz_list,gauss);
 
         IssmDouble normgradphi=sqrt(dphi[0]*dphi[0]+dphi[1]*dphi[1]);
@@ -270,6 +285,25 @@ ElementMatrix* HydrologyGlaDS2Analysis::CreateKMatrix(Element* element){/*{{{*/
                         + dbasis[1*numnodes+i]*dbasis[1*numnodes+j]));
             }
         }
+
+        /*Artificial diffusion*/
+        vel = sqrt(vx*vx + vy*vy);
+        if (vel > DBL_EPSILON) {
+            IssmDouble a = stabilization;
+            D[0][0] = factor*stabilization*a/(2.*vel)*vx*vx;
+            D[1][0] = factor*stabilization*a/(2.*vel)*vx*vy;
+            D[0][1] = factor*stabilization*a/(2.*vel)*vx*vy;
+            D[1][1] = factor*stabilization*a/(2.*vel)*vx*vy;
+            for(int i =0;i<numnodes;i++){
+                for(int j=0;j<numnodes;j++){
+                    Ke->values[i*numnodes+j] += (
+                        dbasis[0*numnodes+i]*(D[0][0]*dbasis[0*numnodes+j] + D[0][1]*dbasis[1*numnodes+j]) +
+                        dbasis[1*numnodes+i]*(D[1][0]*dbasis[0*numnodes+j] + D[1][1]*dbasis[1*numnodes+j])
+                    );
+                }
+            }
+        }
+        
     }
 
     xDelete<IssmDouble>(xyz_list);
