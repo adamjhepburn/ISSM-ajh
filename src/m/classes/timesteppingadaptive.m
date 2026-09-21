@@ -49,7 +49,7 @@ classdef timesteppingadaptive
 			md = checkfield(md,'fieldname','timestepping.final_time','numel',[1],'NaN',1,'Inf',1);
 			md = checkfield(md,'fieldname','timestepping.time_step_min','numel',[1],'>=',0,'NaN',1,'Inf',1);
 			md = checkfield(md,'fieldname','timestepping.time_step_max','numel',[1],'>=',md.timestepping.time_step_min,'NaN',1,'Inf',1);
-			md = checkfield(md,'fieldname','timestepping.cfl_coefficient','numel',[1],'>',0,'<=',1);
+			md = checkfield(md,'fieldname','timestepping.cfl_coefficient','numel',[1],'>',0,'<=',3);
 			md = checkfield(md,'fieldname','timestepping.interp_forcing','numel',[1],'values',[0 1]);
 			md = checkfield(md,'fieldname','timestepping.average_forcing','numel',[1],'values',[0 1]);
 			md = checkfield(md,'fieldname','timestepping.cycle_forcing','numel',[1],'values',[0 1]);

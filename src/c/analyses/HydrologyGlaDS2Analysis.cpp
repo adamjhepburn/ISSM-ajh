@@ -5,7 +5,9 @@
 #include "../shared/shared.h"
 #include "../modules/modules.h"
 
-IssmDouble RegDelta = 0.1; /*Regularization parameter for the pressure closure in UpdateWaterPressure*/
+IssmDouble RegDelta   = 0.1;  /*Regularization parameter for the pressure closure in UpdateWaterPressure*/
+IssmDouble HFloor     = 1e-4; /*Smooth floor for the sheet height h, used in CreateKMatrix/CreatePVector/InputUpdateFromSolution*/
+IssmDouble HSmoothing = 1e-5; /*Transition width for the smooth floor on h, must stay well below HFloor*/
 
 /*Model processing*/
 void HydrologyGlaDS2Analysis::CreateConstraints(Constraints* constraints,IoModel* iomodel){/*{{{*/
@@ -248,6 +250,7 @@ ElementMatrix* HydrologyGlaDS2Analysis::CreateKMatrix(Element* element){/*{{{*/
         element->NodalFunctionsDerivatives(dbasis,xyz_list,gauss);
         element->NodalFunctions(basis,gauss);
         h_input->GetInputValue(&h,gauss);
+        { IssmDouble dh_floor=h-HFloor; h=HFloor+0.5*(dh_floor+sqrt(dh_floor*dh_floor+HSmoothing*HSmoothing)); } /*smooth floor on h*/
         hg_input->GetInputValue(&hg,gauss);
         hw_input->GetInputValue(&hw,gauss);
         H_input->GetInputValue(&H,gauss);
@@ -360,6 +363,7 @@ ElementVector* HydrologyGlaDS2Analysis::CreatePVector(Element* element){/*{{{*/
         element->NodalFunctionsDerivatives(dbasis,xyz_list,gauss);
         element->NodalFunctions(basis,gauss);
         h_input->GetInputValue(&h,gauss);
+        { IssmDouble dh_floor=h-HFloor; h=HFloor+0.5*(dh_floor+sqrt(dh_floor*dh_floor+HSmoothing*HSmoothing)); } /*smooth floor on h*/
         hold_input->GetInputValue(&h_old,gauss);
         hg_input->GetInputValue(&hg,gauss);
         hw_input->GetInputValue(&hw,gauss);
@@ -433,6 +437,18 @@ void           HydrologyGlaDS2Analysis::GradientJ(Vector<IssmDouble>* gradient,E
 }/*}}}*/
 void           HydrologyGlaDS2Analysis::InputUpdateFromSolution(IssmDouble* solution,Element* element){/*{{{*/
 	element->InputUpdateFromSolutionOneDof(solution,HydrologySheetHeightEnum);
+
+    /*Floor sheet height to avoid negative/near-zero h collapsing the conductivity and pressure-closure terms.
+     *Use a smooth (C1) max(h,HFloor) via the quadratic smoothing identity so the Picard iteration doesn't see a kink*/
+    int numvertices_h = element->GetNumberOfVertices();
+    IssmDouble* h_list = xNew<IssmDouble>(numvertices_h);
+    element->GetInputListOnVertices(&h_list[0],HydrologySheetHeightEnum);
+    for(int iv=0;iv<numvertices_h;iv++){
+        IssmDouble dh_floor=h_list[iv]-HFloor;
+        h_list[iv]=HFloor + 0.5*(dh_floor+sqrt(dh_floor*dh_floor+HSmoothing*HSmoothing));
+    }
+    element->AddInput(HydrologySheetHeightEnum,h_list,P1Enum);
+    xDelete<IssmDouble>(h_list);
 
     /*Compute hydrology vx and vy for timestepping purposes, store sheet discharge for mean cavity height eq.*/
 
