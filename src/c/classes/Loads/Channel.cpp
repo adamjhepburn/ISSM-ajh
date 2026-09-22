@@ -990,6 +990,7 @@ void           Channel::UpdateChannelCrossSectionG2(void){/*{{{*/
 	/*Intermediaries */
 	IssmDouble  A,B,n,phi,phi_0,ks,kc,Ngrad;
 	IssmDouble  h_r;
+	IssmDouble  Sold = this->S;
 	IssmDouble  pw,R,Rw;
 	IssmDouble  H,hw,b,dphi[2],dphids,dphimds,db[2],dbds;
 	IssmDouble  xyz_list[NUMVERTICES][3];
@@ -1107,6 +1108,9 @@ void           Channel::UpdateChannelCrossSectionG2(void){/*{{{*/
 
 		if(fabs((this->S - Snew)/(Snew+DBL_EPSILON))<1e-8  || count>=10) converged = true;
 	}
+
+	/*under relax the solution for S*/
+	this->S = 0.5 * (this->S + this->Sold);
 
 	/*Compute the water filled channel cross section* for output only*/
 	/*S = piRpow2/2*/
