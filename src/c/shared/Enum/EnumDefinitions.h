@@ -1031,6 +1031,8 @@ enum definitions{
 	HydrologySheetDischargeEnum,
 	HydrologySheetThicknessEnum,
 	HydrologySheetThicknessOldEnum,
+	HydrologyElasticSheetThicknessEnum,
+	HydrologyElasticSheetThicknessOldEnum,
 	HydrologyStorageEnum,
 	HydrologyTwsEnum,
 	HydrologyTwsSpcEnum,

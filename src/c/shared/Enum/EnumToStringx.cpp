@@ -1037,6 +1037,8 @@ const char* EnumToStringx(int en){
 		case HydrologySheetDischargeEnum : return "HydrologySheetDischarge";
 		case HydrologySheetThicknessEnum : return "HydrologySheetThickness";
 		case HydrologySheetThicknessOldEnum : return "HydrologySheetThicknessOld";
+		case HydrologyElasticSheetThicknessEnum : return "HydrologyElasticSheetThickness";
+		case HydrologyElasticSheetThicknessOldEnum : return "HydrologyElasticSheetThicknessOld";
 		case HydrologyStorageEnum : return "HydrologyStorage";
 		case HydrologyTwsEnum : return "HydrologyTws";
 		case HydrologyTwsSpcEnum : return "HydrologyTwsSpc";

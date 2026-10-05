@@ -241,6 +241,8 @@
 %HydrologySheetDischarge
 %HydrologySheetThickness
 %HydrologySheetThicknessOld
+%HydrologyElasticSheetThickness
+%HydrologyElasticSheetThicknessOld
 %HydrologyStorage
 %HydrologyTws
 %HydrologyTwsSpc

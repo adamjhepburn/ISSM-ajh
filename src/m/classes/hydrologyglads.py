@@ -25,6 +25,11 @@ class hydrologyglads(object):
         self.isincludesheetthickness = 0
         self.creep_open_flag = 1
         self.rheology_B_base = np.nan
+        self.elastic_sheet_flag = 0
+        self.elastic_sheet_depth_scale = 0.
+        self.elastic_sheet_exponent = 0.
+        self.uplift_reg_rate = 0.
+        self.reg_pressure = 0.
 
         # Channels
         self.ischannels = 0
@@ -69,6 +74,11 @@ class hydrologyglads(object):
         s += '{}\n'.format(fielddisplay(self, 'rheology_B_base', 'ice rheology factor B at base of ice (B) [Pa s^(-1/3)]')) #SE
         s += '{}\n'.format(fielddisplay(self, 'isincludesheetthickness', 'Do we add rho_w*g*h in effective pressure calculation? 1: yes, 0: no'))
         s += '{}\n'.format(fielddisplay(self, 'creep_open_flag', 'Do we allow cavities to open by creep when N<0? 1: yes, 0: no'))
+        s += '{}\n'.format(fielddisplay(self, 'elastic_sheet_flag', 'Do we use elastic sheet model? 1: yes, 0: no'))
+        s += '{}\n'.format(fielddisplay(self, 'elastic_sheet_depth_scale', 'Depth scale for elastic sheet model (c_e) [m]'))
+        s += '{}\n'.format(fielddisplay(self, 'elastic_sheet_exponent', 'Exponent for elastic sheet model (\gamma) []'))
+        s += '{}\n'.format(fielddisplay(self, 'uplift_reg_rate', 'Uplift regularization rate (h_{\varepsilon}) [m Pa^(-1)]'))
+        s += '{}\n'.format(fielddisplay(self, 'reg_pressure', 'Regularization pressure (N_{\varepsilon}) [Pa]'))
         s += '\t--CHANNELS\n'
         s += '{}\n'.format(fielddisplay(self, 'ischannels', 'Do we allow for channels? 1: yes, 0: no'))
         s += '{}\n'.format(fielddisplay(self, 'channel_conductivity', 'channel conductivity (k_c) [m^(3 / 2) kg^(- 1 / 2)]'))
@@ -92,6 +102,8 @@ class hydrologyglads(object):
 
     def defaultoutputs(self, md):  # {{{
         list = ['EffectivePressure', 'HydraulicPotential', 'HydrologySheetThickness', 'ChannelArea', 'ChannelDischarge']
+        if self.elastic_sheet_flag:
+            list = list + ['HydrologyElasticSheetThickness']
         return list
     # }}}
 
@@ -114,6 +126,12 @@ class hydrologyglads(object):
         self.sheet_beta = 3.0/2.0
         self.omega = 1./2000. 
         self.creep_open_flag = 1
+        self.isincludesheetthickness = 0
+        self.elastic_sheet_flag = 0
+        self.elastic_sheet_depth_scale = 0. #m see git repo for Stevens et al., 2022
+        self.elastic_sheet_exponent = 1.
+        self.uplift_reg_rate = 0.01/1e3/9.81 #m Pa^{-1}, ~1m uplift for 100m excess head
+        self.reg_pressure = 1e4 #Pa, see git repo for Stevens et al., 2022
 
         # Channel parameters
         self.ischannels = False
@@ -152,6 +170,11 @@ class hydrologyglads(object):
         md = checkfield(md, 'fieldname', 'hydrology.isincludesheetthickness', 'numel', [1], 'values', [0, 1])
         md = checkfield(md, 'fieldname', 'hydrology.creep_open_flag', 'numel', [1], 'values', [0, 1])
         md = checkfield(md,'fieldname','hydrology.rheology_B_base', 'size', [md.mesh.numberofvertices], '>=', 0, 'np.nan', 1, 'Inf', 1)
+        md = checkfield(md,'fieldname','hydrology.elastic_sheet_flag', 'numel', [1], 'values', [0, 1])
+        md = checkfield(md,'fieldname','hydrology.elastic_sheet_depth_scale','numel',[1],'>=',0)
+        md = checkfield(md,'fieldname','hydrology.elastic_sheet_exponent','numel',[1],'>=',0)
+        md = checkfield(md,'fieldname','hydrology.uplift_reg_rate','numel',[1],'>=',0)
+        md = checkfield(md,'fieldname','hydrology.reg_pressure','numel',[1],'>=',0)
 
         # Channels
         md = checkfield(md, 'fieldname', 'hydrology.ischannels', 'numel', [1], 'values', [0, 1])
@@ -193,6 +216,11 @@ class hydrologyglads(object):
         WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'isincludesheetthickness', 'format', 'Boolean')
         WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'creep_open_flag', 'format', 'Boolean')
         WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','rheology_B_base','format','DoubleMat', 'mattype', 1);
+        WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','elastic_sheet_flag','format','Boolean')
+        WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','elastic_sheet_depth_scale','format','Double')
+        WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','elastic_sheet_exponent','format','Double')
+        WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','uplift_reg_rate','format','Double')
+        WriteData(fid,prefix,'object',self,'class','hydrology','fieldname','reg_pressure','format','Double')
 
         # Channels
         WriteData(fid, prefix, 'object', self, 'class', 'hydrology', 'fieldname', 'ischannels', 'format', 'Boolean')
