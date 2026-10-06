@@ -766,6 +766,7 @@ void HydrologyGlaDSAnalysis::UpdateSheetThickness(Element* element){/*{{{*/
 		if(iselasticsheet){
 			p_i = rho_ice*g*H;
 			p_w = phi-rho_water*g*zb;
+			if(isincludesheetthickness) p_w -= rho_water*g*h_old;
 
 			/*first term*/
 			if(p_i<DBL_EPSILON) p_i = DBL_EPSILON;

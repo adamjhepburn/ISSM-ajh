@@ -373,7 +373,7 @@ ElementMatrix* Channel::CreateKMatrixHydrologyGlaDS(void){/*{{{*/
 	IssmDouble  Jdet,v1,qc,fFactor,Afactor,Bfactor,Xifactor;
 	IssmDouble  A,B,n,phi,phi_0,dPw,ks,kc,Ngrad;
 	IssmDouble  h_r;
-	IssmDouble  H,h,b,dphi[2],dphids,dphimds,db[2];
+	IssmDouble  H,h,b,dphi[2],dphids,dphimds,db[2],dh[2];
 	IssmDouble  xyz_list[NUMVERTICES][3];
 	IssmDouble  xyz_list_tria[3][3];
 	const int   numnodes = NUMNODES;
@@ -435,6 +435,7 @@ ElementMatrix* Channel::CreateKMatrixHydrologyGlaDS(void){/*{{{*/
 		/*Get input values at gauss points*/
 		phi_input->GetInputDerivativeValue(&dphi[0],&xyz_list_tria[0][0],gauss);
 		b_input->GetInputDerivativeValue(&db[0],&xyz_list_tria[0][0],gauss);
+		h_input->GetInputDerivativeValue(&dh[0],&xyz_list_tria[0][0],gauss);
 		phi_input->GetInputValue(&phi,gauss);
 		h_input->GetInputValue(&h,gauss);
 		ks_input->GetInputValue(&ks,gauss);
@@ -450,6 +451,7 @@ ElementMatrix* Channel::CreateKMatrixHydrologyGlaDS(void){/*{{{*/
 		if(isincludesheetthickness) phi_0 += rho_water*g*h;
 		dphids  = dphi[0]*tx + dphi[1]*ty;
 		dphimds = rho_water*g*(db[0]*tx + db[1]*ty);
+		if(isincludesheetthickness) dphimds += rho_water*g*(dh[0]*tx + dh[1]*ty);
 		Ngrad   = fabs(dphids);
 		if(Ngrad<DBL_EPSILON) Ngrad = DBL_EPSILON;
 
@@ -538,7 +540,7 @@ ElementVector* Channel::CreatePVectorHydrologyGlaDS(void){/*{{{*/
 	/*Intermediaries */
 	IssmDouble  Jdet,v2,Afactor,Bfactor,fFactor;
 	IssmDouble  A,B,n,phi,phi_0,dphimds,dphi[2];
-	IssmDouble  H,h,b,db[2],dphids,qc,dPw,ks,kc,Ngrad;
+	IssmDouble  H,h,b,db[2],dh[2],dphids,qc,dPw,ks,kc,Ngrad;
 	IssmDouble  h_r;
 	IssmDouble  xyz_list[NUMVERTICES][3];
 	IssmDouble  xyz_list_tria[3][3];
@@ -593,6 +595,7 @@ ElementVector* Channel::CreatePVectorHydrologyGlaDS(void){/*{{{*/
 
 		/*Get input values at gauss points*/
 		b_input->GetInputDerivativeValue(&db[0],&xyz_list_tria[0][0],gauss);
+		h_input->GetInputDerivativeValue(&dh[0],&xyz_list_tria[0][0],gauss);
 		phi_input->GetInputDerivativeValue(&dphi[0],&xyz_list_tria[0][0],gauss);
 		h_input->GetInputValue(&h,gauss);
 		ks_input->GetInputValue(&ks,gauss);
@@ -609,6 +612,7 @@ ElementVector* Channel::CreatePVectorHydrologyGlaDS(void){/*{{{*/
 		if(isincludesheetthickness) phi_0 += rho_water*g*h;
 		dphids  = dphi[0]*tx + dphi[1]*ty;
 		dphimds = rho_water*g*(db[0]*tx + db[1]*ty);
+		if(isincludesheetthickness) dphimds += rho_water*g*(dh[0]*tx + dh[1]*ty);
 		Ngrad   = fabs(dphids);
 		if(Ngrad<DBL_EPSILON) Ngrad = DBL_EPSILON;
 
@@ -709,7 +713,7 @@ void           Channel::UpdateChannelCrossSection(void){/*{{{*/
 	/*Intermediaries */
 	IssmDouble  A,B,n,phi,phi_0,ks,kc,Ngrad;
 	IssmDouble  h_r;
-	IssmDouble  H,h,b,dphi[2],dphids,dphimds,db[2];
+	IssmDouble  H,h,b,dphi[2],dphids,dphimds,db[2],dh[2];
 	IssmDouble  xyz_list[NUMVERTICES][3];
 	IssmDouble  xyz_list_tria[3][3];
 
@@ -762,6 +766,7 @@ void           Channel::UpdateChannelCrossSection(void){/*{{{*/
 	n_input->GetInputValue(&n,gauss);
 	b_input->GetInputValue(&b,gauss);
 	b_input->GetInputDerivativeValue(&db[0],&xyz_list_tria[0][0],gauss);
+	h_input->GetInputDerivativeValue(&dh[0],&xyz_list_tria[0][0],gauss);
 	H_input->GetInputValue(&H,gauss);
 	hr_input->GetInputValue(&h_r,gauss);
 
@@ -770,6 +775,7 @@ void           Channel::UpdateChannelCrossSection(void){/*{{{*/
 	if(isincludesheetthickness) phi_0 += rho_water*g*h;
 	dphids  = dphi[0]*tx + dphi[1]*ty;
 	dphimds = rho_water*g*(db[0]*tx + db[1]*ty);
+	if(isincludesheetthickness) dphimds += rho_water*g*(dh[0]*tx + dh[1]*ty);
 	Ngrad   = fabs(dphids);
 	if(Ngrad<DBL_EPSILON) Ngrad = DBL_EPSILON;
 

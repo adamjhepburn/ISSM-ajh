@@ -131,7 +131,7 @@ class hydrologyglads(object):
         self.elastic_sheet_depth_scale = 0. #m see git repo for Stevens et al., 2022
         self.elastic_sheet_exponent = 1.
         self.uplift_reg_rate = 0.01/1e3/9.81 #m Pa^{-1}, ~1m uplift for 100m excess head
-        self.reg_pressure = 1e4 #Pa, see git repo for Stevens et al., 2022
+        self.reg_pressure = 1e3 #Pa, see git repo for Stevens et al., 2022
 
         # Channel parameters
         self.ischannels = False
@@ -174,7 +174,7 @@ class hydrologyglads(object):
         md = checkfield(md,'fieldname','hydrology.elastic_sheet_depth_scale','numel',[1],'>=',0)
         md = checkfield(md,'fieldname','hydrology.elastic_sheet_exponent','numel',[1],'>=',0)
         md = checkfield(md,'fieldname','hydrology.uplift_reg_rate','numel',[1],'>=',0)
-        md = checkfield(md,'fieldname','hydrology.reg_pressure','numel',[1],'>=',0)
+        md = checkfield(md,'fieldname','hydrology.reg_pressure','numel',[1],'>',0)
 
         # Channels
         md = checkfield(md, 'fieldname', 'hydrology.ischannels', 'numel', [1], 'values', [0, 1])
