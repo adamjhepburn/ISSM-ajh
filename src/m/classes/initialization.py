@@ -22,6 +22,7 @@ class initialization(object):
         self.temperature         = np.nan
         self.enthalpy            = np.nan
         self.waterfraction       = np.nan
+        self.elastic_sheet       = np.nan
         self.sediment_head       = np.nan
         self.epl_head            = np.nan
         self.epl_thickness       = np.nan
@@ -55,6 +56,7 @@ class initialization(object):
         s += '{}\n'.format(fielddisplay(self, 'enthalpy', 'enthalpy [J]'))
         s += '{}\n'.format(fielddisplay(self, 'waterfraction', 'fraction of water in the ice'))
         s += '{}\n'.format(fielddisplay(self, 'watercolumn', 'thickness of subglacial water [m]'))
+        s += '{}\n'.format(fielddisplay(self, 'elastic_sheet', 'thickness of the elastic sheet [m]'))
         s += '{}\n'.format(fielddisplay(self, 'sediment_head', 'sediment water head of subglacial system [m]'))
         s += '{}\n'.format(fielddisplay(self, 'epl_head', 'epl water head of subglacial system [m]'))
         s += '{}\n'.format(fielddisplay(self, 'epl_thickness', 'thickness of the epl [m]'))
@@ -121,11 +123,13 @@ class initialization(object):
         if 'HydrologyGlaDSAnalysis' in analyses:
             if type(md.hydrology).__name__ == 'hydrologyglads':
                 md = checkfield(md, 'fieldname', 'initialization.watercolumn', 'NaN', 1, 'Inf', 1, 'size', [md.mesh.numberofvertices])
+                md = checkfield(md, 'fieldname', 'initialization.elastic_sheet', 'NaN', 1, 'Inf', 1, 'size', [md.mesh.numberofvertices])
                 md = checkfield(md, 'fieldname', 'initialization.hydraulic_potential', 'NaN', 1, 'Inf', 1, 'size', [md.mesh.numberofvertices])
                 md = checkfield(md, 'fieldname', 'initialization.channelarea', 'NaN', 1, 'Inf', 1, '>=', 0, 'size', [md.mesh.numberofelements])
         if 'HydrologyIMLGlaDSAnalysis' in analyses:
             if type(md.hydrology).__name__ == 'hydrologyimlglads':
                 md = checkfield(md, 'fieldname', 'initialization.watercolumn', 'NaN', 1, 'Inf', 1, 'size', [md.mesh.numberofvertices])
+                md = checkfield(md, 'fieldname', 'initialization.elastic_sheet', 'NaN', 1, 'Inf', 1, 'size', [md.mesh.numberofvertices])
                 md = checkfield(md, 'fieldname', 'initialization.elastic_sheet', 'NaN', 1, 'Inf', 1, 'size', [md.mesh.numberofvertices])
                 md = checkfield(md, 'fieldname', 'initialization.hydraulic_potential', 'NaN', 1, 'Inf', 1, 'size', [md.mesh.numberofvertices])
                 md = checkfield(md, 'fieldname', 'initialization.channelarea', 'NaN', 1, 'Inf', 1, '>=', 0, 'size', [md.mesh.numberofelements])
@@ -174,6 +178,7 @@ class initialization(object):
         WriteData(fid, prefix, 'object', self, 'fieldname', 'epl_head', 'format', 'DoubleMat', 'mattype', 1)
         WriteData(fid, prefix, 'object', self, 'fieldname', 'epl_thickness', 'format', 'DoubleMat', 'mattype', 1)
         WriteData(fid, prefix, 'object', self, 'fieldname', 'watercolumn', 'format', 'DoubleMat', 'mattype', 1)
+        WriteData(fid, prefix, 'object', self, 'fieldname', 'elastic_sheet', 'format', 'DoubleMat', 'mattype', 1)
         WriteData(fid, prefix, 'object', self, 'fieldname', 'channelarea', 'format', 'DoubleMat', 'mattype', 1)
         WriteData(fid, prefix, 'object', self, 'fieldname', 'sheet_discharge', 'format', 'DoubleMat', 'mattype', 1)
         WriteData(fid,prefix,'object',self,'fieldname','channel_discharge','format','DoubleMat','mattype',1)
