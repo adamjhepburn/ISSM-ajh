@@ -101,7 +101,8 @@ class hydrologyglads(object):
     # }}}
 
     def defaultoutputs(self, md):  # {{{
-        list = ['EffectivePressure', 'HydraulicPotential', 'HydrologySheetThickness', 'ChannelArea', 'ChannelDischarge']
+        list = ['EffectivePressure', 'HydraulicPotential', 'HydrologySheetThickness', 'ChannelArea', 'ChannelDischarge','HydrologySheetDischarge','HydrologyWaterVx',
+                'HydrologyWaterVy']
         if self.elastic_sheet_flag:
             list = list + ['HydrologyElasticSheetThickness']
         return list
