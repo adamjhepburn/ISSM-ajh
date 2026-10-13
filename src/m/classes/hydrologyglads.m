@@ -15,7 +15,9 @@ classdef hydrologyglads
 		sheet_beta                = NaN; 
 		rheology_B_base           = NaN;
 		isincludesheetthickness   = 0;
-		creep_open_flag  		  = 1;
+		creep_open_flag  		  = 1;	
+		%Elastic sheet
+		elastic_sheet_flag   	  = 0;
 		elastic_sheet_depth_scale = 0.;
 		elastic_sheet_exponent    = 0.;
 		uplift_reg_rate           = 0.;
@@ -36,7 +38,6 @@ classdef hydrologyglads
 		requested_outputs    = {};
 		melt_flag            = 0;
 		istransition         = 0;
-		elastic_sheet_flag   = 0;
 		maxiter              = 0;
 		restol               = 0;
 		reltol               = 0;

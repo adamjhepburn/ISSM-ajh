@@ -194,6 +194,7 @@ void HydrologyIMLGlaDSAnalysis::UpdateElements(Elements* elements,Inputs* inputs
 	iomodel->FetchDataToInput(inputs,elements,"md.hydrology.neumannflux",HydrologyNeumannfluxEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.hydrology.moulin_input",HydrologyMoulinInputEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.initialization.watercolumn",HydrologySheetThicknessEnum);
+	iomodel->FetchDataToInput(inputs,elements,"md.initialization.elastic_sheet",HydrologyElasticSheetThicknessEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.initialization.hydraulic_potential",HydraulicPotentialEnum);
 	iomodel->FetchDataToInput(inputs,elements,"md.hydrology.rheology_B_base",HydrologyRheologyBBaseEnum);
 	if(islakes){
@@ -250,6 +251,11 @@ void HydrologyIMLGlaDSAnalysis::UpdateParameters(Parameters* parameters,IoModel*
 	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.creep_open_flag",HydrologyCreepOpenFlagEnum));
 	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.islakes",HydrologyLakeFlagEnum));
 	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.num_lakes",HydrologyNumLakesEnum));
+	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.elastic_sheet_flag",HydrologyIsIncludeElasticSheetEnum));
+	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.elastic_sheet_depth_scale",HydrologyElasticSheetDepthScaleEnum));
+	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.elastic_sheet_exponent",HydrologyElasticSheetExponentEnum));
+	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.uplift_reg_rate",HydrologyUpliftRegRateEnum));
+	parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.reg_pressure",HydrologyRegPressureForUpliftEnum));	
 	
 	/*Friction*/
 	FrictionUpdateParameters(parameters, iomodel);
