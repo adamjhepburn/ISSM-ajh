@@ -1202,6 +1202,7 @@ syn keyword juliaConstC SmbAccumulatedPrecipitationSubstepEnum
 syn keyword juliaConstC SmbAccumulatedRainSubstepEnum
 syn keyword juliaConstC SmbAccumulatedRefreezeSubstepEnum
 syn keyword juliaConstC SmbAccumulatedRunoffSubstepEnum
+syn keyword juliaConstC SmbAccumulatedSnowMeltEnum
 syn keyword juliaConstC SmbAlbedoEnum
 syn keyword juliaConstC SmbAlbedoInitEnum
 syn keyword juliaConstC SmbAlbedoSnowEnum
@@ -1328,6 +1329,7 @@ syn keyword juliaConstC SmbSemicQmrInitEnum
 syn keyword juliaConstC SmbSizeiniEnum
 syn keyword juliaConstC SmbSmbCorrEnum
 syn keyword juliaConstC SmbSmbrefEnum
+syn keyword juliaConstC SmbSnowMeltEnum
 syn keyword juliaConstC SmbSzaValueEnum
 syn keyword juliaConstC SmbSummerMeltEnum
 syn keyword juliaConstC SmbSummerAlbedoEnum
@@ -1413,6 +1415,7 @@ syn keyword juliaConstC SurfaceSlopeYEnum
 syn keyword juliaConstC TemperatureEnum
 syn keyword juliaConstC TemperatureObsEnum
 syn keyword juliaConstC TemperaturePDDEnum
+syn keyword juliaConstC TemperatureJJAPDDEnum
 syn keyword juliaConstC TemperaturePicardEnum
 syn keyword juliaConstC TemperatureSEMICEnum
 syn keyword juliaConstC ThermalforcingARMANoiseEnum

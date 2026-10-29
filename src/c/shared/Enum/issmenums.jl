@@ -1198,6 +1198,7 @@
 	SmbAccumulatedRainSubstepEnum
 	SmbAccumulatedRefreezeSubstepEnum
 	SmbAccumulatedRunoffSubstepEnum
+	SmbAccumulatedSnowMeltEnum
 	SmbAlbedoEnum
 	SmbAlbedoInitEnum
 	SmbAlbedoSnowEnum
@@ -1324,6 +1325,7 @@
 	SmbSizeiniEnum
 	SmbSmbCorrEnum
 	SmbSmbrefEnum
+	SmbSnowMeltEnum
 	SmbSzaValueEnum
 	SmbSummerMeltEnum
 	SmbSummerAlbedoEnum
@@ -1409,6 +1411,7 @@
 	TemperatureEnum
 	TemperatureObsEnum
 	TemperaturePDDEnum
+	TemperatureJJAPDDEnum
 	TemperaturePicardEnum
 	TemperatureSEMICEnum
 	ThermalforcingARMANoiseEnum
@@ -5095,6 +5098,7 @@ function EnumToString(enum::IssmEnum)
 	if(enum==SmbAccumulatedRainSubstepEnum) return "SmbAccumulatedRainSubstep" end
 	if(enum==SmbAccumulatedRefreezeSubstepEnum) return "SmbAccumulatedRefreezeSubstep" end
 	if(enum==SmbAccumulatedRunoffSubstepEnum) return "SmbAccumulatedRunoffSubstep" end
+	if(enum==SmbAccumulatedSnowMeltEnum) return "SmbAccumulatedSnowMelt" end
 	if(enum==SmbAlbedoEnum) return "SmbAlbedo" end
 	if(enum==SmbAlbedoInitEnum) return "SmbAlbedoInit" end
 	if(enum==SmbAlbedoSnowEnum) return "SmbAlbedoSnow" end
@@ -5221,6 +5225,7 @@ function EnumToString(enum::IssmEnum)
 	if(enum==SmbSizeiniEnum) return "SmbSizeini" end
 	if(enum==SmbSmbCorrEnum) return "SmbSmbCorr" end
 	if(enum==SmbSmbrefEnum) return "SmbSmbref" end
+	if(enum==SmbSnowMeltEnum) return "SmbSnowMelt" end
 	if(enum==SmbSzaValueEnum) return "SmbSzaValue" end
 	if(enum==SmbSummerMeltEnum) return "SmbSummerMelt" end
 	if(enum==SmbSummerAlbedoEnum) return "SmbSummerAlbedo" end
@@ -5306,6 +5311,7 @@ function EnumToString(enum::IssmEnum)
 	if(enum==TemperatureEnum) return "Temperature" end
 	if(enum==TemperatureObsEnum) return "TemperatureObs" end
 	if(enum==TemperaturePDDEnum) return "TemperaturePDD" end
+	if(enum==TemperatureJJAPDDEnum) return "TemperatureJJAPDD" end
 	if(enum==TemperaturePicardEnum) return "TemperaturePicard" end
 	if(enum==TemperatureSEMICEnum) return "TemperatureSEMIC" end
 	if(enum==ThermalforcingARMANoiseEnum) return "ThermalforcingARMANoise" end
@@ -8992,6 +8998,7 @@ function StringToEnum(name::String)
 	if(name=="SmbAccumulatedRainSubstep") return SmbAccumulatedRainSubstepEnum  end
 	if(name=="SmbAccumulatedRefreezeSubstep") return SmbAccumulatedRefreezeSubstepEnum  end
 	if(name=="SmbAccumulatedRunoffSubstep") return SmbAccumulatedRunoffSubstepEnum  end
+	if(name=="SmbAccumulatedSnowMelt") return SmbAccumulatedSnowMeltEnum  end
 	if(name=="SmbAlbedo") return SmbAlbedoEnum  end
 	if(name=="SmbAlbedoInit") return SmbAlbedoInitEnum  end
 	if(name=="SmbAlbedoSnow") return SmbAlbedoSnowEnum  end
@@ -9118,6 +9125,7 @@ function StringToEnum(name::String)
 	if(name=="SmbSizeini") return SmbSizeiniEnum  end
 	if(name=="SmbSmbCorr") return SmbSmbCorrEnum  end
 	if(name=="SmbSmbref") return SmbSmbrefEnum  end
+	if(name=="SmbSnowMelt") return SmbSnowMeltEnum  end
 	if(name=="SmbSzaValue") return SmbSzaValueEnum  end
 	if(name=="SmbSummerMelt") return SmbSummerMeltEnum  end
 	if(name=="SmbSummerAlbedo") return SmbSummerAlbedoEnum  end
@@ -9203,6 +9211,7 @@ function StringToEnum(name::String)
 	if(name=="Temperature") return TemperatureEnum  end
 	if(name=="TemperatureObs") return TemperatureObsEnum  end
 	if(name=="TemperaturePDD") return TemperaturePDDEnum  end
+	if(name=="TemperatureJJAPDD") return TemperatureJJAPDDEnum  end
 	if(name=="TemperaturePicard") return TemperaturePicardEnum  end
 	if(name=="TemperatureSEMIC") return TemperatureSEMICEnum  end
 	if(name=="ThermalforcingARMANoise") return ThermalforcingARMANoiseEnum  end

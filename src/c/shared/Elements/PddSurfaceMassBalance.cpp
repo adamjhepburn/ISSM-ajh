@@ -9,11 +9,11 @@
 #include <cmath>
 
 IssmDouble PddSurfaceMassBalance(IssmDouble* monthlytemperatures, IssmDouble* monthlyprec,
-         IssmDouble* pdds, IssmDouble* pds, IssmDouble* melt, IssmDouble* accu, 
+         IssmDouble* pdds, IssmDouble* pds, IssmDouble* melt, IssmDouble* accu, IssmDouble* snowmelt,
          IssmDouble signorm, IssmDouble yts, IssmDouble h, IssmDouble s, IssmDouble desfac,
          IssmDouble s0t,IssmDouble s0p, IssmDouble rlaps,IssmDouble rlapslgm,
          IssmDouble TdiffTime,IssmDouble sealevTime, IssmDouble pddsnowfac,IssmDouble pddicefac,
-         IssmDouble rho_water,IssmDouble rho_ice){
+         IssmDouble rho_water,IssmDouble rho_ice, IssmDouble* Tsum){
 
   // output:
   IssmDouble B;    // surface mass balance, melt+accumulation
@@ -54,7 +54,7 @@ IssmDouble PddSurfaceMassBalance(IssmDouble* monthlytemperatures, IssmDouble* mo
   IssmDouble frzndd = 0.;  
 
   IssmDouble tstar;          // monthly mean surface temp
-  IssmDouble Tsum= 0.;       // average summer (JJA) temperature
+  // IssmDouble Tsum= 0.;       // average summer (JJA) temperature // REMOVED LOCAL DECLARATION
   IssmDouble Tsurf = 0.;     // average annual temperature    
 
   IssmDouble deltm=1./12.;
@@ -113,7 +113,7 @@ IssmDouble PddSurfaceMassBalance(IssmDouble* monthlytemperatures, IssmDouble* mo
     /*********compute PDD************/
     // ndd(month)=-(tstar-pdd(month)) since ndd+pdd gives expectation of
     // gaussian=T_m, so ndd=-(Tsurf-pdd)
-    if (iqj>5 && iqj<9){ Tsum=Tsum+tstar;} 
+    if (iqj>5 && iqj<9){ *Tsum=*Tsum+tstar;} 
 
     if (tstar >= siglim) {pdd = pdd + tstar*deltm;}
     else if (tstar> -siglim){
@@ -130,7 +130,7 @@ IssmDouble PddSurfaceMassBalance(IssmDouble* monthlytemperatures, IssmDouble* mo
 
   saccu = qm;
   prect = qmp;     // total precipitation during 1 year taking into account des. ef.
-  Tsum=Tsum/3;
+  *Tsum=*Tsum/3;
 
   snowfac=pddsnowfac0;
   icefac=pddicefac0;
@@ -152,13 +152,13 @@ IssmDouble PddSurfaceMassBalance(IssmDouble* monthlytemperatures, IssmDouble* mo
   }
 
   /***** determine PDD factors *****/
-  if(Tsum< -1.) {
+  if(*Tsum< -1.) {
     snwmf=(2.65+snowfac-pddsnowfac0)*0.001;   //  ablation factor for snow per positive degree day.*0.001 to go from mm to m/ppd
     smf=17.22*0.001;    //  ablation factor for ice per pdd (Braithwaite 1995 from tarasov 2002)
   } 
-  else if(Tsum< 10){
-    snwmf = (0.15*(Tsum+1) + (2.65+snowfac-pddsnowfac0))*0.001;
-    smf = (((17.22-icefac)/(pow(11,3)))*pow((10.-Tsum),3) + pddicefac0)*0.001;
+  else if(*Tsum< 10){
+    snwmf = (0.15*(*Tsum+1) + (2.65+snowfac-pddsnowfac0))*0.001;
+    smf = (((17.22-icefac)/(pow(11,3)))*pow((10.-*Tsum),3) + pddicefac0)*0.001;
     //JC,smf = (((icefac-pddicefac0)/(Tsum+1))*pow((10.-Tsum),3) + pddicefac0)*0.001;
   }
   else{
@@ -196,6 +196,7 @@ IssmDouble PddSurfaceMassBalance(IssmDouble* monthlytemperatures, IssmDouble* mo
     runoff=snwm - supice;  //meltwater only, does not include rain
   }
   else {  //all snow melted
+    snwm= saccu; //the amount of snow melted is the exact amount available
     supice= min(hmx2*CovrLm*frzndd, prect );
     runoff= saccu + smf*(pddt-saccu/snwmf) - supice;
     supcap=0;
@@ -239,6 +240,11 @@ IssmDouble PddSurfaceMassBalance(IssmDouble* monthlytemperatures, IssmDouble* mo
   if(Tsurf<0) {
     Tsurf= min(Tsurf+fsupT*diffndd , 0.);}
 
+  //Grab Snowmelt, should be a positive #
+  if (snwm>saccu){
+    snwm=saccu;
+   }
+  snowmelt[0]=snwm/yts;
   melt[0]=smelt/yts;
   accu[0]=saccu/yts;
   B = saccu - smelt;

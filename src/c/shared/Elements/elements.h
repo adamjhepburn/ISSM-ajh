@@ -20,11 +20,11 @@ IssmDouble EstarLambdaS(IssmDouble epseff, IssmDouble epsprime_norm);
 void EstarOmega(IssmDouble* omega,IssmDouble vx,IssmDouble vy,IssmDouble vz,IssmDouble vmag,IssmDouble* dvx,IssmDouble* dvy,IssmDouble* dvz, IssmDouble* dvmag);
 void EstarStrainrateQuantities(IssmDouble *pepsprime_norm, IssmDouble vx,IssmDouble vy,IssmDouble vz,IssmDouble vmag,IssmDouble* dvx,IssmDouble* dvy,IssmDouble* dvz,IssmDouble* dvmag);
 IssmDouble PddSurfaceMassBalance(IssmDouble* monthlytemperatures,  IssmDouble* monthlyprec,
-				 IssmDouble* pdds, IssmDouble* pds, IssmDouble* melt, IssmDouble* accu, IssmDouble signorm, 
+				 IssmDouble* pdds, IssmDouble* pds, IssmDouble* melt, IssmDouble* accu, IssmDouble* snowmelt, IssmDouble signorm, 
 				 IssmDouble yts, IssmDouble h, IssmDouble s, IssmDouble desfac,IssmDouble s0t,
 				 IssmDouble s0p, IssmDouble rlaps, IssmDouble rlapslgm,
 				 IssmDouble TdiffTime,IssmDouble sealevTime,IssmDouble pddsnowfac,IssmDouble pddicefac,
-				 IssmDouble rho_water, IssmDouble rho_ice);
+				 IssmDouble rho_water, IssmDouble rho_ice, IssmDouble* Tsum);
 IssmDouble PddSurfaceMassBalanceSicopolis(IssmDouble* monthlytemperatures,  IssmDouble* monthlyprec,
 				 IssmDouble* melt, IssmDouble* accu, IssmDouble* melt_star, IssmDouble* t_ampl, IssmDouble* p_ampl,
 				 IssmDouble yts, IssmDouble s, IssmDouble desfac,IssmDouble s0t,

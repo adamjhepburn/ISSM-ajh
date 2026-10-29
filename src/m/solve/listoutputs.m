@@ -414,6 +414,7 @@
 %SmbAccumulatedRainSubstep
 %SmbAccumulatedRefreezeSubstep
 %SmbAccumulatedRunoffSubstep
+%SmbAccumulatedSnowMelt
 %SmbAlbedo
 %SmbAlbedoInit
 %SmbAlbedoSnow
@@ -540,6 +541,7 @@
 %SmbSizeini
 %SmbSmbCorr
 %SmbSmbref
+%SmbSnowMelt
 %SmbSzaValue
 %SmbSummerMelt
 %SmbSummerAlbedo
@@ -625,6 +627,7 @@
 %Temperature
 %TemperatureObs
 %TemperaturePDD
+%TemperatureJJAPDD
 %TemperaturePicard
 %TemperatureSEMIC
 %ThermalforcingARMANoise

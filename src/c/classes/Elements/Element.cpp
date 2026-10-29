@@ -3674,9 +3674,11 @@ void       Element::PositiveDegreeDay(IssmDouble* pdds,IssmDouble* pds,IssmDoubl
 	IssmDouble* agd=xNew<IssmDouble>(NUM_VERTICES); // surface mass balance
 	IssmDouble* melt=xNew<IssmDouble>(NUM_VERTICES); // surface melt
 	IssmDouble* accu=xNew<IssmDouble>(NUM_VERTICES); // surface precipitation
+	IssmDouble* snowmelt=xNew<IssmDouble>(NUM_VERTICES); // surface snowmelt
 	IssmDouble* monthlytemperatures=xNew<IssmDouble>(NUM_VERTICES_MONTHS_PER_YEAR);
 	IssmDouble* monthlyprec=xNew<IssmDouble>(NUM_VERTICES_MONTHS_PER_YEAR);
 	IssmDouble* yearlytemperatures=xNew<IssmDouble>(NUM_VERTICES); memset(yearlytemperatures, 0., NUM_VERTICES*sizeof(IssmDouble));
+	IssmDouble* Tsum=xNew<IssmDouble>(NUM_VERTICES);
 	IssmDouble* tmp=xNew<IssmDouble>(NUM_VERTICES);
 	IssmDouble* h=xNew<IssmDouble>(NUM_VERTICES);
 	IssmDouble* s=xNew<IssmDouble>(NUM_VERTICES);
@@ -3684,10 +3686,12 @@ void       Element::PositiveDegreeDay(IssmDouble* pdds,IssmDouble* pds,IssmDoubl
 	IssmDouble* s0t=xNew<IssmDouble>(NUM_VERTICES);
 	IssmDouble pddsnowfac = -1.;
 	IssmDouble pddicefac = -1.;
-	IssmDouble accsumM = 0.0;
+	IssmDouble accsumM = 0.0; //accumulated melt
+	IssmDouble accsumSM = 0.0; //accumulated snow melt
 	IssmDouble accsumSMB = 0.0;
 	IssmDouble accsumP = 0.0;
 	IssmDouble avgM = 0.0;
+	IssmDouble avgSM = 0.0; // average snow melt
 	IssmDouble avgSMB = 0.0;
 	IssmDouble avgP = 0.0;
 	IssmDouble rho_water,rho_ice,desfac,rlaps,rlapslgm;
@@ -3763,10 +3767,12 @@ void       Element::PositiveDegreeDay(IssmDouble* pdds,IssmDouble* pds,IssmDoubl
 
 	//Get accumulated input
 	Input *accsumM_input = NULL;
+	Input *accsumSM_input = NULL;
 	Input *accsumP_input = NULL;
 	Input *accsumSMB_input = NULL;
 	if (isinitialized){
 		accsumM_input = this->GetInput(SmbAccumulatedMeltEnum);  _assert_(accsumM_input);
+		accsumSM_input = this->GetInput(SmbAccumulatedSnowMeltEnum); _assert_(accsumSM_input);
 		accsumP_input = this->GetInput(SmbAccumulatedPrecipitationEnum);  _assert_(accsumP_input);
 		accsumSMB_input = this->GetInput(SmbAccumulatedMassBalanceEnum);  _assert_(accsumSMB_input);
 	}
@@ -3781,9 +3787,9 @@ void       Element::PositiveDegreeDay(IssmDouble* pdds,IssmDouble* pds,IssmDoubl
 			input2->GetInputValue(&pddicefac,gauss);
 		}
 		agd[iv]=PddSurfaceMassBalance(&monthlytemperatures[iv*12], &monthlyprec[iv*12],
-					pdds, pds, &melt[iv], &accu[iv], signorm, yts, h[iv], s[iv],
+					pdds, pds, &melt[iv], &accu[iv], &snowmelt[iv], signorm, yts, h[iv], s[iv],
 					desfac, s0t[iv], s0p[iv],rlaps,rlapslgm,TdiffTime,sealevTime,
-					pddsnowfac,pddicefac,rho_water,rho_ice);
+					pddsnowfac,pddicefac,rho_water,rho_ice,&Tsum[iv]);
 		/*Get yearlytemperatures */
 		for(int month=0;month<12;month++) {
 			yearlytemperatures[iv]=yearlytemperatures[iv]+(monthlytemperatures[iv*12+month]+273.15)*mavg; // Has to be in Kelvin
@@ -3793,11 +3799,13 @@ void       Element::PositiveDegreeDay(IssmDouble* pdds,IssmDouble* pds,IssmDoubl
 
 	/*Save accumulated inputs {{{*/
 	Input *avgM_input = NULL;
+	Input *avgSM_input = NULL;
 	Input *avgP_input = NULL;
 	Input *avgSMB_input = NULL;
 
 	if (isinitialized){
 		accsumM_input->GetInputAverage(&accsumM);
+		accsumSM_input->GetInputAverage(&accsumSM);
 		accsumP_input->GetInputAverage(&accsumP);
 		accsumSMB_input->GetInputAverage(&accsumSMB);
 	}
@@ -3808,9 +3816,11 @@ void       Element::PositiveDegreeDay(IssmDouble* pdds,IssmDouble* pds,IssmDoubl
 	switch(this->ObjectEnum()){
 		case TriaEnum:
 			this->AddInput(TemperaturePDDEnum,&yearlytemperatures[0],P1Enum);
+			this->AddInput(TemperatureJJAPDDEnum,&Tsum[0],P1Enum);
 			this->AddInput(SmbMassBalanceEnum,&agd[0],P1Enum);
 			this->AddInput(SmbAccumulationEnum,&accu[0],P1Enum);
 			this->AddInput(SmbMeltEnum,&melt[0],P1Enum);
+			this->AddInput(SmbSnowMeltEnum,&snowmelt[0],P1Enum);
 			break;
 		case PentaEnum:
 			bool isthermal;
@@ -3870,27 +3880,33 @@ void       Element::PositiveDegreeDay(IssmDouble* pdds,IssmDouble* pds,IssmDoubl
 			}
 			this->AddInput(SmbMassBalanceEnum,&agd[0],P1Enum);
 			this->AddInput(TemperaturePDDEnum,&yearlytemperatures[0],P1Enum);
+			this->AddInput(TemperatureJJAPDDEnum,&Tsum[0],P1Enum);
 			this->AddInput(SmbAccumulationEnum,&accu[0],P1Enum);
 			this->AddInput(SmbMeltEnum,&melt[0],P1Enum);
+			this->AddInput(SmbSnowMeltEnum,&snowmelt[0],P1Enum);
 			this->InputExtrude(TemperaturePDDEnum,-1);
 			this->InputExtrude(SmbMassBalanceEnum,-1);
 			this->InputExtrude(SmbAccumulationEnum,-1);
 			this->InputExtrude(SmbMeltEnum,-1);
+			this->InputExtrude(SmbSnowMeltEnum,-1);
 			break;
 		default: _error_("Not implemented yet");
 	}
 
 	avgM_input = this->GetInput(SmbMeltEnum);  _assert_(avgM_input);
+	avgSM_input = this->GetInput(SmbSnowMeltEnum);  _assert_(avgSM_input);
 	avgP_input = this->GetInput(SmbAccumulationEnum);  _assert_(avgP_input);
 	avgSMB_input = this->GetInput(SmbMassBalanceEnum);  _assert_(avgSMB_input);
 
 	avgM_input->GetInputAverage(&avgM);
+	avgSM_input->GetInputAverage(&avgSM);
 	avgP_input->GetInputAverage(&avgP);
 	avgSMB_input->GetInputAverage(&avgSMB);
 
 	this->SetElementInput(SmbAccumulatedMassBalanceEnum,accsumSMB+avgSMB*dt);
 	this->SetElementInput(SmbAccumulatedPrecipitationEnum,accsumP+avgP*dt);
 	this->SetElementInput(SmbAccumulatedMeltEnum,accsumM+avgM*dt);
+	this->SetElementInput(SmbAccumulatedSnowMeltEnum,accsumSM+avgSM*dt);
 	if (!isinitialized){
 		/*Flag the initialization:*/
 		this->SetBoolInput(this->inputs,SmbIsInitializedEnum,true);
@@ -3901,9 +3917,10 @@ void       Element::PositiveDegreeDay(IssmDouble* pdds,IssmDouble* pds,IssmDoubl
 	xDelete<IssmDouble>(monthlytemperatures);
 	xDelete<IssmDouble>(monthlyprec);
 	xDelete<IssmDouble>(agd);
-	xDelete<IssmDouble>(melt);
+	xDelete<IssmDouble>(snowmelt);
 	xDelete<IssmDouble>(accu);
 	xDelete<IssmDouble>(yearlytemperatures);
+	xDelete<IssmDouble>(Tsum);
 	xDelete<IssmDouble>(h);
 	xDelete<IssmDouble>(s);
 	xDelete<IssmDouble>(s0t);

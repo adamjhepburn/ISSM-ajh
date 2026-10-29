@@ -249,6 +249,8 @@ def ReadData(fid, md):  # {{{
             field = field * yts
         elif fieldname == 'SmbMelt':
             field = field * yts
+        elif fieldname == 'SmbSnowMelt':
+            field = field * yts
         elif fieldname == 'SmbMAdd':
             field = field * yts
         elif fieldname == 'SmbWAdd':
