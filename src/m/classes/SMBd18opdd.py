@@ -90,6 +90,10 @@ class SMBd18opdd(object):
             self.temperatures_reconstructed = project3d(md, 'vector', self.temperatures_reconstructed, 'type', 'node')
         if self.isprecipscaled == 0:
             self.precipitations_reconstructed = project3d(md, 'vector', self.precipitations_reconstructed, 'type', 'node')
+        if self.issetpddfac:
+            self.pddfac_snow = project3d(md, 'vector', self.pddfac_snow, 'type', 'node')
+        if self.issetpddfac:
+            self.pddfac_ice = project3d(md, 'vector', self.pddfac_ice, 'type', 'node')
         self.s0p = project3d(md, 'vector', self.s0p, 'type', 'node')
         self.s0t = project3d(md, 'vector', self.s0t, 'type', 'node')
         return self
